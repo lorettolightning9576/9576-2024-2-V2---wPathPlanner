@@ -17,6 +17,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -146,6 +147,17 @@ public class IntakeSubsystem extends SubsystemBase {
        return "none";
     }
   }
+
+  public Command setIntakeFeedCommand() {
+     return this.runEnd(
+            ()-> {
+                setIntakeFeed();
+            },
+            () -> {
+                stopIntake();
+        });
+  }
+
 
 
   @Override

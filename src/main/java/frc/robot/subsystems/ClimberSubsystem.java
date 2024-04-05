@@ -58,8 +58,8 @@ public class ClimberSubsystem extends SubsystemBase {
     leftClimbMotor.burnFlash();
     rightClimbMotor.burnFlash();
 
-    leftClimberSwitch = new DigitalInput(5);
-    rightClimberSwitch = new DigitalInput(6);
+    leftClimberSwitch = new DigitalInput(8);
+    rightClimberSwitch = new DigitalInput(9);
   }
 
   public void addDashboardWidgets(ShuffleboardLayout layout) {

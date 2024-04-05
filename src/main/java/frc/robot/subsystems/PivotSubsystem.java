@@ -105,8 +105,8 @@ public class PivotSubsystem extends SubsystemBase{
     double kD =  0.0000;
     double kIz = 0;
     double kFF = 0;
-    double kMaxOutput =  0.25;
-    double kMinOutput = -0.25;
+    double kMaxOutput =  0.3;
+    double kMinOutput = -0.3;
 
     pivotPidController.setP(kP);
     pivotPidController.setI(kI);
@@ -427,27 +427,27 @@ public class PivotSubsystem extends SubsystemBase{
   }*/
 
   public void setPivotShootUnderSpeaker() {
-    double  ShootSpeaker = 4.70;
+    double  ShootSpeaker = 4.75;
     setPivotPosition(ShootSpeaker);
   }
 
   public void setPivotShootStage() {
-    double  ShootStage = 5.66;
+    double  ShootStage = 5.71;
     setPivotPosition(ShootStage);
   }
 
   public void setPivotIntake() {
-    double  Intake = 5.66;
+    double  Intake = 5.71;
     setPivotPosition(Intake);
   }
 
-  public void setPivotStart_AMP() {
+  /**public void setPivotStart_AMP() {
     double  Start_AMP = 2.2;
     setPivotPosition(Start_AMP);
-  }
+  }*/
 
   public void setPivotFinish_AMP() {
-    double  Finish_AMP = 1.4;
+    double  Finish_AMP = 1.74;
     setPivotPosition(Finish_AMP);
   }
 
@@ -455,9 +455,9 @@ public class PivotSubsystem extends SubsystemBase{
     return run(() -> setPivotIntake());
   }
 
-  public Command setPivotStart_AMPCommand() {
+  /**public Command setPivotStart_AMPCommand() {
     return run(() -> setPivotStart_AMP());
-  }
+  }*/
 
   public Command setPivot_Finish_AMPCommand() {
     return run(() -> setPivotFinish_AMP());

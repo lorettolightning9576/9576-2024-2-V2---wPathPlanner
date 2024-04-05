@@ -97,9 +97,9 @@ public class RobotContainer {
 
     
     
-    NamedCommands.registerCommand("Shoot", shooterSubsystem.AutoShooterCommand().withTimeout(15));
-    NamedCommands.registerCommand("Initial Feed", feedAuto.withTimeout(.5));
-    NamedCommands.registerCommand("Feed", feedAuto.withTimeout(1.5));
+    NamedCommands.registerCommand("Shoot", shooterSubsystem.AutoShooterCommand().withTimeout(18));
+    NamedCommands.registerCommand("Initial Feed", intakeSubsystem.setIntakeFeedCommand().withTimeout(.5));
+    NamedCommands.registerCommand("Feed", intakeSubsystem.setIntakeFeedCommand().withTimeout(1.5));
     NamedCommands.registerCommand("Intake", intakeInCommand);
     NamedCommands.registerCommand("Pivot Subwoofer", pivotSubsystem.setPivotShootSpeakerCommand().withTimeout(1));
     NamedCommands.registerCommand("Pivot Far", pivotSubsystem.setPivotShootStageCommand().withTimeout(1.5));
@@ -245,12 +245,6 @@ public class RobotContainer {
     xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
 
     xboxControllerCommand.povUp().whileTrue(intakeFeedCommand);
-
-    /**xboxControllerCommand.rightTrigger()
-    .whileTrue(intakeInCommand.alongWith(new InstantCommand(() -> shooterSubsystem.setShooterBrake()))
-    .until(intakeSubsystem::hasNoteRAW)
-    .andThen(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75))))
-    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> shooterSubsystem.setShooterCoast())));*/
   }
 
   /**

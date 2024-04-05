@@ -33,8 +33,8 @@ public final class Constants{
     public static final int intakeSwitchID = 0;
     public static final int pivotUpLimitID = 1;
     public static final int pivotDownLimitID = 2; 
-    public static final int leftClimberSwitch = 5;
-    public static final int rightClimberSwitch = 6;
+    public static final int leftClimberSwitch = 8;
+    public static final int rightClimberSwitch = 9;
   }
 
   // Pathplanner
