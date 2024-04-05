@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -230,6 +229,10 @@ public class RobotContainer {
     xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotIntakeCommand());
     xboxControllerCommand.y().whileTrue(pivotSubsystem.setPivot_Finish_AMPCommand());
     xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotShootStageCommand());
+
+    new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
+    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)))
+    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)));
     
     xboxControllerCommand.rightBumper().whileTrue(intakeOutCommand);
 
@@ -248,7 +251,6 @@ public class RobotContainer {
     .until(intakeSubsystem::hasNoteRAW)
     .andThen(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75))))
     .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> shooterSubsystem.setShooterCoast())));*/
-
   }
 
   /**
