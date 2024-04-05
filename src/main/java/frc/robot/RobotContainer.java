@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -95,13 +96,17 @@ public class RobotContainer {
 
     pivotSubsystem.setDefaultCommand(pivotTriggerCommand);
 
+    
+    
+    NamedCommands.registerCommand("Shoot", shooterSubsystem.AutoShooterCommand().withTimeout(15));
+    NamedCommands.registerCommand("Initial Feed", feedAuto.withTimeout(.5));
+    NamedCommands.registerCommand("Feed", feedAuto.withTimeout(1.5));
+    NamedCommands.registerCommand("Intake", intakeInCommand);
+    NamedCommands.registerCommand("Pivot Subwoofer", pivotSubsystem.setPivotShootSpeakerCommand().withTimeout(1));
+    NamedCommands.registerCommand("Pivot Far", pivotSubsystem.setPivotShootStageCommand().withTimeout(1.5));
+
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
-    
-    NamedCommands.registerCommand("Shooter Shoot", shooterSubsystem.setShooterShootCommand().withTimeout(20));
-    NamedCommands.registerCommand("Feed", feedAuto);
-    NamedCommands.registerCommand("Pivot Subwoofer", pivotSubsystem.setPivotShootSpeakerCommand().withTimeout(2));
-    NamedCommands.registerCommand("Auto Shooter2", shooterSubsystem.AutoShooterCommand().withTimeout(20));
 
     configureBindings();
     configureDashboard();

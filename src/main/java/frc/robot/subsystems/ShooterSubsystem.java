@@ -243,7 +243,7 @@ public class ShooterSubsystem extends SubsystemBase{
     public Command AutoShooterCommand() {
         return this.runEnd(
             ()-> {
-                setShooterCustomSpeed(0.8);
+                setShooterShoot();
             },
             () -> {
                 stopShooter();

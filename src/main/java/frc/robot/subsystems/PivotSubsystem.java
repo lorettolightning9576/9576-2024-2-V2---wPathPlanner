@@ -432,7 +432,7 @@ public class PivotSubsystem extends SubsystemBase{
   }
 
   public void setPivotShootStage() {
-    double  ShootStage = 4.0;
+    double  ShootStage = 5.66;
     setPivotPosition(ShootStage);
   }
 
