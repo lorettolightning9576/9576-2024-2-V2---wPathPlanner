@@ -40,9 +40,9 @@ public class PivotSubsystem extends SubsystemBase{
    * Theoretically if you were off when you install the hex shaft,
    * it would change in 60 degree intervals
    */
-  private static Measure<Angle> PivotOffset = Degrees.of(0);
+  //private static Measure<Angle> PivotOffset = Degrees.of(1);
 
-  public static double PotentiometerOffset = 1.15;
+  public static double PotentiometerOffset = 0.0;
   public static final double Soft_Limit_Foward = 6.75; // Rotations
   public static final double Soft_Limit_Reverse = 1.3; //Rotations
   public static final double Range_Of_Motion = (1.0 / (130 / 10) * 10);
@@ -105,8 +105,8 @@ public class PivotSubsystem extends SubsystemBase{
     double kD =  0.0000;
     double kIz = 0;
     double kFF = 0;
-    double kMaxOutput =  0.3;
-    double kMinOutput = -0.3;
+    double kMaxOutput =  0.35;
+    double kMinOutput = -0.35;
 
     pivotPidController.setP(kP);
     pivotPidController.setI(kI);
@@ -231,6 +231,10 @@ public class PivotSubsystem extends SubsystemBase{
     }
   }
 
+  public double getAimTargetRotations_wOffset() {
+    return aimTargetRotations + PotentiometerOffset;
+  }
+
   /**public static double degPosToNativePotentiometer(double degrees) {
     return(degrees - PotentiometerOffset) / 
   }*/
@@ -245,7 +249,7 @@ public class PivotSubsystem extends SubsystemBase{
       } else {
         stopAimAndMotors();
       }
-    } else if (pivotUpSwitch.get()) {
+    } else if (!pivotUpSwitch.get()) {
       if (commandXboxController.getRawAxis(1) < 0) {
         stopAimAndMotors();
       } else if (commandXboxController.getRawAxis(1) > 0) {
@@ -253,7 +257,7 @@ public class PivotSubsystem extends SubsystemBase{
       }  else {
         stopAimAndMotors();
       }
-    } else if (!pivotUpSwitch.get() && !pivotDownSwitch.get()) {
+    } else if (pivotUpSwitch.get() && !pivotDownSwitch.get()) {
       rightPivotMotorLEADER.set(MathUtil.applyDeadband(commandXboxController.getRawAxis(1) * 0.375, 0.1));
     } else {
       stopAimAndMotors();
@@ -279,7 +283,7 @@ public class PivotSubsystem extends SubsystemBase{
   }
 
   public double getPivotPositionMinusOffset() {
-    return Units.rotationsToRadians(potentiometer.getPosition() - PotentiometerOffset);
+    return Units.rotationsToRadians(potentiometer.getPosition() + PotentiometerOffset);
   }
 
   public double getPivotRawMinusOffset() {
@@ -342,7 +346,7 @@ public class PivotSubsystem extends SubsystemBase{
   }*/
 
   public double getPivotOffset() {
-    return PivotOffset.in(Rotations);
+    return PotentiometerOffset;
   }
 
   static double pivotRadiansToEncoderRotations(double pivotRadians) {
@@ -427,7 +431,7 @@ public class PivotSubsystem extends SubsystemBase{
   }*/
 
   public void setPivotShootUnderSpeaker() {
-    double  ShootSpeaker = 4.75;
+    double  ShootSpeaker = 4.755;
     setPivotPosition(ShootSpeaker);
   }
 
@@ -447,7 +451,7 @@ public class PivotSubsystem extends SubsystemBase{
   }*/
 
   public void setPivotFinish_AMP() {
-    double  Finish_AMP = 1.74;
+    double  Finish_AMP = 1.66;
     setPivotPosition(Finish_AMP);
   }
 

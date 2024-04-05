@@ -3,32 +3,38 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.39,
-        "y": 5.55
+        "x": 2.685566909595359,
+        "y": 3.216623356323636
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3899999999999997,
-        "y": 5.55
+        "x": 5.221371211973195,
+        "y": 0.5722826830269047
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Far Shot"
     },
     {
       "anchor": {
-        "x": 2.8927727086223416,
-        "y": 5.555088802485298
+        "x": 8.230788769269848,
+        "y": 2.417400988648132
       },
       "prevControl": {
-        "x": 1.8927727086223416,
-        "y": 5.555088802485298
+        "x": 6.484339891756708,
+        "y": 2.4470018170805568
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Front"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -45,8 +51,8 @@
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 180.0,
-    "velocity": 0.0
+    "rotation": 135.0,
+    "velocity": 0
   },
   "useDefaultConstraints": true
 }

@@ -161,9 +161,9 @@ public class RobotContainer {
 
     TelopDrive closedFieldRel = new TelopDrive(
       drivebase,
-      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.125),
-      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.125),
-      () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.875, 0.125), () -> true
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075),
+      () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.875, 0.075), () -> true
     );
 
     drivebase.setDefaultCommand(closedFieldRel);

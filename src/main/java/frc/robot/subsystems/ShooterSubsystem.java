@@ -133,7 +133,7 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public void setShooterAMPSpeed() {
-        shooterTopMotor.set(0.175);
+        shooterTopMotor.set(0.18);
         shooterBottomMotor.set(0.125);
     }
 

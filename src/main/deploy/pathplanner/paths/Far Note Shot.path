@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.250522654891466,
-        "y": 0.5920165686485226
+        "x": 8.28012348332389,
+        "y": 0.779488482053888
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.681270557756742,
-        "y": 0.8379441361099361
+        "x": 6.710871386189167,
+        "y": 1.0254160495153015
       },
       "isLocked": false,
       "linkedName": "Far Note"
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Far Shot"
     }
   ],
   "rotationTargets": [],
