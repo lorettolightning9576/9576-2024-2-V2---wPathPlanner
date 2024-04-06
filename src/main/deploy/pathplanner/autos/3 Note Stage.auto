@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.73,
-      "y": 4.41
+      "x": 1.39,
+      "y": 5.55
     },
-    "rotation": 120.0
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
@@ -34,6 +34,37 @@
                     {
                       "type": "named",
                       "data": {
+                        "name": "Initial Feed"
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Middle Note"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot Far"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
                         "name": "Feed"
                       }
                     },
@@ -44,29 +75,22 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "SS - XFSR"
+                              "pathName": "Middle to Stage"
                             }
                           },
                           {
-                            "type": "sequential",
+                            "type": "named",
                             "data": {
-                              "commands": [
-                                {
-                                  "type": "wait",
-                                  "data": {
-                                    "waitTime": 3.0
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "Intake"
-                                  }
-                                }
-                              ]
+                              "name": "Intake"
                             }
                           }
                         ]
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Feed"
                       }
                     }
                   ]

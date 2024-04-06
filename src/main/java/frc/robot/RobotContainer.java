@@ -203,11 +203,11 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
-    leftJoystick.button(8).onTrue(new InstantCommand(drivebase::setGyroOffset));
-    rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
-    rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
-    rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
-    rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
+    //leftJoystick.button(8).onTrue(new InstantCommand(drivebase::setGyroOffset));
+    //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
+    //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
+    //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
+    //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
 
     leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
     rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
