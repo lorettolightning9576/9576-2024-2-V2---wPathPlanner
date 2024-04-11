@@ -209,6 +209,8 @@ public class RobotContainer {
     //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
     //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
 
+    leftJoystick.button(1).whileTrue(drivebase.aimAtSpeaker(2.5));
+
     leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
     rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
     leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
@@ -239,6 +241,8 @@ public class RobotContainer {
     xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand);
 
     xboxControllerCommand.leftTrigger().whileTrue(shooterShootCommand);
+
+
 
     //xboxControllerCommand.leftTrigger().and(xboxControllerCommand.rightTrigger()).whileTrue(intakeFeedCommand);
 

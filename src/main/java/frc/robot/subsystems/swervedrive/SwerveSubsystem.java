@@ -10,7 +10,10 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -22,6 +25,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,6 +34,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 
 import java.io.File;
 import java.util.function.DoubleSupplier;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -138,6 +145,46 @@ public class SwerveSubsystem extends SubsystemBase {
         },
         this // Reference to this subsystem to set requirements
     );
+  }
+
+  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+
+  public double getDistanceToSpeaker() {
+    int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
+    Pose3d speakerAprilTagPose = aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
+    return getPose().getTranslation().getDistance(speakerAprilTagPose.toPose2d().getTranslation());
+  }
+
+  public Rotation2d getSpeakerYaw() {
+    int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
+    Pose3d          speakerAprilTagPose     = aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
+    Translation2d   relativeTranslation2d   = speakerAprilTagPose.toPose2d().relativeTo(getPose()).getTranslation();
+    return new Rotation2d(relativeTranslation2d.getX(), relativeTranslation2d.getY()).plus(swerveDrive.getOdometryHeading());
+  }
+
+  public Command aimAtSpeaker(double tolerance) {
+    SwerveController m_controller = swerveDrive.getSwerveController();
+
+    return run(
+      () -> {
+        drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,
+                                                    0,
+                                                    m_controller.headingCalculate(getHeading().getRadians(),
+                                                    getSpeakerYaw().getRadians()),
+                                                    getHeading())
+              );
+      }).until(() -> Math.abs(getSpeakerYaw().minus(getHeading()).getDegrees()) < tolerance);
+  }
+
+  public Command aimAtTarget(PhotonCamera camera) {
+    return run(() -> {
+      PhotonPipelineResult result = camera.getLatestResult();
+      if (result.hasTargets()) {
+        drive(getTargetSpeeds(0,
+        0,
+        Rotation2d.fromDegrees(result.getBestTarget().getYaw())));
+      }
+    });
   }
   
   /**
