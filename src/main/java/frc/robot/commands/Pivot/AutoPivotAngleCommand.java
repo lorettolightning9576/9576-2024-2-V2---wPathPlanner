@@ -14,8 +14,10 @@ public class AutoPivotAngleCommand extends Command {
   private PivotSubsystem pivotSubsystem;
   private SwerveSubsystem swerveSubsystem;
   /** Creates a new AutoPivotAngleCommand. */
-  public AutoPivotAngleCommand(PivotSubsystem m_PivotSubsystem) {
+  public AutoPivotAngleCommand(PivotSubsystem m_PivotSubsystem, SwerveSubsystem m_SwerveSubsystem) {
+    this.swerveSubsystem = m_SwerveSubsystem;
     this.pivotSubsystem = m_PivotSubsystem;
+
     addRequirements(pivotSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }

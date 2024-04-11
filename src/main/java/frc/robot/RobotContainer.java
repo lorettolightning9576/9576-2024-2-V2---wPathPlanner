@@ -28,6 +28,7 @@ import frc.robot.commands.Intake.FeedAuto;
 import frc.robot.commands.Intake.IntakeFeedCommand;
 import frc.robot.commands.Intake.IntakeInCommand;
 import frc.robot.commands.Intake.IntakeOutCommand;
+import frc.robot.commands.Pivot.AutoPivotAngleCommand;
 import frc.robot.commands.Pivot.PivotTriggerCommand;
 import frc.robot.commands.Pivot.stopPivotCommand;
 import frc.robot.commands.Shooter.AutoShootCommand;
@@ -83,6 +84,7 @@ public class RobotContainer {
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
   private final stopPivotCommand stopPivotCommand = new stopPivotCommand(pivotSubsystem);
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
+  private final AutoPivotAngleCommand autoPivotAngleCommand = new AutoPivotAngleCommand(pivotSubsystem, drivebase);
 
   private final SendableChooser<Command> autoChooser;
 
@@ -228,7 +230,8 @@ public class RobotContainer {
 
 
     xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
-    xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotIntakeCommand());
+    //xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotIntakeCommand());
+    xboxControllerCommand.x().whileTrue(autoPivotAngleCommand);
     xboxControllerCommand.y().whileTrue(pivotSubsystem.setPivot_Finish_AMPCommand());
     xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotShootStageCommand());
 
