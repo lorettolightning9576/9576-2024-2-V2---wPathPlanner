@@ -10,6 +10,9 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import static frc.robot.Constants.VisionConstants.APRILTAG_CAMERA_NAMES;
+import static frc.robot.Constants.VisionConstants.ROBOT_TO_CAMERA_TRANSFORMS;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -31,6 +34,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import java.io.File;
 import java.util.function.DoubleSupplier;
 
+import frc.robot.Photon;
+
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -43,6 +48,8 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase {
   private boolean headingcorrect = false;
+
+  private final Thread photonThread;
 
   /**
    * Swerve drive object.
@@ -60,6 +67,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
     return INSTANCE;
   }
+
   /**
    * Maximum speed of the robot in meters per second, used to limit acceleration.
    */
@@ -103,14 +111,23 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrive.setHeadingCorrection(headingcorrect, 0.1); // Heading correction should only be used while controlling the robot via angle.
 
     setupPathPlanner();
+
+    photonThread = new Thread(new Photon(APRILTAG_CAMERA_NAMES, ROBOT_TO_CAMERA_TRANSFORMS,
+    swerveDrive::addVisionMeasurement, () -> getPose()));
+
+    // Start PhotonVision thread
+    photonThread.setName("PhotonVision");
+    photonThread.setDaemon(true);
+    photonThread.start();
+
+
   }
 
 
   /**
    * Setup AutoBuilder for PathPlanner.
    */
-  public void setupPathPlanner()
-  {
+  public void setupPathPlanner() {
     AutoBuilder.configureHolonomic(
         this::getPose, // Robot pose supplierP
         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
@@ -167,6 +184,9 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
     swerveDrive = new SwerveDrive(driveCfg, controllerCfg, maximumSpeed);
+
+    photonThread = new Thread(new Photon(APRILTAG_CAMERA_NAMES, ROBOT_TO_CAMERA_TRANSFORMS,
+    swerveDrive::addVisionMeasurement, () -> getPose()));
   }
 
   /**
