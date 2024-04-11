@@ -123,6 +123,13 @@ public final class Constants{
     public static final double TURN_CONSTANT    = 6;
   }
 
+  public static InterpolatingDoubleTreeMap shooterAngleMap = new InterpolatingDoubleTreeMap();
+
+  static {
+    shooterAngleMap.put(1.0, 1.0);
+    shooterAngleMap.put(2.0, 2.0);
+  }
+
   // Blinkin Colors
   public static class Colors {
     public double pat1_larscan       = -0.01;

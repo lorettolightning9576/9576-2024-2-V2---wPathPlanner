@@ -249,7 +249,7 @@ public class PivotSubsystem extends SubsystemBase{
       } else {
         stopAimAndMotors();
       }
-    } else if (!pivotUpSwitch.get()) {
+    } else if (pivotUpSwitch.get()) {
       if (commandXboxController.getRawAxis(1) < 0) {
         stopAimAndMotors();
       } else if (commandXboxController.getRawAxis(1) > 0) {
@@ -257,7 +257,7 @@ public class PivotSubsystem extends SubsystemBase{
       }  else {
         stopAimAndMotors();
       }
-    } else if (pivotUpSwitch.get() && !pivotDownSwitch.get()) {
+    } else if (!pivotUpSwitch.get() && !pivotDownSwitch.get()) {
       rightPivotMotorLEADER.set(MathUtil.applyDeadband(commandXboxController.getRawAxis(1) * 0.375, 0.1));
     } else {
       stopAimAndMotors();
