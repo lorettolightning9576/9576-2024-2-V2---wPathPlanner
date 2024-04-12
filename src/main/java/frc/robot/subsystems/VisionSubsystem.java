@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonTargetSortMode;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -55,6 +56,8 @@ public class VisionSubsystem extends SubsystemBase{
     Double camDistToSpeakerTag = null;
 
     Pose2d lastPose = null;
+
+    PhotonTargetSortMode photonTargetSortMode = null;
 
     public static PhotonPipelineResult lastResult;
 
@@ -150,14 +153,18 @@ public class VisionSubsystem extends SubsystemBase{
         return camDistToSpeakerTag;
     }
 
-    /**public static PhotonPipelineResult findtargetInResults(PhotonPipelineResult photonResult, int id) {
-        for (var target : photonResult.targets.) {
+    /**public static PhotonTargetSortMode findtargetInResults(PhotonTargetSortMode photonResult, PhotonPipelineResult photonPipelineResult, int id) {
+        for (var target : photonPipelineResult.getMultiTagResult().fiducialIDsUsed) {
             if (target.doubleValue() == id) {
                 return target.doubleValue();
             }
         }
         return null;
                 var tarID = photonResult.getTargets().get(id);
+    }*/
+
+    /**public static PhotonTargetSortMode findtargetInResults(PhotonTargetSortMode photonResult, PhotonPipelineResult photonPipelineResult, String id) {
+        return photonResult.valueOf(id);
     }*/
 
     /**public static PhotonPipelineResult findtargetIsnResults(PhotonPipelineResult photonResult, int id) {

@@ -11,7 +11,9 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -33,12 +35,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Photon;
+import frc.robot.subsystems.VisionSubsystem;
 
 import static frc.robot.Constants.VisionConstants.APRILTAG_CAMERA_NAMES;
 import static frc.robot.Constants.VisionConstants.ROBOT_TO_CAMERA_TRANSFORMS;
 
 import java.io.File;
 import java.util.function.DoubleSupplier;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -52,6 +59,8 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase {
   private boolean headingcorrect = false;
+
+  private final VisionSubsystem visionSubsystem = new VisionSubsystem();
 
   private final Thread photonThread = new Thread(new Photon(APRILTAG_CAMERA_NAMES, ROBOT_TO_CAMERA_TRANSFORMS, 
     this::addVisionMeasurement, () -> this.getPose())
@@ -575,7 +584,28 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timeStamp, Matrix<N3, N1> visionMeasurementStdDevs){
     swerveDrive.addVisionMeasurement(visionRobotPoseMeters, timeStamp, visionMeasurementStdDevs);
-    swerveDrive.getStates();
+  }
+
+  public void updateVisionOdometry() {
+    PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(
+      AprilTagFields.k2024Crescendo.loadAprilTagLayoutField(), 
+      PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, 
+      VisionSubsystem.camera,
+      VisionSubsystem.robotToCamera
+    );
+
+    photonPoseEstimator.update().ifPresent(estimateRobotPose -> {
+      swerveDrive.addVisionMeasurement(
+        estimateRobotPose.estimatedPose.toPose2d(), 
+        estimateRobotPose.timestampSeconds);
+    });
+
+    /**photonPoseEstimator.update().ifPresent(estimateRobotPose -> {
+      swerveDrive.addVisionMeasurement(
+        estimateRobotPose.estimatedPose.toPose2d(), 
+        estimateRobotPose.timestampSeconds, 
+        VecBuilder.fill(.7, .7,9999999));
+    });*/
   }
 
   public SwerveModuleState[] getSwerveStates() {
