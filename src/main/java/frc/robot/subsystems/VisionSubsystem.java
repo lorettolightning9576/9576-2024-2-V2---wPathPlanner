@@ -119,6 +119,10 @@ public class VisionSubsystem extends SubsystemBase{
 
         PhotonPipelineResult results = camera.getLatestResult();
         lastResult = results;
+
+        if (results.hasTargets()) {
+            SmartDashboard.putString("Vision.DoIHaveTag", "got one");
+        }
         
         /**if (lastTimestamp == null || lastTimestamp != results.getTimestampSeconds()) {
             lastTimestamp = results.getTimestampSeconds();
