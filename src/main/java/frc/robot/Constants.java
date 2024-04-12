@@ -126,8 +126,8 @@ public final class Constants{
   public static InterpolatingDoubleTreeMap shooterAngleMap = new InterpolatingDoubleTreeMap();
 
   static {
-    shooterAngleMap.put(0.0, 0.0);
-    shooterAngleMap.put(100.0, 10.0);
+    shooterAngleMap.put(.5, 4.755);
+    shooterAngleMap.put(2.0, 5.71);
   }
 
   // Blinkin Colors

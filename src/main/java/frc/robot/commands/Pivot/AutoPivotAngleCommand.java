@@ -30,12 +30,15 @@ public class AutoPivotAngleCommand extends Command {
   @Override
   public void execute() {
     Constants.shooterAngleMap.get(swerveSubsystem.getDistanceToSpeaker());
+    pivotSubsystem.setPivotPosition(Constants.shooterAngleMap.get(swerveSubsystem.getDistanceToSpeaker()));
     SmartDashboard.putNumber("Calculated Shooter Angle", Constants.shooterAngleMap.get(swerveSubsystem.getDistanceToSpeaker()) );
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    pivotSubsystem.stopAimAndMotors();
+  }
 
   // Returns true when the command should end.
   @Override

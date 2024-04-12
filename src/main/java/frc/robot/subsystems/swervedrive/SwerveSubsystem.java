@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -36,6 +37,8 @@ import java.io.File;
 import java.util.function.DoubleSupplier;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import swervelib.SwerveController;
@@ -50,6 +53,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase {
   private boolean headingcorrect = false;
+
 
   /**
    * Swerve drive object.
@@ -78,6 +82,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param directory Directory of swerve drive config files.
    */
   public SwerveSubsystem(File directory) {
+
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
     //  In this case the gear ratio is 12.8 motor revolution9s per wheel rotation.
     //  The encoder resolution per motor revolution is 1 per motor revolution.
@@ -94,7 +99,7 @@ public class SwerveSubsystem extends SubsystemBase {
     System.out.println("\t\"drive\": " + driveConversionFactor);
     System.out.println("}");
 
-    SmartDashboard.putData("Field 2.0", field);
+    SmartDashboard.putData("Field2", field);
 
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
@@ -371,6 +376,8 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
+    SmartDashboard.putNumber("Speaker Distance", getDistanceToSpeaker());
+    field.setRobotPose(getPose());
   }
 
   @Override
