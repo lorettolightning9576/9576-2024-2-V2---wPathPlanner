@@ -122,6 +122,8 @@ public class VisionSubsystem extends SubsystemBase{
 
         if (results.hasTargets()) {
             SmartDashboard.putString("Vision.DoIHaveTag", "got one");
+        } else {
+            SmartDashboard.putString("Vision.DoIHaveTag", "no");
         }
         
         /**if (lastTimestamp == null || lastTimestamp != results.getTimestampSeconds()) {
