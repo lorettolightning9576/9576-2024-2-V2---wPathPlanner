@@ -5,11 +5,19 @@
 package frc.robot;
 
 
+import static edu.wpi.first.math.util.Units.degreesToRadians;
+import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static edu.wpi.first.units.Units.Meters;
+
 import com.pathplanner.lib.util.PIDConstants;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
 import swervelib.math.Matter;
 import swervelib.parser.PIDFConfig;
 
@@ -35,6 +43,26 @@ public final class Constants{
     public static final int pivotDownLimitID = 2; 
     public static final int leftClimberSwitch = 8;
     public static final int rightClimberSwitch = 9;
+  }
+
+  public static class VisionConstants {
+    public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
+    public static final Measure<Distance> SINGLE_TAG_DISTANCE_THRESHOLD = Meters.of(5.0);
+
+    public static final Measure<Distance> FIELD_LENGTH = Meters.of(16.54175);
+    public static final Measure<Distance> FIELD_WIDTH = Meters.of(8.0137);
+
+    /**
+     * Physical location of the apriltag cameras on the robot, relative to the center of the robot.
+     * The values here math APRILTAG_CAMERA_NAMES for the camera's name.
+     */
+    public static final Transform3d[] ROBOT_TO_CAMERA_TRANSFORMS = {
+      new Transform3d(
+        new Translation3d(inchesToMeters(11.227), inchesToMeters(-10.446), inchesToMeters(8.238)),
+        new Rotation3d(degreesToRadians(2), degreesToRadians(-24), degreesToRadians(-90))),
+    };
+
+    public static final String[] APRILTAG_CAMERA_NAMES = {"Shoot"};
   }
 
   // Pathplanner

@@ -37,17 +37,19 @@ import frc.robot.commands.Shooter.ShooterShootCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.TelopDrive;
+import frc.robot.commands.swervedrive.drivebase.TelopDriveWithAimCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 
 public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+  public final static SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/neo"));
 
   // CommandJoystick rotationController = new CommandJoystick(1);
@@ -66,6 +68,7 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+  private final VisionSubsystem visionSubsystem = new VisionSubsystem();
 
   // Intake
   private final IntakeInCommand intakeInCommand = new IntakeInCommand(intakeSubsystem, xboxControllerCommand);
@@ -159,6 +162,14 @@ public class RobotContainer {
         () -> MathUtil.applyDeadband(leftJoystick.getX(), 0.15)
     );
 
+    TelopDriveWithAimCommand aimDrive = new TelopDriveWithAimCommand(drivebase, 
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075), 
+      () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.8, 0.075),
+      () -> true,
+      visionSubsystem
+    );
+
     TelopDrive closedFieldRel = new TelopDrive(
       drivebase,
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
@@ -166,7 +177,7 @@ public class RobotContainer {
       () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.8, 0.075), () -> true
     );
 
-    drivebase.setDefaultCommand(closedFieldRel);
+    drivebase.setDefaultCommand(aimDrive);
   }
 
   private void configureDashboard() {
@@ -201,6 +212,10 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+
+    leftJoystick.button(1)
+    .whileTrue(new InstantCommand(() -> drivebase.setAreWeAiming(true)))
+    .whileFalse(new InstantCommand(() -> drivebase.setAreWeAiming(false)));
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
     //leftJoystick.button(8).onTrue(new InstantCommand(drivebase::setGyroOffset));

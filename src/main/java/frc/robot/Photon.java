@@ -97,7 +97,6 @@ public class Photon implements Runnable{
                 continue;
             }
 
-            var currentRobotPose = poseSupplier.get();
             for (int i = 0; i < signaledHandles.length; i++) {
                 int cameraIndex = getCameraIndex(signaledHandles[i]);
                 var aprilTagPublisher = aprilTagPublishers[cameraIndex];

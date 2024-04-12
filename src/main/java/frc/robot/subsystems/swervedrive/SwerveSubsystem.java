@@ -4,12 +4,14 @@
 
 package frc.robot.subsystems.swervedrive;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -17,6 +19,9 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -27,6 +32,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.robot.Photon;
+
+import static frc.robot.Constants.VisionConstants.APRILTAG_CAMERA_NAMES;
+import static frc.robot.Constants.VisionConstants.ROBOT_TO_CAMERA_TRANSFORMS;
 
 import java.io.File;
 import java.util.function.DoubleSupplier;
@@ -44,11 +53,17 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 public class SwerveSubsystem extends SubsystemBase {
   private boolean headingcorrect = false;
 
+  private final Thread photonThread = new Thread(new Photon(APRILTAG_CAMERA_NAMES, ROBOT_TO_CAMERA_TRANSFORMS, 
+    this::addVisionMeasurement, () -> this.getPose())
+  );
+
   /**
    * Swerve drive object.
    */
   private final SwerveDrive swerveDrive;
   private static SwerveSubsystem INSTANCE = null;
+
+  static boolean areWeAiming = false;
 
   private final Field2d field = new Field2d();
   private Pose2d position = new Pose2d(new Translation2d(8, 4), new Rotation2d());
@@ -103,6 +118,10 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrive.setHeadingCorrection(headingcorrect, 0.1); // Heading correction should only be used while controlling the robot via angle.
 
     setupPathPlanner();
+
+    photonThread.setName("camera");
+    photonThread.setDaemon(true);
+    photonThread.start();
   }
 
 
@@ -323,7 +342,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putBoolean("Swerve.AreWeAiming", areWeAiming);
+  }
 
+  public void setAreWeAiming(boolean areweaiming) {
+    this.areWeAiming = areweaiming;
+  }
+
+  public boolean getAreWeAiming() {
+    return areWeAiming;
   }
 
   @Override
@@ -534,12 +561,25 @@ public class SwerveSubsystem extends SubsystemBase {
     return swerveDrive.getPitch();
   }
 
+  public Double getMaximumAngularVelocity() {
+    return swerveDrive.getMaximumAngularVelocity();
+  }
+
   /**
    * Add a fake vision reading for testing purposes.
    */
   public void addFakeVisionReading()
   {
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
+  }
+
+  public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timeStamp, Matrix<N3, N1> visionMeasurementStdDevs){
+    swerveDrive.addVisionMeasurement(visionRobotPoseMeters, timeStamp, visionMeasurementStdDevs);
+    swerveDrive.getStates();
+  }
+
+  public SwerveModuleState[] getSwerveStates() {
+    return swerveDrive.getStates();
   }
 
 }
