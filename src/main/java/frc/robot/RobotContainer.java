@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.Colors;
 import frc.robot.commands.Intake.FeedAuto;
 import frc.robot.commands.Intake.IntakeFeedCommand;
 import frc.robot.commands.Intake.IntakeInCommand;
@@ -37,6 +38,7 @@ import frc.robot.commands.Shooter.ShooterShootCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.TelopDrive;
+import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
@@ -66,6 +68,7 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+  private final Blinkin blinkin = new Blinkin();
 
   // Intake
   private final IntakeInCommand intakeInCommand = new IntakeInCommand(intakeSubsystem, xboxControllerCommand);
@@ -83,6 +86,8 @@ public class RobotContainer {
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
   private final stopPivotCommand stopPivotCommand = new stopPivotCommand(pivotSubsystem);
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
+
+  private final Colors colors = new Colors();
 
   private final SendableChooser<Command> autoChooser;
 
@@ -231,8 +236,8 @@ public class RobotContainer {
     xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotShootStageCommand());
 
     new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
-    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)))
-    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)));
+    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Gold))))
+    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
     
     xboxControllerCommand.rightBumper().whileTrue(intakeOutCommand);
 
