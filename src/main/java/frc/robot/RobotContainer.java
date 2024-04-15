@@ -219,6 +219,9 @@ public class RobotContainer {
     leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
     rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
 
+    xboxControllerCommand.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+    xboxControllerCommand.povDown().whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
+
     //leftJoystick.button(9).whileTrue(new InstantCommand(() -> climberSubsystem.lowerLeftArmOVERRIDE()));/* */
     //leftJoystick.button(10).whileTrue(new InstantCommand(() -> climberSubsystem.lowerRightArmOVERRIDE()));
     rightJoystick.button(1)
@@ -230,7 +233,7 @@ public class RobotContainer {
     leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
 
 
-    xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
+    xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand().alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.c1E2E_blend2Blck))));
     xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotIntakeCommand());
     xboxControllerCommand.y().whileTrue(pivotSubsystem.setPivot_Finish_AMPCommand());
     xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotShootStageCommand());
