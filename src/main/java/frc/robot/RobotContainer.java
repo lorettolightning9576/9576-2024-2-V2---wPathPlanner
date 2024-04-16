@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.io.File;
 
+import org.photonvision.PhotonCamera;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -37,12 +39,14 @@ import frc.robot.commands.Shooter.ShooterInCommand;
 import frc.robot.commands.Shooter.ShooterShootCommand;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
+import frc.robot.commands.swervedrive.drivebase.PhotonAlignCommand;
 import frc.robot.commands.swervedrive.drivebase.TelopDrive;
 import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 
@@ -51,6 +55,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/neo"));
+
+  private final PhotonCamera photonCamera = new PhotonCamera("camera");
 
   // CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -69,6 +75,9 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
   private final Blinkin blinkin = new Blinkin();
+  private final VisionSubsystem visionSubsystem = new VisionSubsystem(photonCamera, drivebase);
+
+  private final PhotonAlignCommand photonAlignCommand = new PhotonAlignCommand(photonCamera, drivebase, () -> visionSubsystem.getCurrentPose());
 
   // Intake
   private final IntakeInCommand intakeInCommand = new IntakeInCommand(intakeSubsystem, xboxControllerCommand);
@@ -208,6 +217,8 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
+    leftJoystick.button(1).whileTrue(photonAlignCommand);
+
     //leftJoystick.button(8).onTrue(new InstantCommand(drivebase::setGyroOffset));
     //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
     //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));

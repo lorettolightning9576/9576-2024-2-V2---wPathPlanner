@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -519,8 +520,7 @@ public class SwerveSubsystem extends SubsystemBase {
   /**
    * Lock the swerve drive to prevent it from moving.
    */
-  public void lock()
-  {
+  public void lock() {
     swerveDrive.lockPose();
   }
 
@@ -529,9 +529,20 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @return The heading as a {@link Rotation2d} angle
    */
-  public Rotation2d getPitch()
-  {
+  public Rotation2d getPitch() {
     return swerveDrive.getPitch();
+  }
+
+  public SwerveModulePosition[] getSwerveModulePositions() {
+    return swerveDrive.getModulePositions();
+  }
+
+  /**public void test() {
+    swerveDrive.swerveDrivePoseEstimator.addVisionMeasurement(position, maximumSpeed);
+  }*/
+
+  public void addCustomVisionMeasurement(Pose2d pose2d, double timestamp) {
+    swerveDrive.addVisionMeasurement(pose2d, timestamp);
   }
 
   /**
