@@ -5,16 +5,23 @@
 package frc.robot;
 
 import java.io.File;
+import java.util.Map;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.SendableCameraWrapper;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -92,6 +99,7 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
 
   public RobotContainer() {
+    CameraServer.startAutomaticCapture().setResolution(650, 480);
     
     pivotSubsystem.setBrake();
     drivebase.setMotorBrake(true);
@@ -184,12 +192,14 @@ public class RobotContainer {
     final var climberTab = Shuffleboard.getTab("Climber");
     climberSubsystem.addDashboardWidgets(climberTab.getLayout("Climber", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(4, 3));
 
-    driverTab.add("Auto", autoChooser).withPosition(3, 0).withSize(3, 2);
+    driverTab.add("Auto", autoChooser).withPosition(3, 0).withSize(2, 2);
 
-    /**driverTab.add(new HttpCamera("photonvision_Port_1184_Output_MJPEG_Server", "http://10.95.76.11:1184"))
+    var USB_URL = "http://roborio-9576-frc.local:1181/?action=stream";
+
+    driverTab.add(new HttpCamera("photonvision_Port_1184_Output_MJPEG_Server", USB_URL))
       .withWidget(BuiltInWidgets.kCameraStream)
       .withProperties(Map.of("showCrosshair", true, "showControls", true))
-      .withSize(4, 5).withPosition(3, 0);*/
+      .withSize(4, 5).withPosition(4, 0);
 
     //Shuffleboard.selectTab(ClimberTab.getTitle());
     //Shuffleboard.selectTab(shooterAndIntakeTab.getTitle());
