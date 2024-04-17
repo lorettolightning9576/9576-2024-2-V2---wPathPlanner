@@ -162,18 +162,18 @@ public class PivotSubsystem extends SubsystemBase{
     layout.addString("Pivot Command", this::currentCommand)                         .withPosition(1, 2);
     layout.addNumber("Raw - Offset", this::getPivotRawMinusOffset)                  .withPosition(1, 3);
     //layout.addNumber("What it sees", this::whatThePIDsees)                                .withPosition(1, 3);
-    //layout.addBoolean("Is Within Tolerance", this::isAimAtTargetPosition)                 .withPosition(1, 3);
+    layout.addBoolean("Is Within Tolerance", this::isAimAtTargetPosition)           .withPosition(2, 3);
     layout.addNumber("Left Motor Velocity", leftMotorEncoder::getVelocity)          .withPosition(2, 0);
     layout.addNumber("Right Motor Veocity", rightMotorLEADEREncoder::getVelocity)   .withPosition(2, 1); 
     layout.addNumber("Degrees Devide Thirteen", this::getPivotAngleDevideBy13)      .withPosition(2, 2);
-    layout.addNumber("PID sees", this::getPivotPositionMinusOffset)                 .withPosition(2, 3);
+    //layout.addNumber("PID sees", this::getPivotPositionMinusOffset)                 .withPosition(2, 3);
     //layout.addNumber("High Tolerance", this::getHighTolerance)                            .withPosition(2, 2);
     //layout.addNumber("Low Tolerance", this::getLowTolerance)                              .withPosition(2, 3);
     layout.addNumber("Position Conv Factor", this::getConvFactor)                   .withPosition(3, 0);
     //layout.addNumber("Encoder Velocity", this::getEncoderVelocity)                        .withPosition(3, 2);
-    layout.addString("Left Idle Mode", this::getRightIdleMode)                      .withPosition(3, 3);
     layout.addBoolean("Down Switch Status", this::downSwitchStatus)                 .withPosition(3, 1);
     layout.addBoolean("Up Switch Status", this::upSwitchStatus)                     .withPosition(3, 2);
+    layout.addString("Left Idle Mode", this::getRightIdleMode)                      .withPosition(3, 3);
   } 
 
   @Override
@@ -355,13 +355,13 @@ public class PivotSubsystem extends SubsystemBase{
 
   /**public double getPivotVelocity() {
     return Units.rotationsToDegrees(pivotAbsoluteEncoder.getVelocity());
-  }
+  }*/
 
   public boolean isAimAtTargetPosition() {
-    return (Math.abs(Units.rotationsToDegrees(pivotAbsoluteEncoder.getPosition())) < (Units.rotationsToDegrees(aimTargetRotations) + 10)) && 
-           (Math.abs(Units.rotationsToDegrees(pivotAbsoluteEncoder.getPosition())) > (Units.rotationsToDegrees(aimTargetRotations) - 10));
+    return (Math.abs(Units.rotationsToDegrees(potentiometer.getPosition())) < (Units.rotationsToDegrees(aimTargetRotations) + 20)) && 
+           (Math.abs(Units.rotationsToDegrees(potentiometer.getPosition())) > (Units.rotationsToDegrees(aimTargetRotations) - 20));
     
-  }*/
+  }
 
   private boolean downSwitchStatus() {
     return pivotDownSwitch.get();

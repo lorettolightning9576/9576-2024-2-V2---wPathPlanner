@@ -5,16 +5,21 @@
 package frc.robot;
 
 import java.io.File;
+import java.util.Map;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -92,7 +97,9 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
 
   public RobotContainer() {
-    
+    CameraServer.startAutomaticCapture().setResolution(640, 460);
+    var usbCamera = CameraServer.startAutomaticCapture().getPath();
+
     pivotSubsystem.setBrake();
     drivebase.setMotorBrake(true);
     shooterSubsystem.setShooterCoast();
@@ -186,10 +193,18 @@ public class RobotContainer {
 
     driverTab.add("Auto", autoChooser).withPosition(3, 0).withSize(3, 2);
 
-    /**driverTab.add(new HttpCamera("photonvision_Port_1184_Output_MJPEG_Server", "http://10.95.76.11:1184"))
+    /**driverTab.add(new HttpCamera("Intake Camera", "http://10.95.76.2"))
       .withWidget(BuiltInWidgets.kCameraStream)
       .withProperties(Map.of("showCrosshair", true, "showControls", true))
       .withSize(4, 5).withPosition(3, 0);*/
+    //driverTab.addCamera("Intake Camera V2", null, CameraServer.startAutomaticCapture().getPath());
+
+    /**driverTab.add(new HttpCamera("Intake USB Camera", CameraServer.startAutomaticCapture().getPath()))
+      .withWidget(BuiltInWidgets.kCameraStream)
+      .withProperties(Map.of("showCrosshair", true, "showControls", true))
+      .withSize(4, 5).withPosition(3, 0);*/
+
+    //driverTab.add(CameraServer.getVideo());
 
     //Shuffleboard.selectTab(ClimberTab.getTitle());
     //Shuffleboard.selectTab(shooterAndIntakeTab.getTitle());
@@ -220,7 +235,9 @@ public class RobotContainer {
     rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
 
     xboxControllerCommand.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
-    xboxControllerCommand.povDown().whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
+    xboxControllerCommand.povDown()
+    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_BOTH_ArmCommand()))
+    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
 
     //leftJoystick.button(9).whileTrue(new InstantCommand(() -> climberSubsystem.lowerLeftArmOVERRIDE()));/* */
     //leftJoystick.button(10).whileTrue(new InstantCommand(() -> climberSubsystem.lowerRightArmOVERRIDE()));
@@ -233,7 +250,7 @@ public class RobotContainer {
     leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
 
 
-    xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand().alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.c1E2E_blend2Blck))));
+    xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
     xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotIntakeCommand());
     xboxControllerCommand.y().whileTrue(pivotSubsystem.setPivot_Finish_AMPCommand());
     xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotShootStageCommand());
@@ -241,6 +258,10 @@ public class RobotContainer {
     new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
     .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Gold))))
     .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
+
+    new Trigger(pivotSubsystem::isAimAtTargetPosition)
+    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)))
+    .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
     
     xboxControllerCommand.rightBumper().whileTrue(intakeOutCommand);
 
@@ -252,7 +273,7 @@ public class RobotContainer {
 
     xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
 
-    xboxControllerCommand.povUp().whileTrue(intakeFeedCommand);
+    //xboxControllerCommand.povUp().whileTrue(intakeFeedCommand);
   }
 
   /**

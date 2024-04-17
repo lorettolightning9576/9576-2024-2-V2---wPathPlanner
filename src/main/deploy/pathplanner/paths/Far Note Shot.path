@@ -20,15 +20,21 @@
         "y": 3.216623356323636
       },
       "prevControl": {
-        "x": 3.669277179441006,
-        "y": 1.729347115009384
+        "x": 3.8084278165703256,
+        "y": 1.9205771935081666
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Far Shot"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7,
+      "rotationDegrees": 140.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
