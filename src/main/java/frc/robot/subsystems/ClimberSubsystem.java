@@ -19,8 +19,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ClimberSubsystem extends SubsystemBase {
   private double raiseLimit = 210.0;
 
-  private double RAISE_SPEED = 0.75;
-  private double LOWER_SPEED = -0.25;
+  private double RAISE_SPEED = 0.9;
+  private double LOWER_SPEED = -0.35;
 
   public boolean fastLower = false;
   public boolean slowRaise = false;
