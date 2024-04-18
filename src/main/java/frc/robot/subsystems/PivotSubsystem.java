@@ -363,6 +363,10 @@ public class PivotSubsystem extends SubsystemBase{
     
   }
 
+  public boolean isTooLow() {
+    return(Math.abs(potentiometer.getPosition()) > 5.75);
+  }
+
   private boolean downSwitchStatus() {
     return pivotDownSwitch.get();
   }

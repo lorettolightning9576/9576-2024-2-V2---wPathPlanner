@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -82,7 +83,7 @@ public class RobotContainer {
   private final FeedAuto feedAuto = new FeedAuto(intakeSubsystem);
 
   // Shooter
-  private final ShooterShootCommand shooterShootCommand = new ShooterShootCommand(shooterSubsystem);
+  private final ShooterShootCommand shooterShootCommand = new ShooterShootCommand(shooterSubsystem, pivotSubsystem);
   private final ShooterInCommand shooterInCommand = new ShooterInCommand(shooterSubsystem);
   private final ShooterAmpCommand shooterAmpCommand = new ShooterAmpCommand(shooterSubsystem);
   private final AutoShootCommand autoShootCommand = new AutoShootCommand(intakeSubsystem, shooterSubsystem);
@@ -98,7 +99,6 @@ public class RobotContainer {
 
   public RobotContainer() {
     CameraServer.startAutomaticCapture().setResolution(640, 460);
-    var usbCamera = CameraServer.startAutomaticCapture().getPath();
 
     pivotSubsystem.setBrake();
     drivebase.setMotorBrake(true);
@@ -260,7 +260,7 @@ public class RobotContainer {
     .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
 
     new Trigger(pivotSubsystem::isAimAtTargetPosition)
-    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)))
+    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(2)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
     .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
     
     xboxControllerCommand.rightBumper().whileTrue(intakeOutCommand);
