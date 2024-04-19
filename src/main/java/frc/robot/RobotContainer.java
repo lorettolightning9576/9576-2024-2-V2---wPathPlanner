@@ -115,7 +115,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Feed", intakeSubsystem.setIntakeFeedCommand().withTimeout(1.5));
     NamedCommands.registerCommand("Intake", intakeInCommand);
     NamedCommands.registerCommand("Pivot Subwoofer", pivotSubsystem.setPivotShootSpeakerCommand().withTimeout(1));
-    NamedCommands.registerCommand("Pivot Far", pivotSubsystem.setPivotShootStageCommand().withTimeout(1.5));
+    NamedCommands.registerCommand("Pivot Intake", pivotSubsystem.setPivotIntakeCommand().withTimeout(1.5));
+    NamedCommands.registerCommand("Pivot Far", pivotSubsystem.autoFront3Notes_Command().withTimeout(1.5));
 
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
@@ -252,9 +253,9 @@ public class RobotContainer {
 
 
     xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
-    xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotIntakeCommand());
+    xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotIntakeCommand());
     xboxControllerCommand.y().whileTrue(pivotSubsystem.setPivot_Finish_AMPCommand());
-    xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotShootStageCommand());
+    xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotShootStageCommand());
 
     new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
     .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))

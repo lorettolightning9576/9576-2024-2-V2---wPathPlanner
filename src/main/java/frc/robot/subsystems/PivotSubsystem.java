@@ -444,6 +444,11 @@ public class PivotSubsystem extends SubsystemBase{
     setPivotPosition(ShootStage);
   }
 
+  public void front3notesAuto() {
+    double  ShootStage = 5.65;
+    setPivotPosition(ShootStage);
+  }
+
   public void setPivotIntake() {
     double  Intake = 5.71;
     setPivotPosition(Intake);
@@ -477,5 +482,9 @@ public class PivotSubsystem extends SubsystemBase{
 
   public Command setPivotShootStageCommand() {
     return run(() -> setPivotShootStage());
+  }
+
+    public Command autoFront3Notes_Command() {
+    return run(() -> front3notesAuto());
   }
 }

@@ -27,5 +27,6 @@
     "id": 13,
     "canbus": null
   },
+  "useCosineCompensator": false,
   "absoluteEncoderInverted": false
 }
