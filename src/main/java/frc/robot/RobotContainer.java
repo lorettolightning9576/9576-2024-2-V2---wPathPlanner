@@ -83,7 +83,7 @@ public class RobotContainer {
   private final FeedAuto feedAuto = new FeedAuto(intakeSubsystem);
 
   // Shooter
-  private final ShooterShootCommand shooterShootCommand = new ShooterShootCommand(shooterSubsystem, pivotSubsystem);
+  private final ShooterShootCommand shooterShootCommand = new ShooterShootCommand(shooterSubsystem, pivotSubsystem::isTooLow);
   private final ShooterInCommand shooterInCommand = new ShooterInCommand(shooterSubsystem);
   private final ShooterAmpCommand shooterAmpCommand = new ShooterAmpCommand(shooterSubsystem);
   private final AutoShootCommand autoShootCommand = new AutoShootCommand(intakeSubsystem, shooterSubsystem);
@@ -242,7 +242,7 @@ public class RobotContainer {
     .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_BOTH_ArmCommand()))
     .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
 
-    //leftJoystick.button(9).whileTrue(new InstantCommand(() -> climberSubsystem.lowerLeftArmOVERRIDE()));/* */
+    //leftJoystick.button(9).whileTrue(new InstantCommand(() -> climberSubsystem.lowerLeftArmOVERRIDE()));
     //leftJoystick.button(10).whileTrue(new InstantCommand(() -> climberSubsystem.lowerRightArmOVERRIDE()));
     rightJoystick.button(1)
     .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = true)))
