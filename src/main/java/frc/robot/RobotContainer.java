@@ -115,7 +115,7 @@ public class RobotContainer {
   private final SendableChooser<Command> controlChooser = new SendableChooser<>();
 
   public RobotContainer() {
-    CameraServer.startAutomaticCapture().setResolution(640, 460);
+    CameraServer.startAutomaticCapture(0);
 
     pivotSubsystem.setBrake();
     drivebase.setMotorBrake(true);
@@ -224,9 +224,12 @@ public class RobotContainer {
     final var climberTab = Shuffleboard.getTab("Climber");
     climberSubsystem.addDashboardWidgets(climberTab.getLayout("Climber", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(4, 3));
 
-    driverTab.add("Auto", autoChooser).withPosition(1, 0).withSize(2, 1);
+
+
+    driverTab.add("Auto", autoChooser).withPosition(0, 0).withSize(1, 1);
     driverTab.add("Control Setup", controlChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(1, 1).withSize(2, 1);
-    driverTab.add(new UsbCamera("camera", 0)).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(5, 4);
+    //driverTab.add(new UsbCamera("camera", 0)).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(5, 4);
+    driverTab.add(CameraServer.putVideo("Intake Camera", 640, 480)).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(5, 4);
 
     robotTab.add(powerDistribution).withWidget(BuiltInWidgets.kPowerDistribution).withPosition(1, 0).withSize(3, 4);
 
