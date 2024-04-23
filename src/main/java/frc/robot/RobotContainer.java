@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Colors;
 import frc.robot.commands.Intake.FeedAuto;
 import frc.robot.commands.Intake.IntakeFeedCommand;
+import frc.robot.commands.Intake.IntakeFeedV2Command;
 import frc.robot.commands.Intake.IntakeInCommand;
 import frc.robot.commands.Intake.IntakeOutCommand;
 import frc.robot.commands.Pivot.PivotTriggerCommand;
@@ -41,6 +42,7 @@ import frc.robot.commands.Shooter.AutoShootCommand;
 import frc.robot.commands.Shooter.ShooterAmpCommand;
 import frc.robot.commands.Shooter.ShooterInCommand;
 import frc.robot.commands.Shooter.ShooterShootCommand;
+import frc.robot.commands.Shooter.ShooterShootV2Command;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.TelopDrive;
@@ -81,12 +83,14 @@ public class RobotContainer {
   private final IntakeOutCommand intakeOutCommand = new IntakeOutCommand(intakeSubsystem, shooterSubsystem);
   private final IntakeFeedCommand intakeFeedCommand = new IntakeFeedCommand(intakeSubsystem, shooterSubsystem);
   private final FeedAuto feedAuto = new FeedAuto(intakeSubsystem);
+  private final IntakeFeedV2Command intakeFeedV2Command = new IntakeFeedV2Command(intakeSubsystem);
 
   // Shooter
   private final ShooterShootCommand shooterShootCommand = new ShooterShootCommand(shooterSubsystem, pivotSubsystem::isTooLow);
   private final ShooterInCommand shooterInCommand = new ShooterInCommand(shooterSubsystem);
   private final ShooterAmpCommand shooterAmpCommand = new ShooterAmpCommand(shooterSubsystem);
   private final AutoShootCommand autoShootCommand = new AutoShootCommand(intakeSubsystem, shooterSubsystem);
+  private final ShooterShootV2Command shooterShootV2Command = new ShooterShootV2Command(shooterSubsystem, pivotSubsystem::isTooLow);
 
   // Pivot
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
@@ -128,11 +132,13 @@ public class RobotContainer {
     controlChooser.addOption("No Xbox", new InstantCommand(() -> configure_NoXbox_Bindings()));
 
 
-    /**if (controlChooser.toString() == "Cameron") {
+    if (controlChooser.getSelected().equals("Cameron")) {
+      configure_Cameron_Bindings();
+    } else if (controlChooser.getSelected().equals("Default-CK")) {
       configure_Cameron_Bindings();
     } else {
-      configureBindings();
-    }*/
+      configure_Cameron_Bindings();
+    }
     //getControlSetupCommand();
     //configureBindings();
     configureDashboard();
@@ -313,10 +319,10 @@ public class RobotContainer {
     leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
 
 
-    //xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
-    //xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotIntakeCommand());
+    xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
+    xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotIntakeCommand());
     //xboxControllerCommand.y().whileTrue(pivotSubsystem.setPivot_Finish_AMPCommand());
-    //xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotShootStageCommand());
+    xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotShootStageCommand());
 
     new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
     .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
@@ -326,20 +332,26 @@ public class RobotContainer {
     .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(1)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
     .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
 
-    new Trigger(xboxControllerCommand.leftTrigger()).and(xboxControllerCommand.rightTrigger().negate()).and(xboxControllerCommand.leftBumper().negate())
-    .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()));
+    /**new Trigger(xboxControllerCommand.rightTrigger()).and(xboxControllerCommand.leftTrigger().negate()).and(xboxControllerCommand.leftBumper().negate())
+    .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()).until(intakeSubsystem::hasNoteRAW));*/
 
-    new Trigger(xboxControllerCommand.rightTrigger()).and(shooterSubsystem::isAtTargetVelocity).and(xboxControllerCommand.leftTrigger())
-    .whileTrue(intakeInCommand);
+    new Trigger(xboxControllerCommand.rightTrigger().and(xboxControllerCommand.leftTrigger().negate()).and(xboxControllerCommand.leftBumper().negate()))
+    .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()).until(intakeSubsystem::hasNoteRAW));
 
-    new Trigger(xboxControllerCommand.leftBumper()).and(shooterSubsystem::isAtTargetSpeed).and(xboxControllerCommand.leftTrigger())
-    .whileTrue(intakeInCommand);
+    new Trigger(xboxControllerCommand.leftBumper().and(shooterSubsystem::isAtTargetSpeed).and(xboxControllerCommand.rightTrigger()))
+    .whileTrue(intakeFeedV2Command);
 
-    new Trigger(xboxControllerCommand.leftTrigger()).and(xboxControllerCommand.y().negate())
-    .whileTrue(shooterShootCommand);
+    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y().negate()))
+    .whileTrue(shooterShootCommand.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
 
-    new Trigger(xboxControllerCommand.leftTrigger()).and(xboxControllerCommand.y())
-    .whileTrue(shooterShootCommand.alongWith(pivotSubsystem.setPivotShootStageCommand()));
+    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y()))
+    .whileTrue(shooterShootV2Command.alongWith(pivotSubsystem.setPivotShootStageCommand()));
+
+    /**new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y()))
+    .whileTrue(shooterShootCommand.alongWith(pivotSubsystem.setPivotShootStageCommand()));*/
+
+    new Trigger(xboxControllerCommand.leftTrigger()).and(shooterSubsystem::isAtTargetVelocity).and(xboxControllerCommand.rightTrigger())
+    .whileTrue(intakeFeedV2Command);
     
     xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand.alongWith(pivotSubsystem.setPivot_Finish_AMPCommand()));
 

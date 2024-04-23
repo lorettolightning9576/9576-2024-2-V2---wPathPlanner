@@ -8,13 +8,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class IntakeInCommand extends Command {
+public class IntakeFeedV2Command extends Command {
   IntakeSubsystem intakeSubsystem;
-  CommandXboxController xboxControllerCommand;
 
-  public IntakeInCommand(IntakeSubsystem m_IntakeSubsystem, CommandXboxController m_xboxControllerCommand) {
+  public IntakeFeedV2Command(IntakeSubsystem m_IntakeSubsystem) {
     this.intakeSubsystem = m_IntakeSubsystem;
-    this.xboxControllerCommand = m_xboxControllerCommand;
     addRequirements(intakeSubsystem);
   }
 
