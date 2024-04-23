@@ -120,7 +120,8 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
 
-    controlChooser.setDefaultOption("Default", new InstantCommand(() -> configureBindings()));
+    //controlChooser.setDefaultOption("Default", new InstantCommand(() -> configureBindings()));
+    controlChooser.setDefaultOption("Default-CK", new InstantCommand(() -> configure_Cameron_Bindings()));
     controlChooser.addOption("Default", new InstantCommand(() -> configureBindings()));
     controlChooser.addOption("Cameron", new InstantCommand(() -> configure_Cameron_Bindings()));
     controlChooser.addOption("Grace", new InstantCommand(() -> configure_Grace_Bindings()));
@@ -325,7 +326,7 @@ public class RobotContainer {
     .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(1)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
     .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
 
-    new Trigger(xboxControllerCommand.rightTrigger()).and(xboxControllerCommand.leftTrigger().negate()).and(xboxControllerCommand.leftBumper().negate())
+    new Trigger(xboxControllerCommand.leftTrigger()).and(xboxControllerCommand.rightTrigger().negate()).and(xboxControllerCommand.leftBumper().negate())
     .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()));
 
     new Trigger(xboxControllerCommand.rightTrigger()).and(shooterSubsystem::isAtTargetVelocity).and(xboxControllerCommand.leftTrigger())
