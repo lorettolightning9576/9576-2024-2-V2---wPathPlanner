@@ -13,14 +13,22 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.hal.FRCNetComm;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -95,7 +103,11 @@ public class RobotContainer {
   // Pivot
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
   private final stopPivotCommand stopPivotCommand = new stopPivotCommand(pivotSubsystem);
+
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
+  private final ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
+
+  private final PowerDistribution powerDistribution = new PowerDistribution(9, ModuleType.kRev);
 
   private final Colors colors = new Colors();
 
@@ -212,8 +224,11 @@ public class RobotContainer {
     final var climberTab = Shuffleboard.getTab("Climber");
     climberSubsystem.addDashboardWidgets(climberTab.getLayout("Climber", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(4, 3));
 
-    driverTab.add("Auto", autoChooser).withPosition(3, 0).withSize(3, 2);
-    driverTab.add("Control Setup", controlChooser).withPosition(3, 3).withSize(3, 2);
+    driverTab.add("Auto", autoChooser).withPosition(1, 0).withSize(2, 1);
+    driverTab.add("Control Setup", controlChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(1, 1).withSize(2, 1);
+    driverTab.add(new UsbCamera("camera", 0)).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(5, 4);
+
+    robotTab.add(powerDistribution).withWidget(BuiltInWidgets.kPowerDistribution).withPosition(1, 0).withSize(3, 4);
 
     /**driverTab.add(new HttpCamera("Intake Camera", "http://10.95.76.2"))
       .withWidget(BuiltInWidgets.kCameraStream)
