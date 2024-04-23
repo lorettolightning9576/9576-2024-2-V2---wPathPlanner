@@ -460,7 +460,7 @@ public class PivotSubsystem extends SubsystemBase{
   }*/
 
   public void setPivotFinish_AMP() {
-    double  Finish_AMP = 1.66;
+    double  Finish_AMP = 1.7;
     setPivotPosition(Finish_AMP);
   }
 
