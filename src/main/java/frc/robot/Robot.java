@@ -145,7 +145,7 @@ public class Robot extends TimedRobot
     CommandScheduler.getInstance().cancelAll();
     try
     {
-      new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve"));
+      new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
     } catch (IOException e)
     {
       throw new RuntimeException(e);

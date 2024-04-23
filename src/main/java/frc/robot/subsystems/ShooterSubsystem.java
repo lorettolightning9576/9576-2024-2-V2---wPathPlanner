@@ -20,6 +20,9 @@ public class ShooterSubsystem extends SubsystemBase{
     private double TopTargetVelocity;
     private double BottomTargetVelocity;
 
+    private double TopTargetSpeed;
+    private double BottomTargetSpeed;
+
     private static boolean setShooterVelocity;
     private double shooterSpeed;
 
@@ -89,6 +92,8 @@ public class ShooterSubsystem extends SubsystemBase{
         layout.addString("Bottom Idle Mode", this::getBottomIdleMode)               .withPosition(1, 2);
         layout.addNumber("Bottom Roller Speed", this::getBottomRollerSpeed)         .withPosition(2, 0);
         layout.addNumber("Top Roller Speed", this::getTopRollerSpeed)               .withPosition(2, 1);
+        layout.addBoolean("Is at Target Velocity Tolerance", this::isAtTargetVelocity)    .withPosition(2, 2);
+        layout.addBoolean("Is at Target Speed Tolerance", this::isAtTargetSpeed)    .withPosition(2, 3);
     }
 
     public void setShooterCustomVelocity(double velocity) {
@@ -133,8 +138,13 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public void setShooterAMPSpeed() {
-        shooterTopMotor.set(0.18);
-        shooterBottomMotor.set(0.125);
+        setShooterVelocity = false;
+
+        BottomTargetSpeed = 0.18;
+        TopTargetSpeed = 0.125;
+
+        shooterTopMotor.set(BottomTargetSpeed);
+        shooterBottomMotor.set(TopTargetSpeed);
     }
 
     public void setShooterAmp () {
@@ -206,6 +216,16 @@ public class ShooterSubsystem extends SubsystemBase{
 
     private double getTopRollerSpeed() {
         return (shooterTopMotorEncoder.getVelocity() / 1.5);
+    }
+
+    public boolean isAtTargetVelocity() {
+        return (Math.abs(shooterBottomMotorEncoder.getVelocity()) < BottomTargetVelocity + 75) && (Math.abs(shooterBottomMotorEncoder.getVelocity()) >  BottomTargetVelocity - 75) &&
+               (Math.abs(shooterTopMotorEncoder.getVelocity()) < TopTargetVelocity + 75 && (Math.abs(shooterTopMotorEncoder.getVelocity()) > TopTargetVelocity - 75));
+    }
+
+    public boolean isAtTargetSpeed() {
+        return (Math.abs(shooterBottomMotor.get()) < BottomTargetSpeed + 0.25) && (Math.abs(shooterBottomMotor.get()) >  BottomTargetSpeed - 0.25) &&
+               (Math.abs(shooterTopMotor.get()) < TopTargetSpeed + 0.25 && (Math.abs(shooterTopMotor.get()) > TopTargetSpeed - 0.25));
     }
 
     private String getTopIdleMode() {

@@ -96,6 +96,7 @@ public class RobotContainer {
   private final Colors colors = new Colors();
 
   private final SendableChooser<Command> autoChooser;
+  private final SendableChooser<Command> controlChooser = new SendableChooser<>();
 
   public RobotContainer() {
     CameraServer.startAutomaticCapture().setResolution(640, 460);
@@ -106,9 +107,6 @@ public class RobotContainer {
     intakeSubsystem.setBrake();
 
     pivotSubsystem.setDefaultCommand(pivotTriggerCommand);
-
-    
-
     
     NamedCommands.registerCommand("Shoot", shooterSubsystem.AutoShooterCommand().withTimeout(18));
     NamedCommands.registerCommand("Initial Feed", intakeSubsystem.setIntakeFeedCommand().withTimeout(.5));
@@ -122,7 +120,20 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
 
-    configureBindings();
+    controlChooser.setDefaultOption("Default", new InstantCommand(() -> configureBindings()));
+    controlChooser.addOption("Default", new InstantCommand(() -> configureBindings()));
+    controlChooser.addOption("Cameron", new InstantCommand(() -> configure_Cameron_Bindings()));
+    controlChooser.addOption("Grace", new InstantCommand(() -> configure_Grace_Bindings()));
+    controlChooser.addOption("No Xbox", new InstantCommand(() -> configure_NoXbox_Bindings()));
+
+
+    /**if (controlChooser.toString() == "Cameron") {
+      configure_Cameron_Bindings();
+    } else {
+      configureBindings();
+    }*/
+    //getControlSetupCommand();
+    //configureBindings();
     configureDashboard();
 
     
@@ -195,6 +206,7 @@ public class RobotContainer {
     climberSubsystem.addDashboardWidgets(climberTab.getLayout("Climber", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(4, 3));
 
     driverTab.add("Auto", autoChooser).withPosition(3, 0).withSize(3, 2);
+    driverTab.add("Control Setup", controlChooser).withPosition(3, 3).withSize(3, 2);
 
     /**driverTab.add(new HttpCamera("Intake Camera", "http://10.95.76.2"))
       .withWidget(BuiltInWidgets.kCameraStream)
@@ -226,7 +238,6 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
-    //leftJoystick.button(8).onTrue(new InstantCommand(drivebase::setGyroOffset));
     //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
     //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
     //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
@@ -241,9 +252,7 @@ public class RobotContainer {
     xboxControllerCommand.povDown()
     .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_BOTH_ArmCommand()))
     .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
-
-    //leftJoystick.button(9).whileTrue(new InstantCommand(() -> climberSubsystem.lowerLeftArmOVERRIDE()));
-    //leftJoystick.button(10).whileTrue(new InstantCommand(() -> climberSubsystem.lowerRightArmOVERRIDE()));
+    
     rightJoystick.button(1)
     .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = true)))
     .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = false)));
@@ -272,11 +281,174 @@ public class RobotContainer {
 
     xboxControllerCommand.leftTrigger().whileTrue(shooterShootCommand);
 
-    //xboxControllerCommand.leftTrigger().and(xboxControllerCommand.rightTrigger()).whileTrue(intakeFeedCommand);
+    xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
+  }
+
+  private void configure_Cameron_Bindings() {
+    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+
+    leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
+    //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
+    //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
+    //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
+    //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
+
+    leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
+    rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
+    leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
+    rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
+
+    xboxControllerCommand.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+    xboxControllerCommand.povDown()
+    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_BOTH_ArmCommand()))
+    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
+    
+    rightJoystick.button(1)
+    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = true)))
+    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = false)));
+
+
+    leftJoystick.povDown().and(rightJoystick.povDown()).whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
+    leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+
+
+    //xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
+    //xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotIntakeCommand());
+    //xboxControllerCommand.y().whileTrue(pivotSubsystem.setPivot_Finish_AMPCommand());
+    //xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotShootStageCommand());
+
+    new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
+    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
+    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
+
+    new Trigger(pivotSubsystem::isAimAtTargetPosition)
+    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(1)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
+    .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
+
+    new Trigger(xboxControllerCommand.rightTrigger()).and(xboxControllerCommand.leftTrigger().negate()).and(xboxControllerCommand.leftBumper().negate())
+    .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()));
+
+    new Trigger(xboxControllerCommand.rightTrigger()).and(shooterSubsystem::isAtTargetVelocity).and(xboxControllerCommand.leftTrigger())
+    .whileTrue(intakeInCommand);
+
+    new Trigger(xboxControllerCommand.leftBumper()).and(shooterSubsystem::isAtTargetSpeed).and(xboxControllerCommand.leftTrigger())
+    .whileTrue(intakeInCommand);
+
+    new Trigger(xboxControllerCommand.leftTrigger()).and(xboxControllerCommand.y().negate())
+    .whileTrue(shooterShootCommand);
+
+    new Trigger(xboxControllerCommand.leftTrigger()).and(xboxControllerCommand.y())
+    .whileTrue(shooterShootCommand.alongWith(pivotSubsystem.setPivotShootStageCommand()));
+    
+    xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand.alongWith(pivotSubsystem.setPivot_Finish_AMPCommand()));
+
+    xboxControllerCommand.rightBumper().whileTrue(intakeOutCommand);
+
+    //xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand);
+
+    //xboxControllerCommand.leftTrigger().whileTrue(shooterShootCommand);
+
+    //xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
+  }
+
+  private void configure_Grace_Bindings() {
+    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+
+    leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
+    //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
+    //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
+    //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
+    //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
+
+    leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
+    rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
+    leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
+    rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
+
+    xboxControllerCommand.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+    xboxControllerCommand.povDown()
+    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_BOTH_ArmCommand()))
+    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
+    
+    rightJoystick.button(1)
+    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = true)))
+    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = false)));
+
+
+    leftJoystick.povDown().and(rightJoystick.povDown()).whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
+    leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+
+
+    xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
+    xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotIntakeCommand());
+    xboxControllerCommand.y().whileTrue(pivotSubsystem.setPivot_Finish_AMPCommand());
+    xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotShootStageCommand());
+
+    new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
+    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
+    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
+
+    new Trigger(pivotSubsystem::isAimAtTargetPosition)
+    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(2)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
+    .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
+    
+    xboxControllerCommand.rightBumper().whileTrue(intakeOutCommand);
+
+    xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand);
+
+    xboxControllerCommand.leftTrigger().whileTrue(shooterShootCommand);
 
     xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
+  }
 
-    //xboxControllerCommand.povUp().whileTrue(intakeFeedCommand);
+  private void configure_NoXbox_Bindings() {
+    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+
+    leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
+    //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
+    //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
+    //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
+    //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
+
+    leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
+    rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
+    leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
+    rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
+
+    xboxControllerCommand.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+    xboxControllerCommand.povDown()
+    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_BOTH_ArmCommand()))
+    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
+    
+    rightJoystick.button(1)
+    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = true)))
+    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = false)));
+
+
+    leftJoystick.povDown().and(rightJoystick.povDown()).whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
+    leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+
+
+    xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
+    xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotIntakeCommand());
+    xboxControllerCommand.y().whileTrue(pivotSubsystem.setPivot_Finish_AMPCommand());
+    xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotShootStageCommand());
+
+    new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
+    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
+    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
+
+    new Trigger(pivotSubsystem::isAimAtTargetPosition)
+    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(2)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
+    .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
+    
+    xboxControllerCommand.rightBumper().whileTrue(intakeOutCommand);
+
+    xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand);
+
+    xboxControllerCommand.leftTrigger().whileTrue(shooterShootCommand);
+
+    xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
   }
 
   /**
@@ -288,9 +460,11 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 
-  public void setDriveMode() {
+  public Command getControlSetupCommand() {
+    return controlChooser.getSelected();
+  }
 
-    
+  public void setDriveMode() {
     //drivebase.setDefaultCommand();
   }
 

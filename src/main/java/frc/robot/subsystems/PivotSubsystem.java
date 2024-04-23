@@ -105,8 +105,8 @@ public class PivotSubsystem extends SubsystemBase{
     double kD =  0.0000;
     double kIz = 0;
     double kFF = 0;
-    double kMaxOutput =  0.4;
-    double kMinOutput = -0.4;
+    double kMaxOutput =  0.5;
+    double kMinOutput = -0.5;
 
     pivotPidController.setP(kP);
     pivotPidController.setI(kI);
