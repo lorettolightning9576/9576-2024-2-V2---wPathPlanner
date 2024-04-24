@@ -244,10 +244,12 @@ public class RobotContainer {
     leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
 
 
-    xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand().alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.c1E2E_blend2Blck))));
+    /**xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand().alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.c1E2E_blend2Blck))));
     xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotIntakeCommand());
     xboxControllerCommand.y().whileTrue(pivotSubsystem.setPivot_Finish_AMPCommand());
-    xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotShootStageCommand());
+    xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotShootStageCommand());*/
+
+    xboxControllerCommand.a().whileTrue(photonAlignCommand);
 
     new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
     .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Gold))))

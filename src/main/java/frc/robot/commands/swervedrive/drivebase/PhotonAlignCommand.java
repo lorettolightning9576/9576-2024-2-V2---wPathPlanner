@@ -21,12 +21,13 @@ import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class PhotonAlignCommand extends Command{
-    private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new Constraints(0.5, 1);
-    private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new Constraints(0.5, 1);
-    private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new Constraints(1, 1);
+    private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new Constraints(0.75, 1);
+    private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new Constraints(0.75, 1);
+    private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new Constraints(0.75, 1);
 
     private static final int Tag_To_Align = 4;
     private static final Transform2d Tag_To_Goal = new Transform2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180));
+    private static final Rotation2d Tag_To_Goal_Rotation = new Rotation2d(degreesToRadians(180));
 
     private final PhotonCamera photonCamera;
     private final SwerveSubsystem driveBase;
@@ -34,7 +35,7 @@ public class PhotonAlignCommand extends Command{
 
     private final ProfiledPIDController xController = new ProfiledPIDController(2, 0, 0, X_CONSTRAINTS);
     private final ProfiledPIDController yController = new ProfiledPIDController(2, 0, 0, Y_CONSTRAINTS);
-    private final ProfiledPIDController omegaController = new ProfiledPIDController(2, 0, 0, OMEGA_CONSTRAINTS);
+    private final ProfiledPIDController omegaController = new ProfiledPIDController(4, 0, 0, OMEGA_CONSTRAINTS);
 
     private Pose2d goalPose;
     private PhotonTrackedTarget lastTarget;
@@ -77,6 +78,7 @@ public class PhotonAlignCommand extends Command{
                     Pose2d targetPose = cameraPose.transformBy(transform);
 
                     goalPose = targetPose.transformBy(Tag_To_Goal);
+                    //goalPose = targetPose.rotateBy(Tag_To_Goal_Rotation);
                 }
 
                 if (null != goalPose) {
@@ -103,7 +105,8 @@ public class PhotonAlignCommand extends Command{
             omegaSpeed = 0;
         }
 
-        driveBase.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, omegaSpeed, robotPose.getRotation()));
+        driveBase.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, omegaSpeed, robotPose.getRotation()));
+        //driveBase.driveFieldOriented(new ChassisSpeeds(0, 0, omegaSpeed));
 
     }
 
