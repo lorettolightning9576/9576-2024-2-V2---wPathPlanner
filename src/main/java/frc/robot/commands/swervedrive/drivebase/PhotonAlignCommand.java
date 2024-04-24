@@ -26,7 +26,7 @@ public class PhotonAlignCommand extends Command{
     private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new Constraints(0.75, 1);
 
     private static final int Tag_To_Align = 4;
-    private static final Transform2d Tag_To_Goal = new Transform2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180));
+    private static final Transform2d Tag_To_Goal = new Transform2d(new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(180));
     private static final Rotation2d Tag_To_Goal_Rotation = new Rotation2d(degreesToRadians(180));
 
     private final PhotonCamera photonCamera;

@@ -10,6 +10,8 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -18,8 +20,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.PubSub;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
@@ -28,9 +33,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.robot.subsystems.VisionSubsystem;
 
 import java.io.File;
 import java.util.function.DoubleSupplier;
+import java.util.function.BooleanSupplier;
 
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -48,8 +55,10 @@ public class SwerveSubsystem extends SubsystemBase {
   /**
    * Swerve drive object.
    */
-  private final SwerveDrive swerveDrive;
+  public final SwerveDrive swerveDrive;
   private static SwerveSubsystem INSTANCE = null;
+
+  private BooleanSupplier photonHasTargets;
 
   private final Field2d field = new Field2d();
   private Pose2d position = new Pose2d(new Translation2d(8, 4), new Rotation2d());
@@ -61,6 +70,9 @@ public class SwerveSubsystem extends SubsystemBase {
     }
     return INSTANCE;
   }
+
+  static boolean areWeAiming = false;
+
   /**
    * Maximum speed of the robot in meters per second, used to limit acceleration.
    */
@@ -110,8 +122,7 @@ public class SwerveSubsystem extends SubsystemBase {
   /**
    * Setup AutoBuilder for PathPlanner.
    */
-  public void setupPathPlanner()
-  {
+  public void setupPathPlanner() {
     AutoBuilder.configureHolonomic(
         this::getPose, // Robot pose supplierP
         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
@@ -324,7 +335,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-
   }
 
   @Override
@@ -537,12 +547,40 @@ public class SwerveSubsystem extends SubsystemBase {
     return swerveDrive.getModulePositions();
   }
 
+  public SwerveDrivePoseEstimator getSwerveDrivePoseEstimator() {
+    return swerveDrive.swerveDrivePoseEstimator;
+  }
+
+  public static boolean getAreWeAiming(){
+    return areWeAiming;
+  }
+
+  public void setAreWeAiming(boolean m_areweaiming){
+    this.areWeAiming = m_areweaiming;
+  }
+
+  public Double getMaximumVelocity() {
+    return swerveDrive.getMaximumVelocity();
+  }
+
+  public Double getMaximumAngularVelocity() {
+    return swerveDrive.getMaximumAngularVelocity();
+  }
+
+  public void setHeadingCorrection(boolean correction) {
+    swerveDrive.setHeadingCorrection(correction);
+  }
+
   /**public void test() {
     swerveDrive.swerveDrivePoseEstimator.addVisionMeasurement(position, maximumSpeed);
   }*/
 
   public void addCustomVisionMeasurement(Pose2d pose2d, double timestamp) {
     swerveDrive.addVisionMeasurement(pose2d, timestamp);
+  }
+
+  public void addCustomVisionMeasurement(Pose2d pose2d, double timestamp, Matrix<N3, N1> visionMeasurementStdDevs) {
+    swerveDrive.addVisionMeasurement(pose2d, timestamp, visionMeasurementStdDevs);
   }
 
   /**

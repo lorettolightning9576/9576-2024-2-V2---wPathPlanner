@@ -41,6 +41,7 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.PhotonAlignCommand;
 import frc.robot.commands.swervedrive.drivebase.TelopDrive;
+import frc.robot.commands.swervedrive.drivebase.TelopDrive_wVisionAlign;
 import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -180,7 +181,16 @@ public class RobotContainer {
       () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.8, 0.075), () -> true
     );
 
-    drivebase.setDefaultCommand(closedFieldRel);
+    TelopDrive_wVisionAlign closedFieldRel_wVision = new TelopDrive_wVisionAlign(
+      drivebase, 
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075),
+      () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.8, 0.075), () -> true, 
+      visionSubsystem, 
+      photonCamera
+    );
+
+    drivebase.setDefaultCommand(closedFieldRel_wVision);
   }
 
   private void configureDashboard() {
@@ -218,6 +228,9 @@ public class RobotContainer {
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
     leftJoystick.button(1).whileTrue(photonAlignCommand);
+    rightJoystick.button(1)
+    .whileTrue(new InstantCommand(() -> drivebase.setAreWeAiming(true)))
+    .onFalse(new InstantCommand(() -> drivebase.setAreWeAiming(false)));
 
     //leftJoystick.button(8).onTrue(new InstantCommand(drivebase::setGyroOffset));
     //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
