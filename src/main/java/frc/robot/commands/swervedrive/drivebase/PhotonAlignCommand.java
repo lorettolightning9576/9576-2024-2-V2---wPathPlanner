@@ -26,7 +26,7 @@ import swervelib.SwerveController;
 public class PhotonAlignCommand extends Command{
     private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new Constraints(0.75, 1);
     private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new Constraints(0.75, 1);
-    private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new Constraints(0.75, 1);
+    private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new Constraints(0.75, 2);
 
     public static final int Tag_To_Align = 7;
     private static final Transform2d Tag_To_Goal = new Transform2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180));
@@ -42,7 +42,7 @@ public class PhotonAlignCommand extends Command{
 
     private final ProfiledPIDController xController = new ProfiledPIDController(2, 0, 0, X_CONSTRAINTS);
     private final ProfiledPIDController yController = new ProfiledPIDController(2, 0, 0, Y_CONSTRAINTS);
-    private final ProfiledPIDController omegaController = new ProfiledPIDController(4, 0, 0, OMEGA_CONSTRAINTS);
+    private final ProfiledPIDController omegaController = new ProfiledPIDController(0.5, 0, 0.0005, OMEGA_CONSTRAINTS);
 
     private Pose2d goalPose;
     private PhotonTrackedTarget lastTarget;
@@ -121,7 +121,7 @@ public class PhotonAlignCommand extends Command{
         /**driveBase.drive(new Translation2d(xVelocity * driveBase.maximumSpeed, yVelocity * driveBase.maximumSpeed),
                         omegaSpeed, true);  */
        // driveBase.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, omegaSpeed, robotPose.getRotation()));
-        driveBase.driveFieldOriented(new ChassisSpeeds(0, 0, omegaSpeed));
+        driveBase.driveFieldOriented(new ChassisSpeeds(0, 0, -omegaSpeed));
 
     }
 
