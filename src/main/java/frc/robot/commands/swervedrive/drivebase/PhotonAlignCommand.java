@@ -118,10 +118,10 @@ public class PhotonAlignCommand extends Command{
 
         SmartDashboard.putNumber("Vision Omega Speed", omegaSpeed);
 
-        driveBase.drive(new Translation2d(xVelocity * driveBase.maximumSpeed, yVelocity * driveBase.maximumSpeed),
-                        omegaSpeed, true);  
-        //driveBase.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, omegaSpeed, robotPose.getRotation()));
-        //driveBase.driveFieldOriented(new ChassisSpeeds(0, 0, omegaSpeed));
+        /**driveBase.drive(new Translation2d(xVelocity * driveBase.maximumSpeed, yVelocity * driveBase.maximumSpeed),
+                        omegaSpeed, true);  */
+       // driveBase.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, omegaSpeed, robotPose.getRotation()));
+        driveBase.driveFieldOriented(new ChassisSpeeds(0, 0, omegaSpeed));
 
     }
 
