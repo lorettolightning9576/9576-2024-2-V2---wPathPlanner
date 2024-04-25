@@ -187,8 +187,7 @@ public class RobotContainer {
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075),
       () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.8, 0.075), 
       () -> true, 
-      visionSubsystem, 
-      photonCamera
+      visionSubsystem
     );
 
     drivebase.setDefaultCommand(closedFieldRel_wVision);
