@@ -46,6 +46,8 @@ public class VisionSubsystem extends SubsystemBase{
     public static Translation2d blueSpeakerPos = new Translation2d(0.076, 5.547868);
     public static Translation2d redSpeakerPos = new Translation2d(16.465042, 5.547868);
 
+    private static final int Tag_To_Align = 7;
+
     private final Field2d field2d = new Field2d();
 
     private PhotonPoseEstimator photonPoseEstimator;
@@ -64,8 +66,8 @@ public class VisionSubsystem extends SubsystemBase{
             e.printStackTrace();
         }*/
 
-        //poseEstimator = new SwerveDrivePoseEstimator(driveBase.getKinematics(), driveBase.getHeading(), driveBase.getSwerveModulePositions(), driveBase.getPose());
-        poseEstimator = driveBase.getSwerveDrivePoseEstimator();
+        poseEstimator = new SwerveDrivePoseEstimator(driveBase.getKinematics(), driveBase.getHeading(), driveBase.getSwerveModulePositions(), driveBase.getPose());
+        //poseEstimator = driveBase.getSwerveDrivePoseEstimator();
 
         SmartDashboard.putData("VisionField", field2d);
     }
@@ -76,9 +78,10 @@ public class VisionSubsystem extends SubsystemBase{
 
         if (photonPoseEstimated.isPresent()) {
             var visionMeasurement = photonPoseEstimated.get();
-            //poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds);
-            poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds, getEstimatedStdDevs(visionMeasurement.estimatedPose.toPose2d(), photonCamera.getLatestResult().getTargets(), photonPoseEstimator.getFieldTags()));
+            poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds);
+            //poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds, getEstimatedStdDevs(visionMeasurement.estimatedPose.toPose2d(), photonCamera.getLatestResult().getTargets(), photonPoseEstimator.getFieldTags()));
             //driveBase.addCustomVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds, getEstimatedStdDevs(visionMeasurement.estimatedPose.toPose2d(), photonCamera.getLatestResult().getTargets(), photonPoseEstimator.getFieldTags()));
+            driveBase.addCustomVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds);
         }
         poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveBase.getHeading(), driveBase.getSwerveModulePositions());
 
@@ -144,5 +147,9 @@ public class VisionSubsystem extends SubsystemBase{
         }
 
         return angle;
+    }
+
+    public int getTagToTarget() {
+        return Tag_To_Align;
     }
 }

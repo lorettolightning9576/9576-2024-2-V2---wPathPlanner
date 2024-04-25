@@ -60,7 +60,7 @@ public class TelopDrive_wVisionAlign extends Command{
     if (swerve.getAreWeAiming()) {
 
       var photonResults = photonCamera.getLatestResult();
-      var targetOpt = photonResults.getTargets().stream().filter(t -> t.getFiducialId() == 4).findFirst();
+      var targetOpt = photonResults.getTargets().stream().filter(t -> t.getFiducialId() == vision.getTagToTarget()).findFirst();
       var target = targetOpt.get();
 
       var camToTarget = target.getBestCameraToTarget();

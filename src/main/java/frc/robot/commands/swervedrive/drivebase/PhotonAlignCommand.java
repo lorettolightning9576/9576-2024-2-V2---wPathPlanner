@@ -25,7 +25,7 @@ public class PhotonAlignCommand extends Command{
     private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new Constraints(0.75, 1);
     private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new Constraints(0.75, 1);
 
-    private static final int Tag_To_Align = 4;
+    public static final int Tag_To_Align = 7;
     private static final Transform2d Tag_To_Goal = new Transform2d(new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(180));
     private static final Rotation2d Tag_To_Goal_Rotation = new Rotation2d(degreesToRadians(180));
 
@@ -67,7 +67,7 @@ public class PhotonAlignCommand extends Command{
         var robotPose = driveBase.getPose();
         var photonResults = photonCamera.getLatestResult();
         if (photonResults.hasTargets()) {
-            var targetOpt = photonResults.getTargets().stream().filter(t -> t.getFiducialId() == Tag_To_Align).findFirst();
+            var targetOpt = photonResults.getTargets().stream().filter(t -> t.getFiducialId() == 7).findFirst();
             if (targetOpt.isPresent()) {
                 var target = targetOpt.get();
                 if (!target.equals(lastTarget)) {
