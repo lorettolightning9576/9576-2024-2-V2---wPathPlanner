@@ -42,7 +42,7 @@ public class VisionSubsystem extends SubsystemBase{
 
     static Optional<Alliance> color;
 
-    public static final Transform3d AprilTag_Robot_to_camera = new Transform3d(new Translation3d(inchesToMeters(11.0), 0, 0), new Rotation3d(0, degreesToRadians(-75), 0));
+    public static final Transform3d AprilTag_Robot_to_camera = new Transform3d(new Translation3d(inchesToMeters(11.0), 0, 0), new Rotation3d(0, degreesToRadians(0), 0));
     public static final Transform2d Camera_To_Robot = new Transform2d(new Translation2d(inchesToMeters(11.0), 0), new Rotation2d(0.0));
     private final SwerveDrivePoseEstimator poseEstimator;
 
@@ -97,9 +97,9 @@ public class VisionSubsystem extends SubsystemBase{
         field2d.setRobotPose(getCurrentPose());
 
         if (color.get() == Alliance.Blue) {
-            camYawToSpeaker = normalizeAngle(getCurrentPose().getTranslation().minus(blueSpeakerPos).getAngle().getDegrees() + 0.0 );
+            camYawToSpeaker = normalizeAngle(getCurrentPose().getTranslation().minus(blueSpeakerPos).getAngle().getDegrees());
         } else {
-            camYawToSpeaker = normalizeAngle(getCurrentPose().getTranslation().minus(redSpeakerPos).getAngle().getDegrees() + 0.0);
+            camYawToSpeaker = normalizeAngle(getCurrentPose().getTranslation().minus(redSpeakerPos).getAngle().getDegrees());
         }
 
         SmartDashboard.putNumber("Cam to Speaker", camYawToSpeaker);

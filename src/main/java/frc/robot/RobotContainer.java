@@ -78,7 +78,7 @@ public class RobotContainer {
   private final Blinkin blinkin = new Blinkin();
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(photonCamera, drivebase);
 
-  private final PhotonAlignCommand photonAlignCommand = new PhotonAlignCommand(photonCamera, drivebase, () -> visionSubsystem.getCurrentPose());
+  //private final PhotonAlignCommand photonAlignCommand = new PhotonAlignCommand(photonCamera, drivebase, () -> visionSubsystem.getCurrentPose());
 
   // Intake
   private final IntakeInCommand intakeInCommand = new IntakeInCommand(intakeSubsystem, xboxControllerCommand);
@@ -227,7 +227,13 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
-    leftJoystick.button(1).whileTrue(photonAlignCommand);
+  
+    leftJoystick.button(1).whileTrue(new PhotonAlignCommand(
+      photonCamera, drivebase, () -> visionSubsystem.getCurrentPose(), 
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075)));
+
+
     rightJoystick.button(1)
     .whileTrue(new InstantCommand(() -> drivebase.setAreWeAiming(true)))
     .onFalse(new InstantCommand(() -> drivebase.setAreWeAiming(false)));
@@ -262,7 +268,7 @@ public class RobotContainer {
     xboxControllerCommand.y().whileTrue(pivotSubsystem.setPivot_Finish_AMPCommand());
     xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotShootStageCommand());*/
 
-    xboxControllerCommand.a().whileTrue(photonAlignCommand);
+    //xboxControllerCommand.a().whileTrue(photonAlignCommand);
 
     new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
     .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Gold))))
