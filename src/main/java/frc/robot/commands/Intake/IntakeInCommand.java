@@ -10,11 +10,20 @@ import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeInCommand extends Command {
   IntakeSubsystem intakeSubsystem;
-  CommandXboxController xboxControllerCommand;
+  //CommandXboxController xboxControllerCommand;
 
-  public IntakeInCommand(IntakeSubsystem m_IntakeSubsystem, CommandXboxController m_xboxControllerCommand) {
+  private static IntakeInCommand Instance = null;
+
+  public static IntakeInCommand getInstance() {
+    if (Instance == null) {
+      Instance = new IntakeInCommand(new IntakeSubsystem());
+    }
+    return Instance;
+  }
+
+  public IntakeInCommand(IntakeSubsystem m_IntakeSubsystem) {
     this.intakeSubsystem = m_IntakeSubsystem;
-    this.xboxControllerCommand = m_xboxControllerCommand;
+    //this.xboxControllerCommand = m_xboxControllerCommand;
     addRequirements(intakeSubsystem);
   }
 

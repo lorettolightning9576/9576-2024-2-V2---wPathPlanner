@@ -79,7 +79,7 @@ public class RobotContainer {
   private final Blinkin blinkin = new Blinkin();
 
   // Intake
-  private final IntakeInCommand intakeInCommand = new IntakeInCommand(intakeSubsystem, xboxControllerCommand);
+  private final IntakeInCommand intakeInCommand = new IntakeInCommand(intakeSubsystem);
   private final IntakeOutCommand intakeOutCommand = new IntakeOutCommand(intakeSubsystem, shooterSubsystem);
   private final IntakeFeedCommand intakeFeedCommand = new IntakeFeedCommand(intakeSubsystem, shooterSubsystem);
   private final FeedAuto feedAuto = new FeedAuto(intakeSubsystem);
