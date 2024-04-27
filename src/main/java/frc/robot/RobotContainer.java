@@ -137,7 +137,7 @@ public class RobotContainer {
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
 
     //controlChooser.setDefaultOption("Default", new InstantCommand(() -> configureBindings()));
-    controlChooser.setDefaultOption("Default-CK", controlSetup.Default);
+    controlChooser.setDefaultOption("Default-CK", controlSetup.Cameron);
     controlChooser.addOption("Default", controlSetup.Default);
     controlChooser.addOption("Cameron", controlSetup.Cameron);
     controlChooser.addOption("Grace", controlSetup.Grace);
@@ -147,19 +147,23 @@ public class RobotContainer {
 
     switch (cSetup) {
       case Cameron:
+      configure_Cameron_Bindings();
       break;
 
       case Default:
+      configureBindings();
       break;
 
       case Grace:
+      configure_Grace_Bindings();
       break;
 
       case NoXbox:
+      configure_NoXbox_Bindings();
       break;
     }
 
-    if (cSetup == controlSetup.Cameron) {
+    /**if (cSetup == controlSetup.Cameron) {
       configure_Cameron_Bindings();
     } else if (cSetup == controlSetup.Default) {
       configureBindings();
@@ -167,11 +171,10 @@ public class RobotContainer {
       configure_Grace_Bindings();
     } else if (cSetup == controlSetup.NoXbox) {
       configure_NoXbox_Bindings();
-    }/** else {
+    }*//** else {
       configureBindings();
     }*/
 
-    //getControlSetupCommand();
     //configureBindings();
     configureDashboard();
 
