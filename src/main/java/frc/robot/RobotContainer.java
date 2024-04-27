@@ -118,6 +118,7 @@ public class RobotContainer {
 
     pivotSubsystem.setDefaultCommand(pivotTriggerCommand);
     
+    //Auto Commands
     NamedCommands.registerCommand("Shoot", shooterSubsystem.AutoShooterCommand().withTimeout(18));
     NamedCommands.registerCommand("Initial Feed", intakeSubsystem.setIntakeFeedCommand().withTimeout(.5));
     NamedCommands.registerCommand("Feed", intakeSubsystem.setIntakeFeedCommand().withTimeout(1.5));
