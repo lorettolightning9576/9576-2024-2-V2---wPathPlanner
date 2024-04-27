@@ -11,24 +11,16 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.HttpCamera;
-import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.hal.FRCNetComm;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -111,8 +103,10 @@ public class RobotContainer {
 
   private final Colors colors = new Colors();
 
+  private static ControlSetup controlSetup = ControlSetup.Cameron;
+
   private final SendableChooser<Command> autoChooser;
-  private final SendableChooser<controlSetup> controlChooser = new SendableChooser<>();
+  private final SendableChooser<ControlSetup> controlChooser = new SendableChooser<>();
 
   public RobotContainer() {
     CameraServer.startAutomaticCapture().setResolution(640, 480);
@@ -137,15 +131,25 @@ public class RobotContainer {
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
 
     //controlChooser.setDefaultOption("Default", new InstantCommand(() -> configureBindings()));
-    controlChooser.setDefaultOption("Default-CK", controlSetup.Cameron);
-    controlChooser.addOption("Default", controlSetup.Default);
-    controlChooser.addOption("Cameron", controlSetup.Cameron);
-    controlChooser.addOption("Grace", controlSetup.Grace);
-    controlChooser.addOption("No Xbox", controlSetup.NoXbox);
+    controlChooser.setDefaultOption("Default-CK", ControlSetup.Cameron);
+    controlChooser.addOption("Default", ControlSetup.Default);
+    controlChooser.addOption("Cameron", ControlSetup.Cameron);
+    controlChooser.addOption("Grace", ControlSetup.Grace);
+    controlChooser.addOption("No Xbox", ControlSetup.NoXbox);
 
-    controlSetup cSetup = controlChooser.getSelected();
+    controlSetup = controlChooser.getSelected();
 
-    switch (cSetup) {
+    if (controlSetup.ordinal() >= ControlSetup.Cameron.ordinal()) {
+      configure_Cameron_Bindings();
+    } else if (controlSetup.ordinal() >= ControlSetup.Default.ordinal()) {
+      configureBindings();
+    } else if (controlSetup.ordinal() >= ControlSetup.Grace.ordinal()) {
+      configure_Grace_Bindings();
+    } else if (controlSetup.ordinal() >= ControlSetup.NoXbox.ordinal()) {
+      configure_NoXbox_Bindings();
+    }
+
+    /**switch (controlSetup) {
       case Cameron:
       configure_Cameron_Bindings();
       break;
@@ -161,7 +165,7 @@ public class RobotContainer {
       case NoXbox:
       configure_NoXbox_Bindings();
       break;
-    }
+    }*/
 
     /**if (cSetup == controlSetup.Cameron) {
       configure_Cameron_Bindings();
@@ -536,11 +540,13 @@ public class RobotContainer {
   
   }
 
-  public enum controlSetup {
+  public enum ControlSetup {
     Cameron,
     Grace,
     Default,
     NoXbox
+
+    
   }
 
 }
