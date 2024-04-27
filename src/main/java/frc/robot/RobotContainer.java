@@ -112,7 +112,7 @@ public class RobotContainer {
   private final Colors colors = new Colors();
 
   private final SendableChooser<Command> autoChooser;
-  private final SendableChooser<Command> controlChooser = new SendableChooser<>();
+  private final SendableChooser<controlSetup> controlChooser = new SendableChooser<>();
 
   public RobotContainer() {
     CameraServer.startAutomaticCapture().setResolution(640, 480);
@@ -137,20 +137,40 @@ public class RobotContainer {
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
 
     //controlChooser.setDefaultOption("Default", new InstantCommand(() -> configureBindings()));
-    controlChooser.setDefaultOption("Default-CK", new InstantCommand(() -> configure_Cameron_Bindings()));
-    controlChooser.addOption("Default", new InstantCommand(() -> configureBindings()));
-    controlChooser.addOption("Cameron", new InstantCommand(() -> configure_Cameron_Bindings()));
-    controlChooser.addOption("Grace", new InstantCommand(() -> configure_Grace_Bindings()));
-    controlChooser.addOption("No Xbox", new InstantCommand(() -> configure_NoXbox_Bindings()));
+    controlChooser.setDefaultOption("Default-CK", controlSetup.Default);
+    controlChooser.addOption("Default", controlSetup.Default);
+    controlChooser.addOption("Cameron", controlSetup.Cameron);
+    controlChooser.addOption("Grace", controlSetup.Grace);
+    controlChooser.addOption("No Xbox", controlSetup.NoXbox);
 
+    controlSetup cSetup = controlChooser.getSelected();
 
-    if (controlChooser.getSelected().equals("Cameron")) {
-      configure_Cameron_Bindings();
-    } else if (controlChooser.getSelected().equals("Default-CK")) {
-      configure_Cameron_Bindings();
-    } else {
-      configure_Cameron_Bindings();
+    switch (cSetup) {
+      case Cameron:
+      break;
+
+      case Default:
+      break;
+
+      case Grace:
+      break;
+
+      case NoXbox:
+      break;
     }
+
+    if (cSetup == controlSetup.Cameron) {
+      configure_Cameron_Bindings();
+    } else if (cSetup == controlSetup.Default) {
+      configureBindings();
+    } else if (cSetup == controlSetup.Grace) {
+      configure_Grace_Bindings();
+    } else if (cSetup == controlSetup.NoXbox) {
+      configure_NoXbox_Bindings();
+    }/** else {
+      configureBindings();
+    }*/
+
     //getControlSetupCommand();
     //configureBindings();
     configureDashboard();
@@ -491,10 +511,6 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 
-  public Command getControlSetupCommand() {
-    return controlChooser.getSelected();
-  }
-
   public void setDriveMode() {
     //drivebase.setDefaultCommand();
   }
@@ -515,6 +531,13 @@ public class RobotContainer {
   }
     return -1;
   
+  }
+
+  public enum controlSetup {
+    Cameron,
+    Grace,
+    Default,
+    NoXbox
   }
 
 }

@@ -10,6 +10,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -17,6 +18,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -64,7 +66,7 @@ public class SwerveSubsystem extends SubsystemBase {
   /**
    * Maximum speed of the robot in meters per second, used to limit acceleration.
    */
-  public        double      maximumSpeed = Units.feetToMeters(16.6);
+  public        double      maximumSpeed = Units.feetToMeters(19.0);
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -73,27 +75,27 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public SwerveSubsystem(File directory) {
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
-    //  In this case the gear ratio is 12.8 motor revolution9s per wheel rotation.
+    //  In this case the gear ratio is 12.8 motor revolutions per wheel rotation.
     //  The encoder resolution per motor revolution is 1 per motor revolution.
     //double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(150/7, 1);
-    double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(21.4285714286, 1);
+    double angleConversionFactor2 = SwerveMath.calculateDegreesPerSteeringRotation(21.4285714286, 1);
     // Motor conversion factor is (PI * WHEEL DIAMETER IN METERS) / (GEAR RATIO * ENCODER RESOLUTION).
     //  In this case the wheel diameter is 4 inches, which must be converted to meters to get meters/second.
     //  The gear ratio is 6.75 motor revolutions per wheel rotation.
     //  The encoder resolution per motor revolution is 1 per motor revolution.
-    double driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 6.12, 1);
+    double driveConversionFactor2 = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 5.3571428, 1);
     //double driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 100);
     System.out.println("\"conversionFactor\": {");
-    System.out.println("\t\"angle\": " + angleConversionFactor + ",");
-    System.out.println("\t\"drive\": " + driveConversionFactor);
+    System.out.println("\t\"angle\": " + angleConversionFactor2 + ",");
+    System.out.println("\t\"drive\": " + driveConversionFactor2);
     System.out.println("}");
 
-    SmartDashboard.putData("Field 2.0", field);
+    //SmartDashboard.putData("Field 2.0", field);
 
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try {
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor2, driveConversionFactor2);
       //swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed);
 
       // Alternative method if you don't want to supply the conversion factor via JSON files.
@@ -542,5 +544,18 @@ public class SwerveSubsystem extends SubsystemBase {
   {
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
   }
+
+  public SwerveModulePosition[] getSwerveModulePositions() {
+    return swerveDrive.getModulePositions();
+  }
+
+  public SwerveDrivePoseEstimator getSwerveDrivePoseEstimator() {
+    return swerveDrive.swerveDrivePoseEstimator;
+  }
+
+  public Field2d getSwerveField() {
+    return swerveDrive.field;
+  }
+
 
 }
