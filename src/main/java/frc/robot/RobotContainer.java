@@ -5,16 +5,20 @@
 package frc.robot;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import org.photonvision.PhotonCamera;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.util.PixelFormat;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -49,6 +53,7 @@ import frc.robot.commands.Shooter.ShooterShootCommand;
 import frc.robot.commands.Shooter.ShooterShootV2Command;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
+import frc.robot.commands.swervedrive.drivebase.AimAtTag;
 import frc.robot.commands.swervedrive.drivebase.TelopDrive;
 import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -119,7 +124,7 @@ public class RobotContainer {
   private final SendableChooser<ControlSetup> controlChooser = new SendableChooser<>();
 
   public RobotContainer() {
-    CameraServer.startAutomaticCapture().setResolution(640, 480);
+    //CameraServer.startAutomaticCapture().setResolution(640, 480);
 
     pivotSubsystem.setBrake();
     drivebase.setMotorBrake(true);
@@ -263,13 +268,15 @@ public class RobotContainer {
     intakeSubsystem.addDashboardWidgets(shooterAndIntakeTab.getLayout("Intake", BuiltInLayouts.kGrid).withPosition(5, 0).withSize(3, 3));
     final var climberTab = Shuffleboard.getTab("Climber");
     climberSubsystem.addDashboardWidgets(climberTab.getLayout("Climber", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(4, 3));
+    
 
+    CameraServer.startAutomaticCapture(0).setResolution(640, 480);
+    var camera = CameraServer.getVideo();
 
-
-    driverTab.add("Auto", autoChooser).withPosition(0, 0).withSize(1, 1);
-    driverTab.add("Control Setup", controlChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(1, 1).withSize(2, 1);
-    driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(3, 0).withSize(4, 6);
-    //driverTab.add(new UsbCamera("camera", 0)).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(5, 4);
+    driverTab.add("Auto", autoChooser).withPosition(0, 0).withSize(2, 1);
+    driverTab.add("Control Setup", controlChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 1).withSize(2, 1);
+    driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(2, 0).withSize(6, 4);
+    driverTab.add(camera.getSource()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(5, 0).withSize(5, 4);
     //driverTab.add(CameraServer.startAutomaticCapture()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(6, 4);
 
     robotTab.add(powerDistribution).withWidget(BuiltInWidgets.kPowerDistribution).withPosition(1, 0).withSize(3, 4);
@@ -354,6 +361,20 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
+
+    leftJoystick.button(1).whileTrue(
+      new AimAtTag(
+      photonCamera, drivebase,       
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075),
+      () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.8, 0.075), () -> true)
+    ).onFalse(
+      new TelopDrive(drivebase, 
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075),
+      () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.8, 0.075), () -> true)
+    );
+
     //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
     //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
     //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));

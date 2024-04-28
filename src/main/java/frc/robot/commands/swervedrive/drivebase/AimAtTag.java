@@ -22,8 +22,8 @@ public class AimAtTag extends Command{
     private double Linear_P = 0.1;
     private double Linear_D = 0.0;
 
-    private double Angular_P = 0.1;
-    private double Angular_D = 0.1;
+    private double Angular_P = 0.05;
+    private double Angular_D = 0.00;
 
     private PIDController forwaPidController = new PIDController(Linear_D, 0.0, Linear_D);
     private PIDController turnController = new PIDController(Angular_P, 0.0, Angular_D);
@@ -59,8 +59,9 @@ public class AimAtTag extends Command{
 
         if (results.hasTargets()) {
             hasTargets = true;
-            rotationSpeed = -turnController.calculate(results.getBestTarget().getYaw(), 0);
-            SmartDashboard.putNumber("Vision Speed", -turnController.calculate(results.getBestTarget().getYaw(), 0));
+            rotationSpeed = -turnController.calculate(results.getBestTarget().getYaw(), 180);
+            SmartDashboard.putNumber("Vision Speed", rotationSpeed);
+            //rotationSpeed = rotationSpeed * controller.config.maxAngularVelocity;
         } else {
             hasTargets = false;
             rotationSpeed = angVelocity * controller.config.maxAngularVelocity;
