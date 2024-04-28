@@ -47,7 +47,6 @@ import frc.robot.commands.Shooter.ShooterShootCommand;
 import frc.robot.commands.Shooter.ShooterShootV2Command;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
-import frc.robot.commands.swervedrive.drivebase.AimAtTag;
 import frc.robot.commands.swervedrive.drivebase.TelopDrive;
 import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -308,20 +307,6 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
-
-    leftJoystick.button(1).whileTrue(
-      new AimAtTag(
-      photonCamera, drivebase,       
-      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
-      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075),
-      () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.8, 0.075), () -> true,
-      poseEstimatorSubsystem::getCurrentPose)
-    ).onFalse(
-      new TelopDrive(drivebase, 
-      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
-      () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075),
-      () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.8, 0.075), () -> true)
-    );
 
     //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
     //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));

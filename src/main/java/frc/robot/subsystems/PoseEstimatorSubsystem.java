@@ -105,7 +105,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
                     EstTagStdDevs = EstTagStdDevs.times(1 + (avgDist * avgDist / 30));
                 }
 
-                //poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds, EstTagStdDevs);
+                poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds, EstTagStdDevs);
             }
             //poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds);
             driveBase.addCustomVisionReading(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds);
