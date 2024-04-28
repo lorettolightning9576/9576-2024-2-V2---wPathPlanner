@@ -104,7 +104,7 @@ public class RobotContainer {
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
   private final stopPivotCommand stopPivotCommand = new stopPivotCommand(pivotSubsystem);
 
-  //private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(photonCamera, drivebase);
+  private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(photonCamera, drivebase);
 
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
   private final ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
@@ -268,7 +268,7 @@ public class RobotContainer {
 
     driverTab.add("Auto", autoChooser).withPosition(0, 0).withSize(1, 1);
     driverTab.add("Control Setup", controlChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(1, 1).withSize(2, 1);
-    //driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(3, 0).withSize(4, 6);
+    driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(3, 0).withSize(4, 6);
     //driverTab.add(new UsbCamera("camera", 0)).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(5, 4);
     //driverTab.add(CameraServer.startAutomaticCapture()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(6, 4);
 
