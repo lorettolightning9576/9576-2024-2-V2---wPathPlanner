@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5868974814872723,
-        "y": 6.729254996971533
+        "x": 2.7645024520818287,
+        "y": 6.81805748226881
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4916668294875064,
-        "y": 6.13723842832301
+        "x": 1.6692718000820628,
+        "y": 6.226040913620287
       },
       "isLocked": false,
       "linkedName": "Amp"
@@ -28,13 +28,7 @@
       "linkedName": "Front"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 180.0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
