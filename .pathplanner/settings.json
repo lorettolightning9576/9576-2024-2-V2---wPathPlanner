@@ -2,9 +2,13 @@
   "robotWidth": 0.91,
   "robotLength": 0.93,
   "holonomicMode": true,
-  "pathFolders": [],
-  "autoFolders": [],
-  "defaultMaxVel": 2.0,
+  "pathFolders": [
+    "Old Shit"
+  ],
+  "autoFolders": [
+    "Old Shit"
+  ],
+  "defaultMaxVel": 2.5,
   "defaultMaxAccel": 2.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,

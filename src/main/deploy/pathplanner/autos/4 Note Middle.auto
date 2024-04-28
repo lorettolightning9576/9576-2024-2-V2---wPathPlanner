@@ -26,15 +26,28 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
+                      "type": "wait",
                       "data": {
-                        "name": "Pivot Subwoofer"
+                        "waitTime": 0.5
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Initial Feed"
+                        "name": "Feed"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pivot Subwoofer"
                       }
                     },
                     {
@@ -50,22 +63,10 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "Intake"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
                               "name": "Pivot Far"
                             }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Feed"
                       }
                     },
                     {
@@ -77,20 +78,8 @@
                             "data": {
                               "pathName": "Amp to Middle"
                             }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Intake"
-                            }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Feed"
                       }
                     },
                     {
@@ -106,22 +95,10 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "Intake"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
                               "name": "Pivot Podium"
                             }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Feed"
                       }
                     }
                   ]
@@ -133,6 +110,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "Old Shit",
   "choreoAuto": false
 }

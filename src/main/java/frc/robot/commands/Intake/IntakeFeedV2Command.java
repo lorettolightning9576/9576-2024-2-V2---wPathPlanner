@@ -23,7 +23,7 @@ public class IntakeFeedV2Command extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intakeSubsystem.setIntakeIn();
+    intakeSubsystem.setIntakeFeed();
   }
 
   @Override
@@ -42,6 +42,10 @@ public class IntakeFeedV2Command extends Command {
     } else {
       return false;
     }*/
+
+    if (intakeSubsystem.hasNote()) {
+      
+    }
 
     return false;
   }

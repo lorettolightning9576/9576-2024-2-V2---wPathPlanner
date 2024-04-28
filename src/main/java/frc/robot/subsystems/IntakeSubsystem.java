@@ -106,7 +106,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void setIntakeFeed () {
-    rightIntakeMotorLEADER.set(Constants.IntakeConstants.intakeFeedSpeed);
+    rightIntakeMotorLEADER.set(0.55);
   }
 
   public void setIntakeReverse() {

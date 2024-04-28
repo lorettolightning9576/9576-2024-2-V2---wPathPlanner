@@ -58,7 +58,7 @@ public final class Constants{
   public static final class IntakeConstants{
     // Intake Speeds
     public static final double intakeInSpeed = .35;
-    public static final double intakeFeedSpeed = .35;
+    public static final double intakeFeedSpeed = 0.55;
     public static final double intakeReverseSpeed = -.35;
     // Intake Motors
     public static final int leftIntakeMotorID = 32;
