@@ -31,11 +31,11 @@ public class AimAtTag extends Command{
     private double Linear_P = 0.1;
     private double Linear_D = 0.0;
 
-    private double Angular_P = 0.05;
+    private double Angular_P = 0.5;
     private double Angular_D = 0.00;
 
     private PIDController forwaPidController = new PIDController(Linear_D, 0.0, Linear_D);
-    private ProfiledPIDController turnController = new ProfiledPIDController(Angular_P, 0.0, Angular_D, new TrapezoidProfile.Constraints(0.5, 1));
+    private ProfiledPIDController turnController = new ProfiledPIDController(Angular_P, 0.0, Angular_D, new TrapezoidProfile.Constraints(2.5, 2.5));
 
 
 
@@ -75,18 +75,21 @@ public class AimAtTag extends Command{
         if (results.hasTargets()) {
 
             var camToTarget = results.getBestTarget().getBestCameraToTarget();
-            new Rotation2d();
-            var transform = new Transform2d(camToTarget.getTranslation().toTranslation2d(), camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(90)));
-            var rotation = camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(90));
+            var transform = new Transform2d(camToTarget.getTranslation().toTranslation2d(), camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(170)));
+            //var rotation = camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(90));
+            //var rotation = camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(170));
 
             var cameraPose = poseProvider.get().transformBy(PoseEstimatorSubsystem.Camera_To_Robot.inverse());
-            Pose2d targetPose = cameraPose.rotateBy(rotation);
+            //Pose2d targetPose = cameraPose.rotateBy(rotation);\
+            Pose2d targetPose = cameraPose.transformBy(transform);
 
             if (targetPose != null) {
                 turnController.setGoal(targetPose.getRotation().getRadians());
             }
 
             rotationSpeed = turnController.calculate(poseProvider.get().getRotation().getRadians());
+
+            rotationSpeed = rotationSpeed * controller.config.maxAngularVelocity;
 
             //rotationSpeed = -turnController.calculate(results.getBestTarget().getYaw(), 180);
             //SmartDashboard.putNumber("Vision Speed", rotationSpeed);
@@ -98,10 +101,14 @@ public class AimAtTag extends Command{
         xVelocity = xVelocity * swerve.maximumSpeed;
         yVelocity = yVelocity * swerve.maximumSpeed;
 
-        swerve.drive(new Translation2d(xVelocity, yVelocity), 
+        /**swerve.drive(new Translation2d(xVelocity, yVelocity), 
             rotationSpeed,
             driveMode.getAsBoolean()
-        );
+        );*/
+
+        if (turnController.atGoal()) {
+            rotationSpeed = angVelocity * controller.config.maxAngularVelocity;
+        }
 
         swerve.setVisionChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, rotationSpeed, poseProvider.get().getRotation()));
 

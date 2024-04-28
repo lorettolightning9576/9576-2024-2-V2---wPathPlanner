@@ -151,51 +151,8 @@ public class RobotContainer {
 
     updateControl();
 
-    /**if (controlSetup.ordinal() >= ControlSetup.Cameron.ordinal()) {
-      configure_Cameron_Bindings();
-    } else if (controlSetup.ordinal() >= ControlSetup.Default.ordinal()) {
-      configureBindings();
-    } else if (controlSetup.ordinal() >= ControlSetup.Grace.ordinal()) {
-      configure_Grace_Bindings();
-    } else if (controlSetup.ordinal() >= ControlSetup.NoXbox.ordinal()) {
-      configure_NoXbox_Bindings();
-    }*/
-
-    /**switch (controlSetup) {
-      case Cameron:
-      configure_Cameron_Bindings();
-      break;
-
-      case Default:
-      configureBindings();
-      break;
-
-      case Grace:
-      configure_Grace_Bindings();
-      break;
-
-      case NoXbox:
-      configure_NoXbox_Bindings();
-      break;
-    }*/
-
-    /**if (cSetup == controlSetup.Cameron) {
-      configure_Cameron_Bindings();
-    } else if (cSetup == controlSetup.Default) {
-      configureBindings();
-    } else if (cSetup == controlSetup.Grace) {
-      configure_Grace_Bindings();
-    } else if (cSetup == controlSetup.NoXbox) {
-      configure_NoXbox_Bindings();
-    }*//** else {
-      configureBindings();
-    }*/
-
     //configureBindings();
     configureDashboard();
-
-    
-
 
     AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
       // Applies deadbands and inverts controls because joysticks
@@ -265,6 +222,7 @@ public class RobotContainer {
     
 
     CameraServer.startAutomaticCapture(0).setResolution(640, 480);
+    CameraServer.getVideo().getSource().setFPS(15);
     var camera = CameraServer.getVideo();
 
     driverTab.add("Auto", autoChooser).withPosition(0, 0).withSize(2, 1);
