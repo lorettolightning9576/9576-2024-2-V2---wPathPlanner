@@ -47,8 +47,9 @@ public class PivotSubsystem extends SubsystemBase{
   public static final double Soft_Limit_Reverse = 1.3; //Rotations
   public static final double Range_Of_Motion = (1.0 / (130 / 10) * 10);
   //                                      (360°/(130 teeth/10 teeth))*10 turns = 276.92 Degrees of movement on the gear rack
-  public static final double factor = (((1.0 / (130.0 / 10.0)) * 10) / 5.0);
-  public static final double factorV2 = (5.0 / (1.0 / (130.0 / 10.0) * 10.0));
+  public static final double factor = (1.0 / (130.0 / 10.0));
+  public static final double factorTooDegrees = (factor * 360);
+  //public static final double factorV2 = (5.0 / (1.0 / (130.0 / 10.0) * 10.0));
 
   /**
    *Rotations
@@ -95,7 +96,7 @@ public class PivotSubsystem extends SubsystemBase{
     var externalpot = rightPivotMotorLEADER.getAnalog(Mode.kAbsolute);
     potentiometer = externalpot;
 
-    //externalpot.setPositionConversionFactor(factorV2);
+    //externalpot.setPositionConversionFactor(factor);
     externalpot.setPositionConversionFactor(4.357);
     pivotPidController.setFeedbackDevice(externalpot);
 

@@ -7,6 +7,8 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import static edu.wpi.first.math.util.Units.degreesToRadians;
 import static edu.wpi.first.math.util.Units.inchesToMeters;
 
+import java.io.IOException;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -31,7 +33,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
     private final PhotonCamera photonCamera;
     private final SwerveSubsystem driveBase;
 
-    public static final Transform3d AprilTag_Robot_to_camera = new Transform3d(new Translation3d(inchesToMeters(11.0), 0, 0), new Rotation3d(0, degreesToRadians(0), 0));
+    public static final Transform3d AprilTag_Robot_to_camera = new Transform3d(new Translation3d(inchesToMeters(11.0), 0, inchesToMeters(3.0)), new Rotation3d(0, degreesToRadians(-75), 0));
     public static final Transform2d Camera_To_Robot = new Transform2d(new Translation2d(inchesToMeters(11.0), 0), new Rotation2d(0.0));
 
     private final SwerveDrivePoseEstimator poseEstimator;
@@ -57,6 +59,13 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
         photonPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, AprilTag_Robot_to_camera);
 
         poseEstimator = new SwerveDrivePoseEstimator(driveBase.getKinematics(), driveBase.getHeading(), driveBase.getSwerveModulePositions(), driveBase.getPose());
+
+        /**try {
+            photonPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, AprilTag_Robot_to_camera);
+            //poseEstimator = driveBase.getSwerveDrivePoseEstimator();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }*/
         //poseEstimator = m_DrivePoseEstimator;
     }
 
@@ -96,7 +105,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
                     EstTagStdDevs = EstTagStdDevs.times(1 + (avgDist * avgDist / 30));
                 }
 
-                poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds, EstTagStdDevs);
+                //poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds, EstTagStdDevs);
             }
             //poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds);
             //driveBase.addCustomVisionReading(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds);
@@ -110,7 +119,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
 
         poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveBase.getHeading(), driveBase.getSwerveModulePositions());
 
-        //field2d.setRobotPose(getCurrentPose());
+        field2d.setRobotPose(getCurrentPose());
     }
 
     public Pose2d getCurrentPose() {
