@@ -375,8 +375,7 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @param chassisSpeeds Chassis Speeds to set.
    */
-  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds)
-  {
+  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
     swerveDrive.setChassisSpeeds(chassisSpeeds);
 
     chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, position.getRotation());
@@ -386,6 +385,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     position = position.plus(new Transform2d(new Translation2d(x, y), new Rotation2d(theta)));
 
+  }
+
+  public void setVisionChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    swerveDrive.setChassisSpeeds(chassisSpeeds);
   }
 
   /**

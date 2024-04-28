@@ -5,20 +5,14 @@
 package frc.robot;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
-import java.util.function.Consumer;
-
 import org.photonvision.PhotonCamera;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.util.PixelFormat;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -287,11 +281,6 @@ public class RobotContainer {
       .withSize(4, 5).withPosition(3, 0);*/
     //driverTab.addCamera("Intake Camera V2", null, CameraServer.startAutomaticCapture().getPath());
 
-    /**driverTab.add(new HttpCamera("Intake USB Camera", CameraServer.startAutomaticCapture().getPath()))
-      .withWidget(BuiltInWidgets.kCameraStream)
-      .withProperties(Map.of("showCrosshair", true, "showControls", true))
-      .withSize(4, 5).withPosition(3, 0);*/
-
     //driverTab.add(CameraServer.getVideo());
 
     //Shuffleboard.selectTab(ClimberTab.getTitle());
@@ -367,7 +356,8 @@ public class RobotContainer {
       photonCamera, drivebase,       
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075),
-      () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.8, 0.075), () -> true)
+      () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.8, 0.075), () -> true,
+      poseEstimatorSubsystem::getCurrentPose)
     ).onFalse(
       new TelopDrive(drivebase, 
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
@@ -415,7 +405,7 @@ public class RobotContainer {
     new Trigger(xboxControllerCommand.rightTrigger().and(xboxControllerCommand.leftTrigger().negate()).and(xboxControllerCommand.leftBumper().negate()))
     .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()).until(intakeSubsystem::hasNoteRAW));
 
-    new Trigger(xboxControllerCommand.leftBumper().and(shooterSubsystem::isAtTargetSpeed).and(xboxControllerCommand.rightTrigger()))
+    new Trigger(xboxControllerCommand.leftBumper().and(shooterSubsystem::isAtTargetSpeed).and(pivotSubsystem::isAimAtTargetPosition).and(xboxControllerCommand.rightTrigger()))
     .whileTrue(intakeFeedV2Command);
 
     new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y().negate()).and(xboxControllerCommand.a().negate()))

@@ -36,6 +36,8 @@ public class TelopDrive extends Command{
     //SmartDashboard.putNumber("vY", yVelocity);
     //SmartDashboard.putNumber("omega", angVelocity);
 
+    SmartDashboard.putNumber("maxAngVelocity", controller.config.maxAngularVelocity);
+
     swerve.drive(new Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed), 
           angVelocity * controller.config.maxAngularVelocity,
           driveMode.getAsBoolean());

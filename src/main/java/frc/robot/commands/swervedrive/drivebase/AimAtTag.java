@@ -1,16 +1,25 @@
 package frc.robot.commands.swervedrive.drivebase;
 
+import static edu.wpi.first.math.util.Units.degreesToRadians;
 import static edu.wpi.first.math.util.Units.inchesToMeters;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import org.photonvision.PhotonCamera;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import swervelib.SwerveController;
 
@@ -26,11 +35,13 @@ public class AimAtTag extends Command{
     private double Angular_D = 0.00;
 
     private PIDController forwaPidController = new PIDController(Linear_D, 0.0, Linear_D);
-    private PIDController turnController = new PIDController(Angular_P, 0.0, Angular_D);
+    private ProfiledPIDController turnController = new ProfiledPIDController(Angular_P, 0.0, Angular_D, new TrapezoidProfile.Constraints(0.5, 1));
 
-    private boolean hasTargets = false;
+
 
     private double rotationSpeed = 0.0;
+
+    private final Supplier<Pose2d> poseProvider;
 
     private final DoubleSupplier vX;
     private final DoubleSupplier vY;
@@ -38,7 +49,7 @@ public class AimAtTag extends Command{
     private final BooleanSupplier driveMode;
     private final SwerveController controller;
 
-    public AimAtTag(PhotonCamera m_PhotonCamera, SwerveSubsystem m_SwerveSubsystem, DoubleSupplier m_vX, DoubleSupplier m_vY, DoubleSupplier m_omega, BooleanSupplier m_driveMode) {
+    public AimAtTag(PhotonCamera m_PhotonCamera, SwerveSubsystem m_SwerveSubsystem, DoubleSupplier m_vX, DoubleSupplier m_vY, DoubleSupplier m_omega, BooleanSupplier m_driveMode, Supplier<Pose2d> pose2d) {
         this.photonCamera = m_PhotonCamera;
         this.swerve = m_SwerveSubsystem;
         this.vX = m_vX;
@@ -46,7 +57,11 @@ public class AimAtTag extends Command{
         this.omega = m_omega;
         this.driveMode = m_driveMode;
         this.controller = swerve.getSwerveController();
+        this.poseProvider = pose2d;
         addRequirements(swerve);
+
+        turnController.setTolerance(degreesToRadians(5));
+        turnController.enableContinuousInput(-1, 1);
     }
 
     @Override
@@ -58,19 +73,37 @@ public class AimAtTag extends Command{
         var results = photonCamera.getLatestResult();
 
         if (results.hasTargets()) {
-            hasTargets = true;
-            rotationSpeed = -turnController.calculate(results.getBestTarget().getYaw(), 180);
-            SmartDashboard.putNumber("Vision Speed", rotationSpeed);
+
+            var camToTarget = results.getBestTarget().getBestCameraToTarget();
+            new Rotation2d();
+            var transform = new Transform2d(camToTarget.getTranslation().toTranslation2d(), camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(90)));
+            var rotation = camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(90));
+
+            var cameraPose = poseProvider.get().transformBy(PoseEstimatorSubsystem.Camera_To_Robot.inverse());
+            Pose2d targetPose = cameraPose.rotateBy(rotation);
+
+            if (targetPose != null) {
+                turnController.setGoal(targetPose.getRotation().getRadians());
+            }
+
+            rotationSpeed = turnController.calculate(poseProvider.get().getRotation().getRadians());
+
+            //rotationSpeed = -turnController.calculate(results.getBestTarget().getYaw(), 180);
+            //SmartDashboard.putNumber("Vision Speed", rotationSpeed);
             //rotationSpeed = rotationSpeed * controller.config.maxAngularVelocity;
         } else {
-            hasTargets = false;
             rotationSpeed = angVelocity * controller.config.maxAngularVelocity;
         }
 
-        swerve.drive(new Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed), 
+        xVelocity = xVelocity * swerve.maximumSpeed;
+        yVelocity = yVelocity * swerve.maximumSpeed;
+
+        swerve.drive(new Translation2d(xVelocity, yVelocity), 
             rotationSpeed,
             driveMode.getAsBoolean()
         );
+
+        swerve.setVisionChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, rotationSpeed, poseProvider.get().getRotation()));
 
         //swerve.drive(new Translation2d(xVelocity * swerve));
     }
