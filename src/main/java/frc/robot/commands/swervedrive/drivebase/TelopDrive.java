@@ -32,9 +32,9 @@ public class TelopDrive extends Command{
     double xVelocity = Math.pow(vX.getAsDouble(), 3);
     double yVelocity = Math.pow(vY.getAsDouble(), 3);
     double angVelocity = Math.pow(omega.getAsDouble(), 3);
-    SmartDashboard.putNumber("vX",xVelocity);
-    SmartDashboard.putNumber("vY", yVelocity);
-    SmartDashboard.putNumber("omega", angVelocity);
+    //SmartDashboard.putNumber("vX",xVelocity);
+    //SmartDashboard.putNumber("vY", yVelocity);
+    //SmartDashboard.putNumber("omega", angVelocity);
 
     swerve.drive(new Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed), 
           angVelocity * controller.config.maxAngularVelocity,
