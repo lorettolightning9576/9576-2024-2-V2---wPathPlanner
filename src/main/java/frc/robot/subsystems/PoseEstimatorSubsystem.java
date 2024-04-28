@@ -37,7 +37,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
     private final SwerveDrivePoseEstimator poseEstimator;
 
     private static final Matrix<N3, N1> SingleTagStdDevs = VecBuilder.fill(4, 4, 8);
-    public static final Matrix<N3, N1 > MultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+    //public static final Matrix<N3, N1 > MultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
 
     private PhotonPoseEstimator photonPoseEstimator;
 
@@ -54,7 +54,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
 
         field2d = driveBase.getSwerveField();
 
-        photonPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, AprilTag_Robot_to_camera);
+        photonPoseEstimator = new PhotonPoseEstimator(AprilTagFields.k2024Crescendo.loadAprilTagLayoutField(), PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, AprilTag_Robot_to_camera);
 
         //poseEstimator = new SwerveDrivePoseEstimator(driveBase.getKinematics(), driveBase.getHeading(), driveBase.getSwerveModulePositions(), driveBase.getPose());
         poseEstimator = driveBase.getSwerveDrivePoseEstimator();
@@ -63,14 +63,14 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
 
-        var EstTagStdDevs = SingleTagStdDevs;
+        //var EstTagStdDevs = SingleTagStdDevs;
 
         var photonPoseEstimated = photonPoseEstimator.update();
 
         if (photonPoseEstimated.isPresent()) {
             var visionMeasurement = photonPoseEstimated.get();
 
-            var targets = photonCamera.getLatestResult().getTargets();
+            /**var targets = photonCamera.getLatestResult().getTargets();
 
             for(var tgt : targets) {
                 var tagPose = aprilTagField.getTagPose(tgt.getFiducialId());
@@ -90,14 +90,15 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
                     EstTagStdDevs = MultiTagStdDevs;
                 }
 
-                if (numTags == 1 && avgDist > 5/*meters*/) {
+                if (numTags == 1 && avgDist > 5) {
                     EstTagStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
                 } else {
                     EstTagStdDevs = EstTagStdDevs.times(1 + (avgDist * avgDist / 30));
                 }
 
                 poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds, EstTagStdDevs);
-            }
+            }*/
+            poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds);
 
         }
 

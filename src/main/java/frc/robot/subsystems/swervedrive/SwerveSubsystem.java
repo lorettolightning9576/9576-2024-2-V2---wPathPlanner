@@ -83,7 +83,7 @@ public class SwerveSubsystem extends SubsystemBase {
     //  In this case the wheel diameter is 4 inches, which must be converted to meters to get meters/second.
     //  The gear ratio is 6.75 motor revolutions per wheel rotation.
     //  The encoder resolution per motor revolution is 1 per motor revolution.
-    double driveConversionFactor2 = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 5.3571428, 1);
+    double driveConversionFactor2 = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(3.875), 5.3571428, 1);
     //double driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 100);
     System.out.println("\"conversionFactor\": {");
     System.out.println("\t\"angle\": " + angleConversionFactor2 + ",");
@@ -93,7 +93,7 @@ public class SwerveSubsystem extends SubsystemBase {
     //SmartDashboard.putData("Field 2.0", field);
 
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
     try {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor2, driveConversionFactor2);
       //swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed);
@@ -120,10 +120,10 @@ public class SwerveSubsystem extends SubsystemBase {
         this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                                          new PIDConstants (/*8.3*/9.4, 0.0, 0.0),
+                                          new PIDConstants (4.75, 0.0, 0.0),
                                           // Translation PID constants
 
-                                          new PIDConstants(5, 0.0, 0.01),
+                                          new PIDConstants(5.5, 0.0, 0.0),
                                           // Rotation PID constants
                                           5,
                                           // Max module speed, in m/s
@@ -326,7 +326,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-
   }
 
   @Override

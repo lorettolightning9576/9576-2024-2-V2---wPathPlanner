@@ -12,14 +12,14 @@ public class IntakeInCommand extends Command {
   IntakeSubsystem intakeSubsystem;
   //CommandXboxController xboxControllerCommand;
 
-  private static IntakeInCommand Instance = null;
+  /**private static IntakeInCommand Instance = null;
 
   public static IntakeInCommand getInstance() {
     if (Instance == null) {
       Instance = new IntakeInCommand(new IntakeSubsystem());
     }
     return Instance;
-  }
+  }*/
 
   public IntakeInCommand(IntakeSubsystem m_IntakeSubsystem) {
     this.intakeSubsystem = m_IntakeSubsystem;

@@ -127,7 +127,13 @@ public class ShooterSubsystem extends SubsystemBase{
 
     public void setShooterShoot () {
         TopTargetVelocity = 4500;
-        BottomTargetVelocity = 4500;
+        BottomTargetVelocity = 4480;
+        setShooterVelocity = true;
+    }
+
+    public void setShooterSHUTTLE() {
+        TopTargetVelocity = 4000;
+        BottomTargetVelocity = 4000;
         setShooterVelocity = true;
     }
 
@@ -141,7 +147,7 @@ public class ShooterSubsystem extends SubsystemBase{
         setShooterVelocity = false;
 
         BottomTargetSpeed = 0.09;
-        TopTargetSpeed = 0.25;
+        TopTargetSpeed = 0.3;
 
         shooterTopMotor.set(TopTargetSpeed);
         shooterBottomMotor.set(BottomTargetSpeed);
@@ -226,6 +232,10 @@ public class ShooterSubsystem extends SubsystemBase{
     public boolean isAtTargetSpeed() {
         return (Math.abs(shooterBottomMotor.get()) < BottomTargetSpeed + 0.25) && (Math.abs(shooterBottomMotor.get()) >  BottomTargetSpeed - 0.25) &&
                (Math.abs(shooterTopMotor.get()) < TopTargetSpeed + 0.25 && (Math.abs(shooterTopMotor.get()) > TopTargetSpeed - 0.25));
+    }
+
+    public boolean isnot_TOOfastTooReverse() {
+        return (Math.abs(shooterBottomMotorEncoder.getVelocity()) < 2000) && (Math.abs(shooterTopMotorEncoder.getVelocity()) < 2000);
     }
 
     private String getTopIdleMode() {

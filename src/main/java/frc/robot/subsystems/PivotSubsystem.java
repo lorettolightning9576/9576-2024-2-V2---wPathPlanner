@@ -178,11 +178,11 @@ public class PivotSubsystem extends SubsystemBase{
 
   @Override
   public void periodic() {
-    if (this.getCurrentCommand() != null) {
+    /**if (this.getCurrentCommand() != null) {
       SmartDashboard.putString("Pivot Command", this.getCurrentCommand().getName());
     } else {
       SmartDashboard.putString("Pivot Command", "none");
-    }
+    }*/
     
     /**if (holdAimPosition) {
       double cosineScalar = Math.cos(getPivotPosition());
@@ -444,6 +444,11 @@ public class PivotSubsystem extends SubsystemBase{
     setPivotPosition(ShootStage);
   }
 
+    public void setPivotSHUTTLE() {
+    double  Shuttle = 5.05;
+    setPivotPosition(Shuttle);
+  }
+
   public void front3notesAuto() {
     double  ShootStage = 5.65;
     setPivotPosition(ShootStage);
@@ -474,6 +479,10 @@ public class PivotSubsystem extends SubsystemBase{
 
   public Command setPivot_Finish_AMPCommand() {
     return run(() -> setPivotFinish_AMP());
+  }
+
+  public Command setPivot_Shuttle_Command() {
+    return run(() -> setPivotSHUTTLE());
   }
 
   public Command setPivotShootSpeakerCommand() {

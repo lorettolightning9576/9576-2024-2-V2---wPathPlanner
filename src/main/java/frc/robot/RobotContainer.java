@@ -6,6 +6,9 @@ package frc.robot;
 
 import java.io.File;
 import java.util.Map;
+import java.util.function.Consumer;
+
+import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -41,6 +44,7 @@ import frc.robot.commands.Pivot.stopPivotCommand;
 import frc.robot.commands.Shooter.AutoShootCommand;
 import frc.robot.commands.Shooter.ShooterAmpCommand;
 import frc.robot.commands.Shooter.ShooterInCommand;
+import frc.robot.commands.Shooter.ShooterSHUTTLECommand;
 import frc.robot.commands.Shooter.ShooterShootCommand;
 import frc.robot.commands.Shooter.ShooterShootV2Command;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
@@ -50,11 +54,14 @@ import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 
 public class RobotContainer {
+
+  private final PhotonCamera photonCamera = new PhotonCamera("camera");
 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
@@ -87,6 +94,7 @@ public class RobotContainer {
 
   // Shooter
   private final ShooterShootCommand shooterShootCommand = new ShooterShootCommand(shooterSubsystem, pivotSubsystem::isTooLow);
+  private final ShooterSHUTTLECommand shooterSHUTTLECommand = new ShooterSHUTTLECommand(shooterSubsystem, pivotSubsystem::isTooLow);
   private final ShooterInCommand shooterInCommand = new ShooterInCommand(shooterSubsystem);
   private final ShooterAmpCommand shooterAmpCommand = new ShooterAmpCommand(shooterSubsystem);
   private final AutoShootCommand autoShootCommand = new AutoShootCommand(intakeSubsystem, shooterSubsystem);
@@ -95,6 +103,8 @@ public class RobotContainer {
   // Pivot
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
   private final stopPivotCommand stopPivotCommand = new stopPivotCommand(pivotSubsystem);
+
+  //private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(photonCamera, drivebase);
 
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
   private final ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
@@ -139,7 +149,9 @@ public class RobotContainer {
 
     controlSetup = controlChooser.getSelected();
 
-    if (controlSetup.ordinal() >= ControlSetup.Cameron.ordinal()) {
+    updateControl();
+
+    /**if (controlSetup.ordinal() >= ControlSetup.Cameron.ordinal()) {
       configure_Cameron_Bindings();
     } else if (controlSetup.ordinal() >= ControlSetup.Default.ordinal()) {
       configureBindings();
@@ -147,7 +159,7 @@ public class RobotContainer {
       configure_Grace_Bindings();
     } else if (controlSetup.ordinal() >= ControlSetup.NoXbox.ordinal()) {
       configure_NoXbox_Bindings();
-    }
+    }*/
 
     /**switch (controlSetup) {
       case Cameron:
@@ -255,8 +267,9 @@ public class RobotContainer {
 
     driverTab.add("Auto", autoChooser).withPosition(0, 0).withSize(1, 1);
     driverTab.add("Control Setup", controlChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(1, 1).withSize(2, 1);
+    //driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(3, 0).withSize(4, 6);
     //driverTab.add(new UsbCamera("camera", 0)).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(5, 4);
-    driverTab.add(CameraServer.startAutomaticCapture()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(6, 4);
+    //driverTab.add(CameraServer.startAutomaticCapture()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(6, 4);
 
     robotTab.add(powerDistribution).withWidget(BuiltInWidgets.kPowerDistribution).withPosition(1, 0).withSize(3, 4);
 
@@ -377,30 +390,32 @@ public class RobotContainer {
     .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(1)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
     .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
 
-    /**new Trigger(xboxControllerCommand.rightTrigger()).and(xboxControllerCommand.leftTrigger().negate()).and(xboxControllerCommand.leftBumper().negate())
-    .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()).until(intakeSubsystem::hasNoteRAW));*/
-
     new Trigger(xboxControllerCommand.rightTrigger().and(xboxControllerCommand.leftTrigger().negate()).and(xboxControllerCommand.leftBumper().negate()))
     .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()).until(intakeSubsystem::hasNoteRAW));
 
     new Trigger(xboxControllerCommand.leftBumper().and(shooterSubsystem::isAtTargetSpeed).and(xboxControllerCommand.rightTrigger()))
     .whileTrue(intakeFeedV2Command);
 
-    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y().negate()))
+    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y().negate()).and(xboxControllerCommand.a().negate()))
     .whileTrue(shooterShootCommand.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
 
     new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y()))
     .whileTrue(shooterShootV2Command.alongWith(pivotSubsystem.setPivotShootStageCommand()));
 
+    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.a()))
+    .whileTrue(shooterSHUTTLECommand.alongWith(pivotSubsystem.setPivotShootStageCommand()));
+
+    /**new Trigger(xboxControllerCommand.rightTrigger()).and(xboxControllerCommand.leftTrigger().negate()).and(xboxControllerCommand.leftBumper().negate())
+    .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()).until(intakeSubsystem::hasNoteRAW));*/
+
     /**new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y()))
     .whileTrue(shooterShootCommand.alongWith(pivotSubsystem.setPivotShootStageCommand()));*/
 
-    new Trigger(xboxControllerCommand.leftTrigger()).and(shooterSubsystem::isAtTargetVelocity).and(xboxControllerCommand.rightTrigger())
-    .whileTrue(intakeFeedV2Command);
+    new Trigger(xboxControllerCommand.leftTrigger()).and(shooterSubsystem::isAtTargetVelocity).and(xboxControllerCommand.rightTrigger()).whileTrue(intakeFeedV2Command);
     
     xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand.alongWith(pivotSubsystem.setPivot_Finish_AMPCommand()));
 
-    xboxControllerCommand.rightBumper().whileTrue(intakeOutCommand);
+    new Trigger(xboxControllerCommand.rightBumper().and(shooterSubsystem::isnot_TOOfastTooReverse)).whileTrue(intakeOutCommand);
 
     //xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand);
 
@@ -545,8 +560,20 @@ public class RobotContainer {
     Grace,
     Default,
     NoXbox
+  }
 
-    
+  public void updateControl() {
+    if (controlSetup.ordinal() >= ControlSetup.Cameron.ordinal()) {
+      configure_Cameron_Bindings();
+    } else if (controlSetup.ordinal() >= ControlSetup.Default.ordinal()) {
+      configureBindings();
+    } else if (controlSetup.ordinal() >= ControlSetup.Grace.ordinal()) {
+      configure_Grace_Bindings();
+    } else if (controlSetup.ordinal() >= ControlSetup.NoXbox.ordinal()) {
+      configure_NoXbox_Bindings();
+    } else {
+      configureBindings();
+    }
   }
 
 }
