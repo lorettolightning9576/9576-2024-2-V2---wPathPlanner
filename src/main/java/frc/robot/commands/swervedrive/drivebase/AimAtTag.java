@@ -65,11 +65,18 @@ public class AimAtTag extends Command{
     }
 
     @Override
+    public void initialize() {
+        var robotpose = poseProvider.get();
+        turnController.reset(robotpose.getRotation().getRadians());
+    }
+
+    @Override
     public void execute() {
         double xVelocity = Math.pow(vX.getAsDouble(), 3);
         double yVelocity = Math.pow(vY.getAsDouble(), 3);
         double angVelocity = Math.pow(omega.getAsDouble(), 3);
 
+        var robotPose = poseProvider.get();
         var results = photonCamera.getLatestResult();
 
         if (results.hasTargets()) {
@@ -79,7 +86,7 @@ public class AimAtTag extends Command{
             //var rotation = camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(90));
             //var rotation = camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(170));
 
-            var cameraPose = poseProvider.get().transformBy(PoseEstimatorSubsystem.Camera_To_Robot.inverse());
+            var cameraPose = robotPose.transformBy(PoseEstimatorSubsystem.Camera_To_Robot.inverse());
             //Pose2d targetPose = cameraPose.rotateBy(rotation);\
             Pose2d targetPose = cameraPose.transformBy(transform);
 
@@ -87,7 +94,7 @@ public class AimAtTag extends Command{
                 turnController.setGoal(targetPose.getRotation().getRadians());
             }
 
-            rotationSpeed = turnController.calculate(poseProvider.get().getRotation().getRadians());
+            rotationSpeed = turnController.calculate(robotPose.getRotation().getRadians());
 
             rotationSpeed = rotationSpeed * controller.config.maxAngularVelocity;
 
@@ -108,6 +115,9 @@ public class AimAtTag extends Command{
 
         if (turnController.atGoal()) {
             rotationSpeed = angVelocity * controller.config.maxAngularVelocity;
+        } else {
+            rotationSpeed = turnController.calculate(robotPose.getRotation().getRadians());
+            rotationSpeed = rotationSpeed * controller.config.maxAngularVelocity;
         }
 
         swerve.setVisionChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, rotationSpeed, poseProvider.get().getRotation()));
