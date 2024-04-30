@@ -51,7 +51,7 @@ public class ShooterSubsystem extends SubsystemBase{
         double kP_Bottom =          6.0e-5;
         double kI_Bottom =          0;
         double kD_Bottom =          0;
-        double kFF_Bottom =         0.000175;
+        double kFF_Bottom =         0.0001725;
         double kMaxOutput_Bottom =  1.0;
         double kMinOutput_Bottom = -1.0;
 

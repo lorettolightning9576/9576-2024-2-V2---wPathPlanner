@@ -102,7 +102,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void setIntakeIn() {
-    rightIntakeMotorLEADER.set(0.375);
+    rightIntakeMotorLEADER.set(0.475);
   }
 
   public void setIntakeFeed () {

@@ -10,6 +10,7 @@ import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
@@ -203,7 +204,7 @@ public class RobotContainer {
       drivebase,
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075),
-      () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.8, 0.075), () -> true
+      () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.75, 0.075), () -> true
     );
 
     drivebase.setDefaultCommand(closedFieldRel);

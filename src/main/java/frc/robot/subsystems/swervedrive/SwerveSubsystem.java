@@ -9,6 +9,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -96,7 +97,7 @@ public class SwerveSubsystem extends SubsystemBase {
     //SmartDashboard.putData("Field 2.0", field);
 
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.NONE;
     try {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor2, driveConversionFactor2);
       //swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed);
@@ -570,6 +571,5 @@ public class SwerveSubsystem extends SubsystemBase {
   public Field2d getSwerveField() {
     return swerveDrive.field;
   }
-
 
 }
