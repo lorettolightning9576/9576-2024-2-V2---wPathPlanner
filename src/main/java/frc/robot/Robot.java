@@ -34,6 +34,9 @@ public class Robot extends TimedRobot
   public Robot()
   {
     instance = this;
+    /**addPeriodic(() -> {
+      m_robotContainer.controlChooser.getSelected();
+    }, kDefaultPeriod);*/
   }
 
   public static Robot getInstance()
@@ -73,6 +76,10 @@ public class Robot extends TimedRobot
     CommandScheduler.getInstance().run();
     //Shuffleboard.update();
     //new InstantCommand(() -> m_robotContainer.updateControl()).
+
+    /**addPeriodic(() -> {
+      m_robotContainer.refreshControls();
+    }, kDefaultPeriod);*/
   }
 
   /**
