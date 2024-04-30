@@ -79,6 +79,7 @@ public class RobotContainer {
   @SuppressWarnings({ "unused" })
   public final CommandXboxController xboxControllerCommand = new CommandXboxController(2);
   public final PS5Controller ps5Controller = new PS5Controller(3);
+  public final CommandPS5Controller commandPS5controller = new CommandPS5Controller(3);
 
   // Subsystems
   private final PivotSubsystem pivotSubsystem = new PivotSubsystem(xboxControllerCommand);
@@ -115,7 +116,7 @@ public class RobotContainer {
 
   private final Colors colors = new Colors();
 
-  private static ControlSetup controlSetup = ControlSetup.Cameron;
+  private static ControlSetup controlSetup = ControlSetup.PS5;
 
   private final SendableChooser<Command> autoChooser;
   private final SendableChooser<ControlSetup> controlChooser = new SendableChooser<>();
@@ -144,11 +145,12 @@ public class RobotContainer {
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
 
     //controlChooser.setDefaultOption("Default", new InstantCommand(() -> configureBindings()));
-    controlChooser.setDefaultOption("Default-CK", ControlSetup.Cameron);
+    controlChooser.setDefaultOption("Default_1", ControlSetup.PS5);
     controlChooser.addOption("Default", ControlSetup.Default);
     controlChooser.addOption("Cameron", ControlSetup.Cameron);
     controlChooser.addOption("Grace", ControlSetup.Grace);
     controlChooser.addOption("No Xbox", ControlSetup.NoXbox);
+    controlChooser.addOption("PS5", ControlSetup.PS5);
 
     controlSetup = controlChooser.getSelected();
 
@@ -212,9 +214,9 @@ public class RobotContainer {
 
     TelopDrive closedFieldRel = new TelopDrive(
       drivebase,
-      () -> HeadingCorrection() * MathUtil.applyDeadband(-ps5Controller.getRightY(), 0.075),
-      () -> HeadingCorrection() * MathUtil.applyDeadband(-ps5Controller.getRightX(), 0.075),
-      () -> MathUtil.applyDeadband(-ps5Controller.getLeftX() * 0.75, 0.075), () -> true
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-ps5Controller.getLeftY(), 0.075),
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-ps5Controller.getLeftX(), 0.075),
+      () -> MathUtil.applyDeadband(-ps5Controller.getRightX() * 0.75, 0.075), () -> true
     );
 
     drivebase.setDefaultCommand(closedFieldRel);
@@ -239,6 +241,12 @@ public class RobotContainer {
     driverTab.add("Control Setup", controlChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 1).withSize(2, 1);
     driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(2, 0).withSize(6, 4);
     driverTab.add(camera.getSource()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(5, 0).withSize(5, 4);
+
+    driverTab.add("Refresh Controls", new InstantCommand(() -> this.updateControl()))
+    .withWidget(BuiltInWidgets.kCommand)
+    .withPosition(0, 2)
+    .withSize(1, 1);
+
     //driverTab.add(CameraServer.startAutomaticCapture()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(6, 4);
 
     robotTab.add(powerDistribution).withWidget(BuiltInWidgets.kPowerDistribution).withPosition(1, 0).withSize(3, 4);
@@ -382,12 +390,70 @@ public class RobotContainer {
     xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand.alongWith(pivotSubsystem.setPivot_Finish_AMPCommand()));
 
     new Trigger(xboxControllerCommand.rightBumper().and(shooterSubsystem::isnot_TOOfastTooReverse)).whileTrue(intakeOutCommand);
+  }
 
-    //xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand);
+  private void configure_PS5_Bindings() {
+    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
-    //xboxControllerCommand.leftTrigger().whileTrue(shooterShootCommand);
+    leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
 
-    //xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
+    //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
+    //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
+    //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
+    //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
+
+    leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
+    rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
+    leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
+    rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
+
+    commandPS5controller.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+    commandPS5controller.povDown()
+    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_BOTH_ArmCommand()))
+    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
+    
+    rightJoystick.button(1)
+    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = true)))
+    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = false)));
+
+
+    leftJoystick.povDown().and(rightJoystick.povDown()).whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
+    leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+
+
+    commandPS5controller.triangle().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
+    commandPS5controller.cross().whileTrue(pivotSubsystem.setPivotIntakeCommand());
+    commandPS5controller.square().whileTrue(pivotSubsystem.setPivotShootStageCommand());
+
+    new Trigger(intakeSubsystem::hasNoteRAW).and(commandPS5controller.R2())
+    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
+    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
+
+    new Trigger(pivotSubsystem::isAimAtTargetPosition)
+    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(1)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
+    .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
+
+    new Trigger(commandPS5controller.R2().and(commandPS5controller.L2().negate()).and(commandPS5controller.L1().negate()))
+    .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()).until(intakeSubsystem::hasNoteRAW));
+
+    new Trigger(commandPS5controller.L1().and(shooterSubsystem::isAtTargetSpeed).and(pivotSubsystem::isAimAtTargetPosition).and(commandPS5controller.R2()))
+    .whileTrue(intakeFeedV2Command);
+
+    new Trigger(commandPS5controller.L2().and(commandPS5controller.triangle().negate()).and(commandPS5controller.cross().negate()))
+    .whileTrue(shooterShootCommand.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
+
+    new Trigger(commandPS5controller.L2().and(commandPS5controller.triangle()))
+    .whileTrue(shooterShootV2Command.alongWith(pivotSubsystem.setPivotShootStageCommand()));
+
+    new Trigger(commandPS5controller.L2().and(commandPS5controller.cross()))
+    .whileTrue(shooterSHUTTLECommand.alongWith(pivotSubsystem.setPivotShootStageCommand()));
+
+    new Trigger(commandPS5controller.L2()).and(shooterSubsystem::isAtTargetVelocity).and(commandPS5controller.R2()).whileTrue(intakeFeedV2Command);
+    
+    commandPS5controller.L1().whileTrue(shooterAmpCommand.alongWith(pivotSubsystem.setPivot_Finish_AMPCommand()));
+
+    new Trigger(commandPS5controller.R1().and(shooterSubsystem::isnot_TOOfastTooReverse)).whileTrue(intakeOutCommand);
+
   }
 
   private void configure_Grace_Bindings() {
@@ -525,7 +591,8 @@ public class RobotContainer {
     Cameron,
     Grace,
     Default,
-    NoXbox
+    NoXbox,
+    PS5
   }
 
   public void updateControl() {
@@ -537,6 +604,8 @@ public class RobotContainer {
       configure_Grace_Bindings();
     } else if (controlSetup.ordinal() >= ControlSetup.NoXbox.ordinal()) {
       configure_NoXbox_Bindings();
+    } else if (controlSetup.ordinal() >= ControlSetup.PS5.ordinal()) {
+      configure_PS5_Bindings();
     } else {
       configureBindings();
     }
