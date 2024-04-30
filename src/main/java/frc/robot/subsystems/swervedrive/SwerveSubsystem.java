@@ -439,6 +439,10 @@ public class SwerveSubsystem extends SubsystemBase {
     return getPose().getRotation();
   }
 
+  public Rotation2d getRawYaw() {
+    return Rotation2d.fromDegrees(360 - swerveDrive.imuReadingCache.getValue().getZ());
+  }
+
   /**
    * Get the chassis speeds based on controller input of 2 joysticks. One for speeds in which direction. The other for
    * the angle of the robot.

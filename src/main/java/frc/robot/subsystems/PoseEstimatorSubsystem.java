@@ -37,7 +37,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
     private final PhotonCamera photonCamera;
     private final SwerveSubsystem driveBase;
 
-    public static final Transform3d AprilTag_Robot_to_camera = new Transform3d(new Translation3d(inchesToMeters(11.0), 0, inchesToMeters(3.0)), new Rotation3d(0, degreesToRadians(-75), 0));
+    public static final Transform3d AprilTag_Robot_to_camera = new Transform3d(new Translation3d(inchesToMeters(11.0), 0, inchesToMeters(8.0)), new Rotation3d(0, degreesToRadians(-75), 0));
     public static final Transform2d Camera_To_Robot = new Transform2d(new Translation2d(inchesToMeters(11.0), 0), new Rotation2d(0.0));
 
     private final SwerveDrivePoseEstimator poseEstimator;
@@ -68,7 +68,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
 
         photonPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, AprilTag_Robot_to_camera);
 
-        poseEstimator = new SwerveDrivePoseEstimator(driveBase.getKinematics(), driveBase.getHeading(), driveBase.getSwerveModulePositions(), driveBase.getPose());
+        poseEstimator = new SwerveDrivePoseEstimator(driveBase.getKinematics(), driveBase.getRawYaw(), driveBase.getSwerveModulePositions(), driveBase.getPose());
 
         /**try {
             photonPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, AprilTag_Robot_to_camera);

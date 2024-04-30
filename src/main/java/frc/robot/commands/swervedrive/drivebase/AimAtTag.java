@@ -8,6 +8,8 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -17,6 +19,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
@@ -28,16 +31,14 @@ public class AimAtTag extends Command{
     private final PhotonCamera photonCamera;
     private final SwerveSubsystem swerve;
 
-    private double Linear_P = 0.1;
-    private double Linear_D = 0.0;
+    private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new Constraints(2.0, 2.0);
 
     private double Angular_P = 0.5;
     private double Angular_D = 0.00;
+    private ProfiledPIDController turnController = new ProfiledPIDController(Angular_P, 0.0, Angular_D, OMEGA_CONSTRAINTS);
 
-    private PIDController forwaPidController = new PIDController(Linear_D, 0.0, Linear_D);
-    private ProfiledPIDController turnController = new ProfiledPIDController(Angular_P, 0.0, Angular_D, new TrapezoidProfile.Constraints(2.5, 2.5));
-
-
+    private Pose2d goalPose;
+    private PhotonTrackedTarget lastTarget;
 
     private double rotationSpeed = 0.0;
 
@@ -66,6 +67,9 @@ public class AimAtTag extends Command{
 
     @Override
     public void initialize() {
+        goalPose = null;
+        lastTarget = null;
+
         var robotpose = poseProvider.get();
         turnController.reset(robotpose.getRotation().getRadians());
     }
@@ -80,27 +84,34 @@ public class AimAtTag extends Command{
         var results = photonCamera.getLatestResult();
 
         if (results.hasTargets()) {
+            var targetTag = results.getTargets().stream().filter(t -> t.getFiducialId() == 7).findFirst();
 
-            var camToTarget = results.getBestTarget().getBestCameraToTarget();
-            var transform = new Transform2d(camToTarget.getTranslation().toTranslation2d(), camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(170)));
-            //var rotation = camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(90));
-            //var rotation = camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(170));
+            if (targetTag.isPresent()) {
+                var target = targetTag.get();
+                if (!target.equals(lastTarget)) {
+                    lastTarget = target;
 
-            var cameraPose = robotPose.transformBy(PoseEstimatorSubsystem.Camera_To_Robot.inverse());
-            //Pose2d targetPose = cameraPose.rotateBy(rotation);\
-            Pose2d targetPose = cameraPose.transformBy(transform);
+                    var camToTarget = target.getBestCameraToTarget();
+                    var transform = new Transform2d(camToTarget.getTranslation().toTranslation2d(), camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(90)));
 
-            if (targetPose != null) {
-                turnController.setGoal(targetPose.getRotation().getRadians());
+                    var cameraPose = robotPose.transformBy(PoseEstimatorSubsystem.Camera_To_Robot.inverse());
+                    Pose2d targetPose = cameraPose.transformBy(transform);
+
+                    goalPose = targetPose.rotateBy(Rotation2d.fromDegrees(180));
+                }
+
+                if (null != goalPose) {
+                    turnController.setGoal(goalPose.getRotation().getRadians());
+                }
+
+            } else {
+                rotationSpeed = angVelocity * controller.config.maxAngularVelocity;
             }
 
             rotationSpeed = turnController.calculate(robotPose.getRotation().getRadians());
 
             rotationSpeed = rotationSpeed * controller.config.maxAngularVelocity;
 
-            //rotationSpeed = -turnController.calculate(results.getBestTarget().getYaw(), 180);
-            //SmartDashboard.putNumber("Vision Speed", rotationSpeed);
-            //rotationSpeed = rotationSpeed * controller.config.maxAngularVelocity;
         } else {
             rotationSpeed = angVelocity * controller.config.maxAngularVelocity;
         }
@@ -120,7 +131,7 @@ public class AimAtTag extends Command{
             rotationSpeed = rotationSpeed * controller.config.maxAngularVelocity;
         }
 
-        swerve.setVisionChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, rotationSpeed, poseProvider.get().getRotation()));
+        swerve.setVisionChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, rotationSpeed, robotPose.getRotation()));
 
         //swerve.drive(new Translation2d(xVelocity * swerve));
     }
