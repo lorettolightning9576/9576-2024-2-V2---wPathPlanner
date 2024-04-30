@@ -16,6 +16,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -30,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Colors;
@@ -76,6 +78,7 @@ public class RobotContainer {
   public static final XboxController xboxController = new XboxController(2);
   @SuppressWarnings({ "unused" })
   public final CommandXboxController xboxControllerCommand = new CommandXboxController(2);
+  public final PS5Controller ps5Controller = new PS5Controller(3);
 
   // Subsystems
   private final PivotSubsystem pivotSubsystem = new PivotSubsystem(xboxControllerCommand);
@@ -200,11 +203,18 @@ public class RobotContainer {
         () -> MathUtil.applyDeadband(leftJoystick.getX(), 0.15)
     );
 
-    TelopDrive closedFieldRel = new TelopDrive(
+    /**TelopDrive closedFieldRel = new TelopDrive(
       drivebase,
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075),
       () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.75, 0.075), () -> true
+    );*/
+
+    TelopDrive closedFieldRel = new TelopDrive(
+      drivebase,
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-ps5Controller.getRightY(), 0.075),
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-ps5Controller.getRightX(), 0.075),
+      () -> MathUtil.applyDeadband(-ps5Controller.getLeftX() * 0.75, 0.075), () -> true
     );
 
     drivebase.setDefaultCommand(closedFieldRel);
