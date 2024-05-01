@@ -97,7 +97,7 @@ public class PivotSubsystem extends SubsystemBase{
     potentiometer = externalpot;
 
     //externalpot.setPositionConversionFactor(factor);
-    externalpot.setPositionConversionFactor(4.357);
+    externalpot.setPositionConversionFactor(factor);
     pivotPidController.setFeedbackDevice(externalpot);
 
 
