@@ -116,10 +116,8 @@ public class RobotContainer {
 
   private final Colors colors = new Colors();
 
-  private static ControlSetup controlSetup = ControlSetup.PS5;
-
   private final SendableChooser<Command> autoChooser;
-  private final SendableChooser<ControlSetup> controlChooser = new SendableChooser<>();
+  public SendableChooser<Command> controlChooser = new SendableChooser<>();
 
   public RobotContainer() {
     //CameraServer.startAutomaticCapture().setResolution(640, 480);
@@ -144,17 +142,14 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
 
-    //controlChooser.setDefaultOption("Default", new InstantCommand(() -> configureBindings()));
-    controlChooser.setDefaultOption("Default_1", ControlSetup.PS5);
-    controlChooser.addOption("Default", ControlSetup.Default);
-    controlChooser.addOption("Cameron", ControlSetup.Cameron);
-    controlChooser.addOption("Grace", ControlSetup.Grace);
-    controlChooser.addOption("No Xbox", ControlSetup.NoXbox);
-    controlChooser.addOption("PS5", ControlSetup.PS5);
+    //controlSetup = controlChooser.getSelected();
 
-    controlSetup = controlChooser.getSelected();
-
-    updateControl();
+    controlChooser.setDefaultOption("Default", configureCameronBindings());
+    controlChooser.addOption("Cameron", configureCameronBindings());
+    controlChooser.addOption("Standard", configureStandardBindings());
+    controlChooser.addOption("PS5", configurePS5Bindings());
+    controlChooser.addOption("Only Joysticks", configureNoXboxBindings());
+    controlChooser.addOption("Grace", configureGraceBindings());
 
     //configureBindings();
     configureDashboard();
@@ -238,14 +233,14 @@ public class RobotContainer {
     var camera = CameraServer.getVideo();
 
     driverTab.add("Auto", autoChooser).withPosition(0, 0).withSize(2, 1);
-    driverTab.add("Control Setup", controlChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 1).withSize(2, 1);
+    //driverTab.add("Control Setup", controlChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 1).withSize(2, 1);
     driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(2, 0).withSize(6, 4);
     driverTab.add(camera.getSource()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(5, 0).withSize(5, 4);
 
-    driverTab.add("Refresh Controls", new InstantCommand(() -> this.updateControl()))
+    /**driverTab.add("Refresh Controls", new InstantCommand(() -> this.updateControl()))
     .withWidget(BuiltInWidgets.kCommand)
     .withPosition(0, 2)
-    .withSize(1, 1);
+    .withSize(1, 1);*/
 
     //driverTab.add(CameraServer.startAutomaticCapture()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(6, 4);
 
@@ -272,7 +267,7 @@ public class RobotContainer {
    * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
    * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
    */
-  private void configureBindings() {
+  public void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
@@ -322,7 +317,7 @@ public class RobotContainer {
     xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
   }
 
-  private void configure_Cameron_Bindings() {
+  public void configure_Cameron_Bindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
@@ -392,7 +387,7 @@ public class RobotContainer {
     new Trigger(xboxControllerCommand.rightBumper().and(shooterSubsystem::isnot_TOOfastTooReverse)).whileTrue(intakeOutCommand);
   }
 
-  private void configure_PS5_Bindings() {
+  public void configure_PS5_Bindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
@@ -456,7 +451,7 @@ public class RobotContainer {
 
   }
 
-  private void configure_Grace_Bindings() {
+  public void configure_Grace_Bindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
@@ -506,7 +501,7 @@ public class RobotContainer {
     xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
   }
 
-  private void configure_NoXbox_Bindings() {
+  public void configure_NoXbox_Bindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
@@ -587,28 +582,24 @@ public class RobotContainer {
   
   }
 
-  public enum ControlSetup {
-    Cameron,
-    Grace,
-    Default,
-    NoXbox,
-    PS5
+  public Command configureCameronBindings() {
+    return new InstantCommand(() -> configure_Cameron_Bindings());
   }
 
-  public void updateControl() {
-    if (controlSetup.ordinal() >= ControlSetup.Cameron.ordinal()) {
-      configure_Cameron_Bindings();
-    } else if (controlSetup.ordinal() >= ControlSetup.Default.ordinal()) {
-      configureBindings();
-    } else if (controlSetup.ordinal() >= ControlSetup.Grace.ordinal()) {
-      configure_Grace_Bindings();
-    } else if (controlSetup.ordinal() >= ControlSetup.NoXbox.ordinal()) {
-      configure_NoXbox_Bindings();
-    } else if (controlSetup.ordinal() >= ControlSetup.PS5.ordinal()) {
-      configure_PS5_Bindings();
-    } else {
-      configureBindings();
-    }
+  public Command configurePS5Bindings() {
+    return new InstantCommand(() -> configure_PS5_Bindings());
+  }
+
+  public Command configureNoXboxBindings() {
+    return new InstantCommand(() -> configure_NoXbox_Bindings());
+  }
+
+  public Command configureGraceBindings() {
+    return new InstantCommand(() -> configure_Grace_Bindings());
+  }
+
+  public Command configureStandardBindings() {
+    return new InstantCommand(() -> configureBindings());
   }
 
 }
