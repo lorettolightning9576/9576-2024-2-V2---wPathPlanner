@@ -36,18 +36,16 @@ import static edu.wpi.first.units.Units.Volts;
 
 public class PivotSubsystem extends SubsystemBase{
   private double targetAngle;
-  /**
-   * Theoretically if you were off when you install the hex shaft,
-   * it would change in 60 degree intervals
-   */
   //private static Measure<Angle> PivotOffset = Degrees.of(1);
 
-  public static double PotentiometerOffset = 0.0;
+  //public static double PotentiometerOffset = Units.degreesToRotations(24.6);
+  public static double PotentiometerOffset = Units.degreesToRotations(0.0);
+
   public static final double Soft_Limit_Foward = 6.75; // Rotations
   public static final double Soft_Limit_Reverse = 1.3; //Rotations
   public static final double Range_Of_Motion = (1.0 / (130 / 10) * 10);
   //                                      (360°/(130 teeth/10 teeth))*10 turns = 276.92 Degrees of movement on the gear rack
-  public static final double factor = (1.0 / (130.0 / 10.0));
+  public static final double factor = (5.0 / (1.0 / (130.0 / 10.0)));
   public static final double factorTooDegrees = (factor * 360);
   //public static final double factorV2 = (5.0 / (1.0 / (130.0 / 10.0) * 10.0));
 
@@ -96,10 +94,11 @@ public class PivotSubsystem extends SubsystemBase{
     var externalpot = rightPivotMotorLEADER.getAnalog(Mode.kAbsolute);
     potentiometer = externalpot;
 
+    potentiometer.setInverted(true);
+
     //externalpot.setPositionConversionFactor(factor);
     externalpot.setPositionConversionFactor(factor);
     pivotPidController.setFeedbackDevice(externalpot);
-
 
     double kP =  0.65;
     double kI =  0;
@@ -170,7 +169,7 @@ public class PivotSubsystem extends SubsystemBase{
     //layout.addNumber("PID sees", this::getPivotPositionMinusOffset)                 .withPosition(2, 3);
     //layout.addNumber("High Tolerance", this::getHighTolerance)                            .withPosition(2, 2);
     //layout.addNumber("Low Tolerance", this::getLowTolerance)                              .withPosition(2, 3);
-    layout.addNumber("Position Conv Factor", this::getConvFactor)                   .withPosition(3, 0);
+    layout.addNumber("Potentiometer Voltage", this::getConvFactor)                   .withPosition(3, 0);
     //layout.addNumber("Encoder Velocity", this::getEncoderVelocity)                        .withPosition(3, 2);
     layout.addBoolean("Down Switch Status", this::downSwitchStatus)                 .withPosition(3, 1);
     layout.addBoolean("Up Switch Status", this::upSwitchStatus)                     .withPosition(3, 2);
@@ -284,7 +283,7 @@ public class PivotSubsystem extends SubsystemBase{
   }
 
   public double getPivotPositionMinusOffset() {
-    return Units.rotationsToRadians(potentiometer.getPosition() + PotentiometerOffset);
+    return Units.rotationsToRadians(potentiometer.getPosition() - PotentiometerOffset);
   }
 
   public double getPivotRawMinusOffset() {
@@ -304,7 +303,7 @@ public class PivotSubsystem extends SubsystemBase{
   }*/
 
   public double getConvFactor() {
-    return rightMotorLEADEREncoder.getPositionConversionFactor();
+    return potentiometer.getVoltage();
   }
 
   /**public double whatThePIDsees() {
@@ -316,7 +315,7 @@ public class PivotSubsystem extends SubsystemBase{
   }*/
   
   public double getPivotAngle() {
-    return Units.rotationsToDegrees(potentiometer.getPosition());
+    return Units.rotationsToDegrees(potentiometer.getPosition() - PotentiometerOffset);
   }
 
   public double getPivotAngleDevideBy13() {
