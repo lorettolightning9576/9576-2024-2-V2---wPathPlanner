@@ -11,11 +11,15 @@ import org.photonvision.PhotonCamera;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.vision.VisionRunner.Listener;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -114,6 +118,13 @@ public class RobotContainer {
 
   private final PowerDistribution powerDistribution = new PowerDistribution(9, ModuleType.kRev);
 
+  //private final Notifier controlThread;
+
+  private final CANSparkMax FLdriveMotor = new CANSparkMax(1, MotorType.kBrushless);
+  private final CANSparkMax BLdriveMotor = new CANSparkMax(3, MotorType.kBrushless);
+  private final CANSparkMax BRdriveMotor = new CANSparkMax(7, MotorType.kBrushless);
+  private final CANSparkMax FRdriveMotor = new CANSparkMax(5, MotorType.kBrushless);
+
   private final Colors colors = new Colors();
 
   private final SendableChooser<Command> autoChooser;
@@ -141,6 +152,8 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
+
+    //controlThread = new Notifier(this::)
 
     //controlSetup = controlChooser.getSelected();
 
@@ -200,19 +213,19 @@ public class RobotContainer {
         () -> MathUtil.applyDeadband(leftJoystick.getX(), 0.15)
     );
 
-    /**TelopDrive closedFieldRel = new TelopDrive(
+    TelopDrive closedFieldRel = new TelopDrive(
       drivebase,
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075),
       () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.75, 0.075), () -> true
-    );*/
+    );
 
-    TelopDrive closedFieldRel = new TelopDrive(
+    /**TelopDrive closedFieldRel = new TelopDrive(
       drivebase,
       () -> HeadingCorrection() * MathUtil.applyDeadband(-ps5Controller.getLeftY(), 0.075),
       () -> HeadingCorrection() * MathUtil.applyDeadband(-ps5Controller.getLeftX(), 0.075),
       () -> MathUtil.applyDeadband(-ps5Controller.getRightX() * 0.75, 0.075), () -> true
-    );
+    );*/
 
     drivebase.setDefaultCommand(closedFieldRel);
   }
@@ -244,15 +257,8 @@ public class RobotContainer {
 
     //driverTab.add(CameraServer.startAutomaticCapture()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(6, 4);
 
-    robotTab.add(powerDistribution).withWidget(BuiltInWidgets.kPowerDistribution).withPosition(1, 0).withSize(3, 4);
-
-    /**driverTab.add(new HttpCamera("Intake Camera", "http://10.95.76.2"))
-      .withWidget(BuiltInWidgets.kCameraStream)
-      .withProperties(Map.of("showCrosshair", true, "showControls", true))
-      .withSize(4, 5).withPosition(3, 0);*/
-    //driverTab.addCamera("Intake Camera V2", null, CameraServer.startAutomaticCapture().getPath());
-
-    //driverTab.add(CameraServer.getVideo());
+    robotTab.add(powerDistribution).withWidget(BuiltInWidgets.kPowerDistribution).withPosition(2, 0).withSize(3, 4);
+    robotTab.addNumber("test" , this::getAvgMotorTemp).withWidget(BuiltInWidgets.kNumberBar).withPosition(0, 0).withSize(2, 1);
 
     //Shuffleboard.selectTab(ClimberTab.getTitle());
     //Shuffleboard.selectTab(shooterAndIntakeTab.getTitle());
@@ -600,6 +606,10 @@ public class RobotContainer {
 
   public Command configureStandardBindings() {
     return new InstantCommand(() -> configureBindings());
+  }
+
+  public double getAvgMotorTemp() {
+    return (((FLdriveMotor.getMotorTemperature() * 1.8) + 32.0) + ((FRdriveMotor.getMotorTemperature() * 1.8) + 32.0) + ((BLdriveMotor.getMotorTemperature() * 1.8) + 32.0) + ((BRdriveMotor.getMotorTemperature() * 1.8) + 32.0) / 4);
   }
 
 }
