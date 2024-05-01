@@ -125,10 +125,10 @@ public class RobotContainer {
 
   //private final Notifier controlThread;
 
-  private final CANSparkMax FLdriveMotor = new CANSparkMax(1, MotorType.kBrushless);
+  /**private final CANSparkMax FLdriveMotor = new CANSparkMax(1, MotorType.kBrushless);
   private final CANSparkMax BLdriveMotor = new CANSparkMax(3, MotorType.kBrushless);
   private final CANSparkMax BRdriveMotor = new CANSparkMax(7, MotorType.kBrushless);
-  private final CANSparkMax FRdriveMotor = new CANSparkMax(5, MotorType.kBrushless);
+  private final CANSparkMax FRdriveMotor = new CANSparkMax(5, MotorType.kBrushless);*/
 
   private final Colors colors = new Colors();
 
@@ -278,7 +278,7 @@ public class RobotContainer {
     //driverTab.add(CameraServer.startAutomaticCapture()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(6, 4);
 
     robotTab.add(powerDistribution).withWidget(BuiltInWidgets.kPowerDistribution).withPosition(2, 0).withSize(3, 4);
-    robotTab.addNumber("test" , this::getAvgMotorTemp).withWidget(BuiltInWidgets.kNumberBar).withPosition(0, 0).withSize(2, 1);
+    //robotTab.addNumber("test" , this::getAvgMotorTemp).withWidget(BuiltInWidgets.kNumberBar).withPosition(0, 0).withSize(2, 1);
 
     //Shuffleboard.selectTab(ClimberTab.getTitle());
     //Shuffleboard.selectTab(shooterAndIntakeTab.getTitle());
@@ -627,9 +627,9 @@ public class RobotContainer {
     return new InstantCommand(() -> configureBindings());
   }
 
-  public double getAvgMotorTemp() {
+  /**public double getAvgMotorTemp() {
     return (((FLdriveMotor.getMotorTemperature() * 1.8) + 32.0) + ((FRdriveMotor.getMotorTemperature() * 1.8) + 32.0) + ((BLdriveMotor.getMotorTemperature() * 1.8) + 32.0) + ((BRdriveMotor.getMotorTemperature() * 1.8) + 32.0) / 4);
-  }
+  }*/
 
   /**public Command getControlChooserSelection() {
     return controlChooser.getSelected();
