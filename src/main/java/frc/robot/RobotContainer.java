@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.io.File;
 import java.util.Map;
+import java.util.function.Consumer;
+
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -33,6 +35,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -113,6 +116,8 @@ public class RobotContainer {
 
   private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(photonCamera, drivebase);
 
+  public final Void SelectedControls;
+
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
   private final ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
 
@@ -128,7 +133,9 @@ public class RobotContainer {
   private final Colors colors = new Colors();
 
   private final SendableChooser<Command> autoChooser;
-  public SendableChooser<Command> controlChooser = new SendableChooser<>();
+  public SendableChooser<Void> controlChooser = new SendableChooser<>();
+  //public SendableChooser<String> c_Chooser = new SendableChooser<>();
+
 
   public RobotContainer() {
     //CameraServer.startAutomaticCapture().setResolution(640, 480);
@@ -157,12 +164,26 @@ public class RobotContainer {
 
     //controlSetup = controlChooser.getSelected();
 
-    controlChooser.setDefaultOption("Default", configureCameronBindings());
+    /**controlChooser.setDefaultOption("Default", this::configure_Cameron_Bindings);
     controlChooser.addOption("Cameron", configureCameronBindings());
     controlChooser.addOption("Standard", configureStandardBindings());
     controlChooser.addOption("PS5", configurePS5Bindings());
     controlChooser.addOption("Only Joysticks", configureNoXboxBindings());
-    controlChooser.addOption("Grace", configureGraceBindings());
+    controlChooser.addOption("Grace", configureGraceBindings());*/
+
+    /**c_Chooser.setDefaultOption("Default", configureCameronBindings().toString());
+    c_Chooser.addOption("Cam", configureCameronBindings().toString());
+    c_Chooser.addOption("Standard", configureStandardBindings().toString());
+    c_Chooser.addOption("PS5", configurePS5Bindings().toString());
+    c_Chooser.addOption("Only Joysticks", configureNoXboxBindings().toString());
+    c_Chooser.addOption("Grace", configureGraceBindings().toString());*/
+
+    //refreshControls().schedule();
+
+    SelectedControls = controlChooser.getSelected();
+
+    //configure_PS5_Bindings();
+    configure_Cameron_Bindings();
 
     //configureBindings();
     configureDashboard();
@@ -182,7 +203,6 @@ public class RobotContainer {
       () -> MathUtil.applyDeadband(rightJoystick.getX(), 0.15),
       () -> MathUtil.applyDeadband(leftJoystick.getX(), 0.15)
     );
-
 
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
@@ -246,11 +266,11 @@ public class RobotContainer {
     var camera = CameraServer.getVideo();
 
     driverTab.add("Auto", autoChooser).withPosition(0, 0).withSize(2, 1);
-    //driverTab.add("Control Setup", controlChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 1).withSize(2, 1);
+    driverTab.add("Control Setup", controlChooser).withPosition(0, 1).withSize(2, 1);
     driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(2, 0).withSize(6, 4);
     driverTab.add(camera.getSource()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(5, 0).withSize(5, 4);
 
-    /**driverTab.add("Refresh Controls", new InstantCommand(() -> this.updateControl()))
+    /**driverTab.add("Refresh Controls", refreshControls())
     .withWidget(BuiltInWidgets.kCommand)
     .withPosition(0, 2)
     .withSize(1, 1);*/
@@ -421,18 +441,17 @@ public class RobotContainer {
     leftJoystick.povDown().and(rightJoystick.povDown()).whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
     leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
 
-
     commandPS5controller.triangle().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
     commandPS5controller.cross().whileTrue(pivotSubsystem.setPivotIntakeCommand());
     commandPS5controller.square().whileTrue(pivotSubsystem.setPivotShootStageCommand());
 
     new Trigger(intakeSubsystem::hasNoteRAW).and(commandPS5controller.R2())
-    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
-    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
+    .whileTrue(new InstantCommand(() -> ps5Controller.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
+    .onFalse(new InstantCommand(() -> ps5Controller.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
 
     new Trigger(pivotSubsystem::isAimAtTargetPosition)
-    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(1)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
-    .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
+    .whileTrue((new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white))).andThen(new WaitCommand(1)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
+    .onFalse((new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
 
     new Trigger(commandPS5controller.R2().and(commandPS5controller.L2().negate()).and(commandPS5controller.L1().negate()))
     .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()).until(intakeSubsystem::hasNoteRAW));
@@ -611,6 +630,46 @@ public class RobotContainer {
   public double getAvgMotorTemp() {
     return (((FLdriveMotor.getMotorTemperature() * 1.8) + 32.0) + ((FRdriveMotor.getMotorTemperature() * 1.8) + 32.0) + ((BLdriveMotor.getMotorTemperature() * 1.8) + 32.0) + ((BRdriveMotor.getMotorTemperature() * 1.8) + 32.0) / 4);
   }
+
+  /**public Command getControlChooserSelection() {
+    return controlChooser.getSelected();
+  }
+
+  public Command refreshControls() {
+    if (getControlChooserSelection() == configureCameronBindings()) {
+      return configureCameronBindings();
+    } else  if (getControlChooserSelection() == configureGraceBindings()) {
+      return configureGraceBindings();
+    } else  if (getControlChooserSelection() == configureNoXboxBindings()) {
+      return configureNoXboxBindings();
+    } else  if (getControlChooserSelection() ==  configurePS5Bindings()) {
+      return configurePS5Bindings();
+    } else  if (getControlChooserSelection() == configureStandardBindings()) {
+      return configureStandardBindings();
+    } else {
+      return configureCameronBindings();
+    }
+  }*/
+
+  /**public Command getControlChooserSelection() {
+    return controlChooser.getSelected();
+  }
+
+  public Command refreshControls() {
+    if (getControlChooserSelection() == configureCameronBindings()) {
+      return configureCameronBindings();
+    } else  if (getControlChooserSelection() == configureGraceBindings()) {
+      return configureGraceBindings();
+    } else  if (getControlChooserSelection() == configureNoXboxBindings()) {
+      return configureNoXboxBindings();
+    } else  if (getControlChooserSelection() ==  configurePS5Bindings()) {
+      return configurePS5Bindings();
+    } else  if (getControlChooserSelection() == configureStandardBindings()) {
+      return configureStandardBindings();
+    } else {
+      return configureCameronBindings();
+    }
+  }*/
 
 }
 
