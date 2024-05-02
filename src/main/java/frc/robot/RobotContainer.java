@@ -153,7 +153,9 @@ public class RobotContainer {
     controlChooser.addOption("Only Joysticks", configureNoXboxBindings());
     controlChooser.addOption("Grace", configureGraceBindings());*/
 
-    configure_Cameron_Bindings();
+    //configure_Cameron_Bindings();
+
+    configureBindings();
 
     //configureBindings();
     configureDashboard();
@@ -204,10 +206,17 @@ public class RobotContainer {
         () -> MathUtil.applyDeadband(leftJoystick.getX(), 0.15)
     );
 
-    TelopDrive closedFieldRel = new TelopDrive(
+    /**TelopDrive closedFieldRel = new TelopDrive(
       drivebase,
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075),
+      () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.75, 0.075), () -> true
+    );*/
+
+    TelopDrive closedFieldRel = new TelopDrive(
+      drivebase,
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-xboxController.getRightY(), 0.075),
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-xboxController.getRightX(), 0.075),
       () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.75, 0.075), () -> true
     );
 
@@ -252,8 +261,8 @@ public class RobotContainer {
 
     //Shuffleboard.selectTab(ClimberTab.getTitle());
     //Shuffleboard.selectTab(shooterAndIntakeTab.getTitle());
-    //Shuffleboard.selectTab(pivotTab.getTitle());
-    Shuffleboard.selectTab(driverTab.getTitle());
+    Shuffleboard.selectTab(pivotTab.getTitle());
+    //Shuffleboard.selectTab(driverTab.getTitle());
   }
 
   /**
