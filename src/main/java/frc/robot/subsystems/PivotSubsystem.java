@@ -39,14 +39,14 @@ public class PivotSubsystem extends SubsystemBase{
   //private static Measure<Angle> PivotOffset = Degrees.of(1);
 
   //public static double PotentiometerOffset = Units.degreesToRotations(24.6);
-  public static double PotentiometerOffset = -Units.degreesToRotations(0.0);
+  public static double PotentiometerOffset = -Units.degreesToRotations(141.0);
 
   public static final double Soft_Limit_Foward = 6.75; // Rotations
   public static final double Soft_Limit_Reverse = 1.3; //Rotations
   public static final double Range_Of_Motion = (1.0 / (130 / 10) * 10);
   public static final double RangeOfMotion_Degrees = (Range_Of_Motion * 360);
   //                                      (360°/(130 teeth/10 teeth))*10 turns = 276.92 Degrees of movement on the gear rack
-  public static final double factor = (5.0 / (1.0 / (130.0 / 10.0)));
+  public static final double factor = (0.5 * (1.0 / (130.0 / 10.0)));
   public static final double factorTooDegrees = (factor * 360);
   //public static final double factorV2 = (5.0 / (1.0 / (130.0 / 10.0) * 10.0));
 
@@ -98,10 +98,10 @@ public class PivotSubsystem extends SubsystemBase{
     potentiometer.setInverted(true);
 
     //externalpot.setPositionConversionFactor(factor);
-    externalpot.setPositionConversionFactor(1);
+    externalpot.setPositionConversionFactor(0.24);
     pivotPidController.setFeedbackDevice(externalpot);
 
-    double kP =  0.65;
+    double kP =  8;
     double kI =  0;
     double kD =  0.0000;
     double kIz = 0;
@@ -115,8 +115,8 @@ public class PivotSubsystem extends SubsystemBase{
     pivotPidController.setIZone(kIz);
     pivotPidController.setFF(kFF);
     pivotPidController.setOutputRange(kMinOutput, kMaxOutput); 
-    pivotPidController.setPositionPIDWrappingMaxInput(13.0);
-    pivotPidController.setPositionPIDWrappingMinInput(0);
+    pivotPidController.setPositionPIDWrappingMaxInput(1);
+    pivotPidController.setPositionPIDWrappingMinInput(-1);
     pivotPidController.setPositionPIDWrappingEnabled(true);
 
     rightPivotMotorLEADER.enableVoltageCompensation(12);
@@ -133,8 +133,8 @@ public class PivotSubsystem extends SubsystemBase{
     rightPivotMotorLEADER.setIdleMode(IdleMode.kCoast);
     leftPivotMotor.setIdleMode(IdleMode.kCoast); 
 
-    rightPivotMotorLEADER.setInverted(true);
-    leftPivotMotor.setInverted(false);  
+    rightPivotMotorLEADER.setInverted(false);
+    leftPivotMotor.setInverted(true);  
 
     leftPivotMotor.follow(rightPivotMotorLEADER, true);  
 
@@ -153,7 +153,7 @@ public class PivotSubsystem extends SubsystemBase{
   public void addDashboardWidgets(ShuffleboardLayout layout) {
     layout.withProperties(Map.of("Number of columns", 4, "Number of rows", 4));
     layout.addNumber("Rotations to Radians", this::getPivotPosition)                 .withPosition(0, 0);
-    layout.addNumber("Rotations to Degrees", this::nativePositionToDegrees)                    .withPosition(0, 1);
+    layout.addNumber("Rotations to Degrees", this::getPivotAngle)                    .withPosition(0, 1);
     //layout.addNumber("Position Raw", pivotAbsoluteEncoder::getPosition)                   .withPosition(0, 2);
     layout.addNumber("Position Raw", potentiometer::getPosition)                    .withPosition(0, 2);
     layout.addNumber("Pivot Offset", this::getPivotOffset)                          .withPosition(0, 3);
@@ -161,12 +161,12 @@ public class PivotSubsystem extends SubsystemBase{
     layout.addNumber("Pot Offset in Rotations", this::PotOffsetInRot)               .withPosition(1, 1);
     //layout.addNumber("Pivot Tolerance Factor", this::pivotToleranceFactor)                .withPosition(1, 1);
     layout.addString("Pivot Command", this::currentCommand)                         .withPosition(1, 2);
-    layout.addNumber("Raw - Offset", this::getPivotRawMinusOffset)                  .withPosition(1, 3);
+    layout.addNumber("Raw - Offset", this::getPivotPositionWoffset)                  .withPosition(1, 3);
     //layout.addNumber("What it sees", this::whatThePIDsees)                                .withPosition(1, 3);
     layout.addBoolean("Is Within Tolerance", this::isAimAtTargetPosition)           .withPosition(2, 3);
     layout.addNumber("Left Motor Velocity", leftMotorEncoder::getVelocity)          .withPosition(2, 0);
     layout.addNumber("Right Motor Veocity", rightMotorLEADEREncoder::getVelocity)   .withPosition(2, 1); 
-    layout.addNumber("Degrees Devide Thirteen", this::getPivotAngleDevideBy13)      .withPosition(2, 2);
+    layout.addNumber("Degrees Devide Thirteen", this::getPivotPositionWoffset)      .withPosition(2, 2);
     layout.addNumber("Potentiometer Voltage", this::getVoltage)                     .withPosition(3, 0);
     layout.addBoolean("Down Switch Status", this::downSwitchStatus)                 .withPosition(3, 1);
     layout.addBoolean("Up Switch Status", this::upSwitchStatus)                     .withPosition(3, 2);
@@ -255,7 +255,7 @@ public class PivotSubsystem extends SubsystemBase{
       if (commandXboxController.getRawAxis(1) > 0) {
         stopAimAndMotors();
       } else if (commandXboxController.getRawAxis(1) < 0) {
-        rightPivotMotorLEADER.set(MathUtil.applyDeadband(commandXboxController.getRawAxis(1) * 0.375, 0.1));
+        rightPivotMotorLEADER.set(MathUtil.applyDeadband(-commandXboxController.getRawAxis(1) * 0.375, 0.1));
       } else {
         stopAimAndMotors();
       }
@@ -263,12 +263,12 @@ public class PivotSubsystem extends SubsystemBase{
       if (commandXboxController.getRawAxis(1) < 0) {
         stopAimAndMotors();
       } else if (commandXboxController.getRawAxis(1) > 0) {
-        rightPivotMotorLEADER.set(MathUtil.applyDeadband(commandXboxController.getRawAxis(1) * 0.375, 0.1));
+        rightPivotMotorLEADER.set(MathUtil.applyDeadband(-commandXboxController.getRawAxis(1) * 0.375, 0.1));
       }  else {
         stopAimAndMotors();
       }
     } else if (pivotUpSwitch.get() && !pivotDownSwitch.get()) {
-      rightPivotMotorLEADER.set(MathUtil.applyDeadband(commandXboxController.getRawAxis(1) * 0.375, 0.1));
+      rightPivotMotorLEADER.set(MathUtil.applyDeadband(-commandXboxController.getRawAxis(1) * 0.375, 0.1));
     } else {
       stopAimAndMotors();
     }
@@ -284,72 +284,29 @@ public class PivotSubsystem extends SubsystemBase{
     leftPivotMotor.setIdleMode(IdleMode.kBrake);
   }
 
-  /**public double getPivotPosition() {
-    return Units.rotationsToRadians(potentiometer.getPosition()  - PotentiometerOffset);
-  }*/
+  public double getPivotPositionWOffset() {
+    return Units.rotationsToRadians(getPivotPositionWoffset());
+  }
 
   public double getPivotPosition() {
-    return Units.degreesToRadians(nativePositionToDegrees());
+    return Units.rotationsToRadians(potentiometer.getPosition());
   }
-
-  public double getPivotRawMinusOffset() {
-    return potentiometer.getPosition()  + PotentiometerOffset;
-  }
-
-  /**public double PotOffsetInRot() {
-    return PotentiometerOffset.in(Rotations);
-  }*/
 
   public double PotOffsetInRot() {
     return PotentiometerOffset;
   }
 
-  /**public double getPivotAngle() {
-    return Units.rotationsToDegrees(analogPotentiometer.get());
-  }*/
-
   public double getVoltage() {
     return potentiometer.getVoltage();
   }
-
-  /**public double whatThePIDsees() {
-    return potentiometer.getPosition() - PotentiometerOffset.in(Rotations);
-  }*/
-
-  /**public double getPivotAngle() {
-    return Units.rotationsToDegrees(potentiometer.getPosition() - PotentiometerOffset);
-  }*/
   
   public double getPivotAngle() {
-    return Units.rotationsToDegrees(potentiometer.getPosition() + PotentiometerOffset);
+    return Units.rotationsToDegrees(getPivotPositionWoffset());
   }
 
-  public double getPivotAngleDevideBy13() {
-    return (Units.rotationsToDegrees(potentiometer.getPosition() + PotentiometerOffset) / 13);
+  public double getPivotPositionWoffset() {
+    return (potentiometer.getPosition() + PotentiometerOffset);
   }
-
-  /**public void setEncoderOffset() {
-    PivotOffset = Rotations.of(pivotAbsoluteEncoder.getPosition());
-    
-    pivotAbsoluteEncoder.setZeroOffset(PivotOffset.in(Rotations));
-  }
-
-
-  public double getPivotPosition() {
-    return Units.rotationsToRadians(pivotAbsoluteEncoder.getPosition());
-  }
-
-  public double getPivotAngle() {
-    return Units.rotationsToDegrees(pivotAbsoluteEncoder.getPosition());
-  }
-
-  public double getPivotAngleCONVERTED() {
-    return Units.rotationsToDegrees(pivotAbsoluteEncoder.getPosition() / 13);
-  }
-
-  public double getPivotPositionConveted() {
-    return Units.rotationsToDegrees(pivotAbsoluteEncoder.getPosition());
-  }*/
 
   public double getPivotOffset() {
     return PotentiometerOffset;
@@ -363,19 +320,16 @@ public class PivotSubsystem extends SubsystemBase{
     return Units.rotationsToDegrees(pivotAbsoluteEncoder.getVelocity());
   }*/
 
-  public boolean isAimAtTargetPosition() {
-    return (Math.abs(nativePositionToDegrees()) < (Units.rotationsToDegrees(aimTargetRotations) + 20)) && 
-           (Math.abs(nativePositionToDegrees()) > (Units.rotationsToDegrees(aimTargetRotations) - 20));
+  /**public boolean isAimAtTargetPosition() {
+    return (Math.abs(potentiometer.getPosition()) < (Units.rotationsToDegrees(aimTargetRotations) + 20)) && 
+           (Math.abs(potentiometer.getPosition()) > (Units.rotationsToDegrees(aimTargetRotations) - 20));
     
-  }
+  }*/
 
-  /**
-   * Converts a native potentiometer position to a position in degrees
-   * @param pot potentiometer position
-   * @return position in degrees
-   */
-  public double nativePositionToDegrees() {
-    return potentiometer.getPosition() * RangeOfMotion_Degrees + PotentiometerOffset;
+  public boolean isAimAtTargetPosition() {
+    return (Math.abs(Units.rotationsToDegrees(potentiometer.getPosition())) < (Units.rotationsToDegrees(aimTargetRotations) + 10)) && 
+           (Math.abs(Units.rotationsToDegrees(potentiometer.getPosition())) > (Units.rotationsToDegrees(aimTargetRotations) - 10));
+    
   }
 
   public boolean isTooLow() {
@@ -407,7 +361,7 @@ public class PivotSubsystem extends SubsystemBase{
   }
 
   public void setPivotPosition(double angle) {
-    targetAngle = (angle);
+    targetAngle = (Units.degreesToRotations(angle) - getPivotOffset());
     holdAimPosition = true;
     aimTargetRotations = targetAngle;
 
@@ -430,39 +384,39 @@ public class PivotSubsystem extends SubsystemBase{
   }
 
   public void setPivotShootUnderSpeaker() {
-    double  ShootSpeaker = 4.755;
+    double  ShootSpeaker = 55.0;
     setPivotPosition(ShootSpeaker);
   }
 
   public void setPivotShootStage() {
-    double  ShootStage = 5.71;
+    double  ShootStage = 32.5;
     setPivotPosition(ShootStage);
   }
 
     public void setPivotSHUTTLE() {
-    double  Shuttle = 5.05;
+    double  Shuttle = 40.0;
     setPivotPosition(Shuttle);
   }
 
   public void front3notesAuto() {
-    double  ShootStage = 5.65;
+    double  ShootStage = 35.0;
     setPivotPosition(ShootStage);
   }
 
   public void setPivotIntake() {
-    double  Intake = 5.71;
+    double  Intake = 35.0;
     setPivotPosition(Intake);
+  }
+
+  public void setPivotFinish_AMP() {
+    double  Finish_AMP = 112.0;
+    setPivotPosition(Finish_AMP);
   }
 
   /**public void setPivotStart_AMP() {
     double  Start_AMP = 2.2;
     setPivotPosition(Start_AMP);
   }*/
-
-  public void setPivotFinish_AMP() {
-    double  Finish_AMP = 1.7;
-    setPivotPosition(Finish_AMP);
-  }
 
   public Command setPivotIntakeCommand() {
     return run(() -> setPivotIntake());

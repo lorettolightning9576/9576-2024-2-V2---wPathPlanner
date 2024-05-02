@@ -146,12 +146,14 @@ public class RobotContainer {
 
     //controlSetup = controlChooser.getSelected();
 
-    controlChooser.setDefaultOption("Default", configureCameronBindings());
+    /**controlChooser.setDefaultOption("Default", configureCameronBindings());
     controlChooser.addOption("Cameron", configureCameronBindings());
     controlChooser.addOption("Standard", configureStandardBindings());
     controlChooser.addOption("PS5", configurePS5Bindings());
     controlChooser.addOption("Only Joysticks", configureNoXboxBindings());
-    controlChooser.addOption("Grace", configureGraceBindings());
+    controlChooser.addOption("Grace", configureGraceBindings());*/
+
+    configure_Cameron_Bindings();
 
     //configureBindings();
     configureDashboard();

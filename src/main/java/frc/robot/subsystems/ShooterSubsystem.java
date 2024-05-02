@@ -225,8 +225,8 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public boolean isAtTargetVelocity() {
-        return (Math.abs(shooterBottomMotorEncoder.getVelocity()) < BottomTargetVelocity + 75) && (Math.abs(shooterBottomMotorEncoder.getVelocity()) >  BottomTargetVelocity - 75) &&
-               (Math.abs(shooterTopMotorEncoder.getVelocity()) < TopTargetVelocity + 75 && (Math.abs(shooterTopMotorEncoder.getVelocity()) > TopTargetVelocity - 75));
+        return (Math.abs(shooterBottomMotorEncoder.getVelocity()) < BottomTargetVelocity + 125) && (Math.abs(shooterBottomMotorEncoder.getVelocity()) >  BottomTargetVelocity - 125) &&
+               (Math.abs(shooterTopMotorEncoder.getVelocity()) < TopTargetVelocity + 125 && (Math.abs(shooterTopMotorEncoder.getVelocity()) > TopTargetVelocity - 125));
     }
 
     public boolean isAtTargetSpeed() {
