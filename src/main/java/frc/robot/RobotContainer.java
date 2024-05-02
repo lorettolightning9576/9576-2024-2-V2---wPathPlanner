@@ -250,6 +250,8 @@ public class RobotContainer {
     driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(2, 0).withSize(6, 4);
     driverTab.add(camera.getSource()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(5, 0).withSize(5, 4);
 
+    driverTab.addNumber("Distance From tag", poseEstimatorSubsystem::getDistance).withPosition(0, 1).withSize(2, 1);
+
     /**driverTab.add("Refresh Controls", new InstantCommand(() -> this.updateControl()))
     .withWidget(BuiltInWidgets.kCommand)
     .withPosition(0, 2)

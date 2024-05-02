@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonUtils;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import static edu.wpi.first.math.util.Units.degreesToRadians;
@@ -143,6 +144,10 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
 
     public Pose2d getCurrentPose() {
         return poseEstimator.getEstimatedPosition();
+    }
+
+    public double getDistance(){
+        return PhotonUtils.calculateDistanceToTargetMeters(inchesToMeters(10), inchesToMeters(60), degreesToRadians(-75.0), degreesToRadians(photonCamera.getLatestResult().getBestTarget().getPitch()));
     }
 
 }
