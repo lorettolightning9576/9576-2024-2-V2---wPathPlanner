@@ -263,8 +263,8 @@ public class RobotContainer {
 
     //Shuffleboard.selectTab(ClimberTab.getTitle());
     //Shuffleboard.selectTab(shooterAndIntakeTab.getTitle());
-    Shuffleboard.selectTab(pivotTab.getTitle());
-    //Shuffleboard.selectTab(driverTab.getTitle());
+    //Shuffleboard.selectTab(pivotTab.getTitle());
+    Shuffleboard.selectTab(driverTab.getTitle());
   }
 
   /**
