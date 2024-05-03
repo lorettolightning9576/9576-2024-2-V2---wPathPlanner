@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.39,
+        "x": 1.35,
         "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3899999999999997,
+        "x": 2.3499999999999996,
         "y": 5.55
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "MS"
     },
     {
       "anchor": {
-        "x": 2.9717082511088115,
-        "y": 5.446552431566402
+        "x": 2.95,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 1.9717082511088115,
-        "y": 5.446552431566402
+        "x": 1.9500000000000002,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Front"
+      "linkedName": "MR Straight"
     }
   ],
   "rotationTargets": [],
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Old Shit",
+  "folder": null,
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0.0

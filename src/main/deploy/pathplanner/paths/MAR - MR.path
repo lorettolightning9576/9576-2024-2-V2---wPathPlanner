@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7645024520818287,
-        "y": 6.81805748226881
+        "x": 8.072917684296907,
+        "y": 5.910298743674411
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6692718000820628,
-        "y": 6.226040913620287
+        "x": 5.842988609054142,
+        "y": 6.8969930247552815
       },
       "isLocked": false,
-      "linkedName": "Amp"
+      "linkedName": "MAR"
     },
     {
       "anchor": {
@@ -20,12 +20,12 @@
         "y": 5.446552431566402
       },
       "prevControl": {
-        "x": 1.659404857271255,
-        "y": 5.436685488755592
+        "x": 3.9584025321896807,
+        "y": 5.999101228971688
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Front"
+      "linkedName": "MR Curved"
     }
   ],
   "rotationTargets": [],
@@ -43,9 +43,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Old Shit",
+  "folder": null,
   "previewStartingState": {
-    "rotation": -150.0,
+    "rotation": 150.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

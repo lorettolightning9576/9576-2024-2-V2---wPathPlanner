@@ -46,6 +46,7 @@ import frc.robot.commands.Intake.FeedAuto;
 import frc.robot.commands.Intake.IntakeFeedCommand;
 import frc.robot.commands.Intake.IntakeFeedV2Command;
 import frc.robot.commands.Intake.IntakeInCommand;
+import frc.robot.commands.Intake.IntakeInCommandBeamBrake;
 import frc.robot.commands.Intake.IntakeOutCommand;
 import frc.robot.commands.Pivot.PivotTriggerCommand;
 import frc.robot.commands.Pivot.stopPivotCommand;
@@ -101,6 +102,7 @@ public class RobotContainer {
   private final IntakeFeedCommand intakeFeedCommand = new IntakeFeedCommand(intakeSubsystem, shooterSubsystem);
   private final FeedAuto feedAuto = new FeedAuto(intakeSubsystem);
   private final IntakeFeedV2Command intakeFeedV2Command = new IntakeFeedV2Command(intakeSubsystem);
+  private final IntakeInCommandBeamBrake intakeInCommandBeamBrake = new IntakeInCommandBeamBrake(intakeSubsystem);
 
   // Shooter
   private final ShooterShootCommand shooterShootCommand = new ShooterShootCommand(shooterSubsystem, pivotSubsystem::isTooLow);
@@ -148,7 +150,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Initial Feed", intakeSubsystem.setIntakeFeedCommand().withTimeout(.5));
     NamedCommands.registerCommand("Feed", intakeSubsystem.setIntakeFeedCommand().withTimeout(18));
         //NamedCommands.registerCommand("Feed44", intakeSubsystem.setIntakeFeedCommand().onlyWhile(null));
-    NamedCommands.registerCommand("Intake", intakeInCommand);
+    NamedCommands.registerCommand("Intake", intakeInCommandBeamBrake);
     NamedCommands.registerCommand("Pivot Subwoofer", pivotSubsystem.setPivotShootSpeakerCommand().withTimeout(.75));
     NamedCommands.registerCommand("Pivot Intake", pivotSubsystem.setPivotIntakeCommand().withTimeout(1.5));
     NamedCommands.registerCommand("Pivot Far", pivotSubsystem.autoFront3Notes_Command().withTimeout(1.5));
@@ -241,8 +243,8 @@ public class RobotContainer {
     var camera = CameraServer.getVideo();
 
     driverTab.add("Auto", autoChooser).withPosition(0, 0).withSize(2, 1);
-    driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(2, 0).withSize(6, 4);
-    driverTab.add(camera.getSource()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(5, 0).withSize(5, 4);
+    driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(2, 0).withSize(5, 4);
+    driverTab.add(camera.getSource()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(7, 0).withSize(4, 4);
 
     /**driverTab.add("Refresh Controls", refreshControls())
     .withWidget(BuiltInWidgets.kCommand)
