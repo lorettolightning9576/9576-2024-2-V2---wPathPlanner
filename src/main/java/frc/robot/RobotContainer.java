@@ -114,9 +114,7 @@ public class RobotContainer {
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
   private final stopPivotCommand stopPivotCommand = new stopPivotCommand(pivotSubsystem);
 
-  private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(photonCamera, drivebase);
-
-  public final Void SelectedControls;
+  //private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(photonCamera, drivebase);
 
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
   private final ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
@@ -133,7 +131,6 @@ public class RobotContainer {
   private final Colors colors = new Colors();
 
   private final SendableChooser<Command> autoChooser;
-  public SendableChooser<Void> controlChooser = new SendableChooser<>();
   //public SendableChooser<String> c_Chooser = new SendableChooser<>();
 
 
@@ -159,28 +156,6 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
-
-    //controlThread = new Notifier(this::)
-
-    //controlSetup = controlChooser.getSelected();
-
-    /**controlChooser.setDefaultOption("Default", this::configure_Cameron_Bindings);
-    controlChooser.addOption("Cameron", configureCameronBindings());
-    controlChooser.addOption("Standard", configureStandardBindings());
-    controlChooser.addOption("PS5", configurePS5Bindings());
-    controlChooser.addOption("Only Joysticks", configureNoXboxBindings());
-    controlChooser.addOption("Grace", configureGraceBindings());*/
-
-    /**c_Chooser.setDefaultOption("Default", configureCameronBindings().toString());
-    c_Chooser.addOption("Cam", configureCameronBindings().toString());
-    c_Chooser.addOption("Standard", configureStandardBindings().toString());
-    c_Chooser.addOption("PS5", configurePS5Bindings().toString());
-    c_Chooser.addOption("Only Joysticks", configureNoXboxBindings().toString());
-    c_Chooser.addOption("Grace", configureGraceBindings().toString());*/
-
-    //refreshControls().schedule();
-
-    SelectedControls = controlChooser.getSelected();
 
     //configure_PS5_Bindings();
     configure_Cameron_Bindings();
@@ -266,7 +241,6 @@ public class RobotContainer {
     var camera = CameraServer.getVideo();
 
     driverTab.add("Auto", autoChooser).withPosition(0, 0).withSize(2, 1);
-    driverTab.add("Control Setup", controlChooser).withPosition(0, 1).withSize(2, 1);
     driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(2, 0).withSize(6, 4);
     driverTab.add(camera.getSource()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(5, 0).withSize(5, 4);
 
@@ -626,50 +600,6 @@ public class RobotContainer {
   public Command configureStandardBindings() {
     return new InstantCommand(() -> configureBindings());
   }
-
-  /**public double getAvgMotorTemp() {
-    return (((FLdriveMotor.getMotorTemperature() * 1.8) + 32.0) + ((FRdriveMotor.getMotorTemperature() * 1.8) + 32.0) + ((BLdriveMotor.getMotorTemperature() * 1.8) + 32.0) + ((BRdriveMotor.getMotorTemperature() * 1.8) + 32.0) / 4);
-  }*/
-
-  /**public Command getControlChooserSelection() {
-    return controlChooser.getSelected();
-  }
-
-  public Command refreshControls() {
-    if (getControlChooserSelection() == configureCameronBindings()) {
-      return configureCameronBindings();
-    } else  if (getControlChooserSelection() == configureGraceBindings()) {
-      return configureGraceBindings();
-    } else  if (getControlChooserSelection() == configureNoXboxBindings()) {
-      return configureNoXboxBindings();
-    } else  if (getControlChooserSelection() ==  configurePS5Bindings()) {
-      return configurePS5Bindings();
-    } else  if (getControlChooserSelection() == configureStandardBindings()) {
-      return configureStandardBindings();
-    } else {
-      return configureCameronBindings();
-    }
-  }*/
-
-  /**public Command getControlChooserSelection() {
-    return controlChooser.getSelected();
-  }
-
-  public Command refreshControls() {
-    if (getControlChooserSelection() == configureCameronBindings()) {
-      return configureCameronBindings();
-    } else  if (getControlChooserSelection() == configureGraceBindings()) {
-      return configureGraceBindings();
-    } else  if (getControlChooserSelection() == configureNoXboxBindings()) {
-      return configureNoXboxBindings();
-    } else  if (getControlChooserSelection() ==  configurePS5Bindings()) {
-      return configurePS5Bindings();
-    } else  if (getControlChooserSelection() == configureStandardBindings()) {
-      return configureStandardBindings();
-    } else {
-      return configureCameronBindings();
-    }
-  }*/
-
+  
 }
 
