@@ -130,8 +130,8 @@ public class PivotSubsystem extends SubsystemBase{
     rightPivotMotorLEADER.getForwardLimitSwitch(kNormallyOpen).enableLimitSwitch(false);
     rightPivotMotorLEADER.getReverseLimitSwitch(kNormallyOpen).enableLimitSwitch(false);
 
-    rightPivotMotorLEADER.setIdleMode(IdleMode.kCoast);
-    leftPivotMotor.setIdleMode(IdleMode.kCoast); 
+    rightPivotMotorLEADER.setIdleMode(IdleMode.kBrake);
+    leftPivotMotor.setIdleMode(IdleMode.kBrake); 
 
     rightPivotMotorLEADER.setInverted(true);
     leftPivotMotor.setInverted(false);  

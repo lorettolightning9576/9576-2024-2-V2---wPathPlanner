@@ -147,7 +147,7 @@ public class ShooterSubsystem extends SubsystemBase{
         setShooterVelocity = false;
 
         BottomTargetSpeed = 0.09;
-        TopTargetSpeed = 0.3;
+        TopTargetSpeed = 0.275;
 
         shooterTopMotor.set(TopTargetSpeed);
         shooterBottomMotor.set(BottomTargetSpeed);
