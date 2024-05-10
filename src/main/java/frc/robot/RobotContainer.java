@@ -57,6 +57,12 @@ import frc.robot.commands.Shooter.ShooterInCommand;
 import frc.robot.commands.Shooter.ShooterSHUTTLECommand;
 import frc.robot.commands.Shooter.ShooterShootCommand;
 import frc.robot.commands.Shooter.ShooterShootV2Command;
+import frc.robot.commands.Shooter.ShooterFun.ShooterFunCommand;
+import frc.robot.commands.Shooter.ShooterFun.ShooterFunLongCommand;
+import frc.robot.commands.Shooter.ShooterFun.ShooterFunLongV2Command;
+import frc.robot.commands.Shooter.ShooterFun.ShooterFunMIDCommand;
+import frc.robot.commands.Shooter.ShooterFun.ShooterFunV2Command;
+import frc.robot.commands.Shooter.ShooterFun.ShooterFunV3Command;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.TelopDrive;
@@ -113,6 +119,12 @@ public class RobotContainer {
   private final AutoShootCommand autoShootCommand = new AutoShootCommand(intakeSubsystem, shooterSubsystem);
   private final ShooterShootV2Command shooterShootV2Command = new ShooterShootV2Command(shooterSubsystem, pivotSubsystem::isTooLow);
   private final ShooterAmpCommandV2 shooterAmpCommandV2 = new ShooterAmpCommandV2(shooterSubsystem);
+  private final ShooterFunCommand shooterFunCommand = new ShooterFunCommand(shooterSubsystem);
+  private final ShooterFunV2Command shooterFunV2Command = new ShooterFunV2Command(shooterSubsystem);
+  private final ShooterFunV3Command shooterFunV3Command = new ShooterFunV3Command(shooterSubsystem);
+  private final ShooterFunMIDCommand shooterFunMIDCommand = new ShooterFunMIDCommand(shooterSubsystem);
+  private final ShooterFunLongCommand shooterFunLongCommand = new ShooterFunLongCommand(shooterSubsystem);
+  private final ShooterFunLongV2Command shooterFunLongV2Command = new ShooterFunLongV2Command(shooterSubsystem);
 
   // Pivot
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
@@ -161,7 +173,8 @@ public class RobotContainer {
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
 
     //configure_PS5_Bindings();
-    configure_Cameron_Bindings();
+    //configure_Cameron_Bindings();
+    configure_FUN_Bindings();
 
     //configureBindings();
     configureDashboard();
@@ -393,6 +406,84 @@ public class RobotContainer {
 
   }
 
+  public void configure_FUN_Bindings() {
+
+    leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
+
+    //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
+    //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
+    //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
+    //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
+
+    leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
+    //rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
+    leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
+    //rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
+
+    leftJoystick.button(10).onTrue(new InstantCommand(() -> climberSubsystem.setLEFT_Position()));
+    xboxControllerCommand.povLeft().whileTrue(new InstantCommand(() -> climberSubsystem.lowerLeftArmOVERRIDE())).onFalse(new InstantCommand(() -> climberSubsystem.stopLeftMotor()).alongWith(new InstantCommand(() -> climberSubsystem.setLEFT_Position())));
+
+    //xboxControllerCommand.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+
+    xboxControllerCommand.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
+
+    xboxControllerCommand.povDown()
+    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_LEFT_ArmCommand()))
+    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
+    
+    rightJoystick.button(1)
+    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = true)))
+    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = false)));
+
+
+    leftJoystick.povDown().and(rightJoystick.povDown()).whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
+    leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+
+    new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
+    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
+    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
+
+    new Trigger(pivotSubsystem::isAimAtTargetPosition)
+    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(1)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
+    .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
+
+    new Trigger(xboxControllerCommand.rightTrigger().and(xboxControllerCommand.leftTrigger().negate()).and(xboxControllerCommand.leftBumper().negate()))
+    .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()).until(intakeSubsystem::hasNoteRAW));
+
+    new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8).negate()).and(shooterSubsystem::isAtTargetSpeed).and(pivotSubsystem::isAimAtTargetPosition).and(xboxControllerCommand.rightTrigger()))
+    .whileTrue(intakeFeedV2Command);
+
+    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y().negate()).and(xboxControllerCommand.a().negate()).and(xboxControllerCommand.x().negate()))
+    .whileTrue(shooterFunCommand.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
+
+    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y()))
+    .whileTrue(shooterFunLongCommand.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
+
+    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.x()))
+    .whileTrue(shooterFunLongV2Command.alongWith(pivotSubsystem.setPivot_Vertical_Command()));
+
+    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.a()))
+    .whileTrue(shooterFunMIDCommand.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
+
+    new Trigger(xboxControllerCommand.leftTrigger().and(shooterSubsystem::isAtTargetVelocity).and(xboxControllerCommand.rightTrigger()).and(xboxControllerCommand.button(8).negate()))
+    .whileTrue(intakeFeedV2Command);
+    
+    new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8).negate()))
+    .whileTrue(shooterAmpCommand.alongWith(pivotSubsystem.setPivot_Finish_AMPCommand()))
+    .onFalse(new WaitCommand(0.5));
+
+    new Trigger(xboxControllerCommand.rightBumper().and(shooterSubsystem::isnot_TOOfastTooReverse))
+    .whileTrue(intakeOutCommand);
+
+    new Trigger(xboxControllerCommand.rightTrigger().and(xboxControllerCommand.button(8)))
+    .whileTrue(intakeFeedV2Command);
+
+    new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8)))
+    .whileTrue(shooterAmpCommandV2);
+
+  }
+
+
   public void configure_PS5_Bindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
@@ -585,26 +676,6 @@ public class RobotContainer {
   }
     return -1;
   
-  }
-
-  public Command configureCameronBindings() {
-    return new InstantCommand(() -> configure_Cameron_Bindings());
-  }
-
-  public Command configurePS5Bindings() {
-    return new InstantCommand(() -> configure_PS5_Bindings());
-  }
-
-  public Command configureNoXboxBindings() {
-    return new InstantCommand(() -> configure_NoXbox_Bindings());
-  }
-
-  public Command configureGraceBindings() {
-    return new InstantCommand(() -> configure_Grace_Bindings());
-  }
-
-  public Command configureStandardBindings() {
-    return new InstantCommand(() -> configureBindings());
   }
   
 }

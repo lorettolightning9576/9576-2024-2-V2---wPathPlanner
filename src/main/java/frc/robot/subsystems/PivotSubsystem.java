@@ -101,7 +101,7 @@ public class PivotSubsystem extends SubsystemBase{
     pivotPidController.setFeedbackDevice(externalpot);
 
 
-    double kP =  0.65;
+    double kP =  0.4;
     double kI =  0;
     double kD =  0.0000;
     double kIz = 0;
@@ -470,6 +470,11 @@ public class PivotSubsystem extends SubsystemBase{
     setPivotPosition(Finish_AMP);
   }
 
+  public void setPivot_StraightUp() {
+    double  Finish_AMP = 3.20;
+    setPivotPosition(Finish_AMP);
+  }
+
   public Command setPivotIntakeCommand() {
     return run(() -> setPivotIntake());
   }
@@ -480,6 +485,10 @@ public class PivotSubsystem extends SubsystemBase{
 
   public Command setPivot_Finish_AMPCommand() {
     return run(() -> setPivotFinish_AMP());
+  }
+
+  public Command setPivot_Vertical_Command() {
+    return run(() -> setPivot_StraightUp());
   }
 
   public Command setPivot_Shuttle_Command() {
