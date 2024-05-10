@@ -127,9 +127,22 @@
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "MSR - SP"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "MSR - SP"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Podium"
+                            }
+                          }
+                        ]
                       }
                     },
                     {

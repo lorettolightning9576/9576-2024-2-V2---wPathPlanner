@@ -118,7 +118,7 @@ public class RobotContainer {
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
   private final stopPivotCommand stopPivotCommand = new stopPivotCommand(pivotSubsystem);
 
-  //private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(photonCamera, drivebase);
+  private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(photonCamera, drivebase);
 
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
   private final ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
@@ -330,13 +330,19 @@ public class RobotContainer {
     //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
 
     leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
-    rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
+    //rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
     leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
-    rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
+    //rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
 
-    xboxControllerCommand.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+    leftJoystick.button(10).onTrue(new InstantCommand(() -> climberSubsystem.setLEFT_Position()));
+    xboxControllerCommand.povLeft().whileTrue(new InstantCommand(() -> climberSubsystem.lowerLeftArmOVERRIDE())).onFalse(new InstantCommand(() -> climberSubsystem.stopLeftMotor()).alongWith(new InstantCommand(() -> climberSubsystem.setLEFT_Position())));
+
+    //xboxControllerCommand.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+
+    xboxControllerCommand.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
+
     xboxControllerCommand.povDown()
-    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_BOTH_ArmCommand()))
+    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_LEFT_ArmCommand()))
     .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
     
     rightJoystick.button(1)

@@ -132,8 +132,8 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public void setShooterSHUTTLE() {
-        TopTargetVelocity = 4000;
-        BottomTargetVelocity = 4000;
+        TopTargetVelocity = 4300;
+        BottomTargetVelocity = 4280;
         setShooterVelocity = true;
     }
 
@@ -146,7 +146,7 @@ public class ShooterSubsystem extends SubsystemBase{
     public void setShooterAMPSpeed() {
         setShooterVelocity = false;
 
-        BottomTargetSpeed = 0.09;
+        BottomTargetSpeed = 0.125; 
         TopTargetSpeed = 0.275;
 
         shooterTopMotor.set(TopTargetSpeed);

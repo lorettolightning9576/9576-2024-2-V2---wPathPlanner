@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.075210963546035,
-        "y": 1.0131703430311285
+        "x": 3.69131945111251,
+        "y": 0.5855418272890752
       },
       "isLocked": false,
       "linkedName": "MSR"
     },
     {
       "anchor": {
-        "x": 2.6559660811629335,
-        "y": 3.4238291553506186
+        "x": 2.309440738710292,
+        "y": 3.712335185012738
       },
       "prevControl": {
-        "x": 3.6130595338113767,
-        "y": 2.565405130810262
+        "x": 2.5670791427174855,
+        "y": 3.6186484926464857
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,14 +32,14 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 3.25,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 135.0,
+    "rotation": 137.5,
     "rotateFast": false
   },
   "reversed": false,

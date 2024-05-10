@@ -83,7 +83,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
 
-        var EstTagStdDevs = SingleTagStdDevs;
+        /**var EstTagStdDevs = SingleTagStdDevs;
 
         var photonPoseEstimated = photonPoseEstimator.update();
 
@@ -124,7 +124,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase{
             //driveBase.addCustomVisionReading(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds);
             poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds, EstTagStdDevs);
             driveBase.addCustomVisionReading(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds, EstTagStdDevs);
-        }
+        }*/
 
         /**if (RobotState.isAutonomous()) {
             poseEstimator.addVisionMeasurement(visionMeasurement.estimatedPose.toPose2d(), visionMeasurement.timestampSeconds);
