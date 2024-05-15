@@ -132,8 +132,6 @@ public class RobotContainer {
 
   private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(photonCamera, drivebase);
 
-  public final Void SelectedControls;
-
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
   private final ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
 
@@ -149,7 +147,6 @@ public class RobotContainer {
   private final Colors colors = new Colors();
 
   private final SendableChooser<Command> autoChooser;
-  private final SendableChooser<ControlSetup> controlChooser = new SendableChooser<>();
 
   public RobotContainer() {
     //CameraServer.startAutomaticCapture().setResolution(640, 480);
@@ -172,17 +169,6 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
-
-    //controlChooser.setDefaultOption("Default", new InstantCommand(() -> configureBindings()));
-    controlChooser.setDefaultOption("Default-CK", ControlSetup.Cameron);
-    controlChooser.addOption("Default", ControlSetup.Default);
-    controlChooser.addOption("Cameron", ControlSetup.Cameron);
-    controlChooser.addOption("Grace", ControlSetup.Grace);
-    controlChooser.addOption("No Xbox", ControlSetup.NoXbox);
-
-    controlSetup = controlChooser.getSelected();
-
-    updateControl();
 
     //configureBindings();
     configureDashboard();
@@ -265,7 +251,7 @@ public class RobotContainer {
     var camera = CameraServer.getVideo();
 
     driverTab.add("Auto", autoChooser).withPosition(0, 0).withSize(2, 1);
-    driverTab.add("Control Setup", controlChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 1).withSize(2, 1);
+    //driverTab.add("Control Setup", controlChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 1).withSize(2, 1);
     driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(2, 0).withSize(6, 4);
     driverTab.add(camera.getSource()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(5, 0).withSize(5, 4);
     //driverTab.add(CameraServer.startAutomaticCapture()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(6, 4);
@@ -614,27 +600,6 @@ public class RobotContainer {
   }
     return -1;
   
-  }
-
-  public enum ControlSetup {
-    Cameron,
-    Grace,
-    Default,
-    NoXbox
-  }
-
-  public void updateControl() {
-    if (controlSetup.ordinal() >= ControlSetup.Cameron.ordinal()) {
-      configure_Cameron_Bindings();
-    } else if (controlSetup.ordinal() >= ControlSetup.Default.ordinal()) {
-      configureBindings();
-    } else if (controlSetup.ordinal() >= ControlSetup.Grace.ordinal()) {
-      configure_Grace_Bindings();
-    } else if (controlSetup.ordinal() >= ControlSetup.NoXbox.ordinal()) {
-      configure_NoXbox_Bindings();
-    } else {
-      configureBindings();
-    }
   }
 
 }
