@@ -131,9 +131,27 @@ public class ShooterSubsystem extends SubsystemBase{
         setShooterVelocity = true;
     }
 
+    public void setShooterFUN_Short() {
+        TopTargetVelocity = 1500;
+        BottomTargetVelocity = 1500;
+        setShooterVelocity = true;
+    }
+
+    public void setShooterFUN_Mid() {
+        TopTargetVelocity = 2000;
+        BottomTargetVelocity = 2000;
+        setShooterVelocity = true;
+    }
+
+    public void setShooterFUN_Long() {
+        TopTargetVelocity = 2500;
+        BottomTargetVelocity = 2500;
+        setShooterVelocity = true;
+    }
+
     public void setShooterSHUTTLE() {
-        TopTargetVelocity = 4000;
-        BottomTargetVelocity = 4000;
+        TopTargetVelocity = 4300;
+        BottomTargetVelocity = 4280;
         setShooterVelocity = true;
     }
 
@@ -146,8 +164,8 @@ public class ShooterSubsystem extends SubsystemBase{
     public void setShooterAMPSpeed() {
         setShooterVelocity = false;
 
-        BottomTargetSpeed = 0.09;
-        TopTargetSpeed = 0.3;
+        BottomTargetSpeed = 0.125; 
+        TopTargetSpeed = 0.275;
 
         shooterTopMotor.set(TopTargetSpeed);
         shooterBottomMotor.set(BottomTargetSpeed);

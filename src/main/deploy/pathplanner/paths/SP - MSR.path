@@ -3,50 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.9717082511088115,
-        "y": 5.446552431566402
+        "x": 2.309440738710292,
+        "y": 3.712335185012738
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.830464708882895,
-        "y": 5.500975948105743
+        "x": 4.826693499540847,
+        "y": 1.0261620523241057
       },
       "isLocked": false,
-      "linkedName": "Front"
+      "linkedName": "SP"
     },
     {
       "anchor": {
-        "x": 2.8335710517574895,
-        "y": 4.01584572399914
+        "x": 8.281967377058862,
+        "y": 2.4241431649767726
       },
       "prevControl": {
-        "x": 1.965280084406324,
-        "y": 4.578261464215236
+        "x": 7.007287860729568,
+        "y": 1.8451183056212273
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "MSR"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.5,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 150.0,
+    "velocity": 0.0,
+    "rotation": -160.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Old Shit",
+  "folder": null,
   "previewStartingState": {
-    "rotation": 180.0,
+    "rotation": 137.5,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

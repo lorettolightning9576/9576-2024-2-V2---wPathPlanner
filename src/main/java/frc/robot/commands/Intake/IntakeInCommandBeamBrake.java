@@ -8,11 +8,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class IntakeFeedV2Command extends Command {
+public class IntakeInCommandBeamBrake extends Command {
   IntakeSubsystem intakeSubsystem;
+  //CommandXboxController xboxControllerCommand;
 
-  public IntakeFeedV2Command(IntakeSubsystem m_IntakeSubsystem) {
+  /**private static IntakeInCommand Instance = null;
+
+  public static IntakeInCommand getInstance() {
+    if (Instance == null) {
+      Instance = new IntakeInCommand(new IntakeSubsystem());
+    }
+    return Instance;
+  }*/
+
+  public IntakeInCommandBeamBrake(IntakeSubsystem m_IntakeSubsystem) {
     this.intakeSubsystem = m_IntakeSubsystem;
+    //this.xboxControllerCommand = m_xboxControllerCommand;
     addRequirements(intakeSubsystem);
   }
 
@@ -23,7 +34,7 @@ public class IntakeFeedV2Command extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intakeSubsystem.setIntakeFeed();
+    intakeSubsystem.setIntakeIn();
   }
 
   @Override
@@ -33,16 +44,10 @@ public class IntakeFeedV2Command extends Command {
 
   @Override
   public boolean isFinished() {
-    /**if (xboxControllerCommand.rightTrigger().getAsBoolean() && xboxControllerCommand.leftTrigger().getAsBoolean()) {
-      return false;
-    } else if (xboxControllerCommand.leftBumper().getAsBoolean()) {
-      return false;
-    } else if (intakeSubsystem.hasNoteRAW()) {
+    if (intakeSubsystem.hasNoteRAW()) {
       return true;
     } else {
       return false;
-    }*/
-
-    return false;
+    }
   }
 }

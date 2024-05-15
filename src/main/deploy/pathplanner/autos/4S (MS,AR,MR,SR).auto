@@ -57,7 +57,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "Middle Side Note"
+                              "pathName": "MS - AR"
                             }
                           },
                           {
@@ -76,7 +76,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "Amp to Middle"
+                              "pathName": "AR - MR"
                             }
                           }
                         ]
@@ -89,7 +89,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "Middle to Stage"
+                              "pathName": "MR - SR"
                             }
                           },
                           {
@@ -110,6 +110,6 @@
       ]
     }
   },
-  "folder": "Old Shit",
+  "folder": null,
   "choreoAuto": false
 }
