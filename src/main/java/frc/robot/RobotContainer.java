@@ -60,6 +60,7 @@ import frc.robot.commands.Shooter.ShooterShootV2Command;
 import frc.robot.commands.Shooter.ShooterFun.ShooterFunCommand;
 import frc.robot.commands.Shooter.ShooterFun.ShooterFunLongCommand;
 import frc.robot.commands.Shooter.ShooterFun.ShooterFunLongV2Command;
+import frc.robot.commands.Shooter.ShooterFun.ShooterFunLongV3Command;
 import frc.robot.commands.Shooter.ShooterFun.ShooterFunMIDCommand;
 import frc.robot.commands.Shooter.ShooterFun.ShooterFunV2Command;
 import frc.robot.commands.Shooter.ShooterFun.ShooterFunV3Command;
@@ -125,6 +126,7 @@ public class RobotContainer {
   private final ShooterFunMIDCommand shooterFunMIDCommand = new ShooterFunMIDCommand(shooterSubsystem);
   private final ShooterFunLongCommand shooterFunLongCommand = new ShooterFunLongCommand(shooterSubsystem);
   private final ShooterFunLongV2Command shooterFunLongV2Command = new ShooterFunLongV2Command(shooterSubsystem);
+  private final ShooterFunLongV3Command shooterFunLongV3Command = new ShooterFunLongV3Command(shooterSubsystem);
 
   // Pivot
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
@@ -453,11 +455,14 @@ public class RobotContainer {
     new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8).negate()).and(shooterSubsystem::isAtTargetSpeed).and(pivotSubsystem::isAimAtTargetPosition).and(xboxControllerCommand.rightTrigger()))
     .whileTrue(intakeFeedV2Command);
 
-    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y().negate()).and(xboxControllerCommand.a().negate()).and(xboxControllerCommand.x().negate()))
+    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y().negate()).and(xboxControllerCommand.a().negate()).and(xboxControllerCommand.x().negate()).and(xboxControllerCommand.b().negate()))
     .whileTrue(shooterFunCommand.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
 
     new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y()))
-    .whileTrue(shooterFunLongCommand.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
+    .whileTrue(shooterFunLongCommand.alongWith(pivotSubsystem.setPivotShootStageCommand()));
+
+    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.b()))
+    .whileTrue(shooterFunLongV3Command.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
 
     new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.x()))
     .whileTrue(shooterFunLongV2Command.alongWith(pivotSubsystem.setPivot_Vertical_Command()));

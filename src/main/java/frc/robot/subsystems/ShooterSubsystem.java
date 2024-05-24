@@ -132,20 +132,20 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public void setShooterFUN_Short() {
-        TopTargetVelocity = 1500;
-        BottomTargetVelocity = 1500;
+        TopTargetVelocity = 2250;
+        BottomTargetVelocity = 2250;
         setShooterVelocity = true;
     }
 
     public void setShooterFUN_Mid() {
-        TopTargetVelocity = 2000;
-        BottomTargetVelocity = 2000;
+        TopTargetVelocity = 3000;
+        BottomTargetVelocity = 3000;
         setShooterVelocity = true;
     }
 
     public void setShooterFUN_Long() {
-        TopTargetVelocity = 2500;
-        BottomTargetVelocity = 2500;
+        TopTargetVelocity = 4500;
+        BottomTargetVelocity = 4500;
         setShooterVelocity = true;
     }
 
