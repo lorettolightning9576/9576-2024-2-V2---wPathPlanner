@@ -149,8 +149,6 @@ public class RobotContainer {
   private final Colors colors = new Colors();
 
   private final SendableChooser<Command> autoChooser;
-  //public SendableChooser<String> c_Chooser = new SendableChooser<>();
-
 
   public RobotContainer() {
     //CameraServer.startAutomaticCapture().setResolution(640, 480);
@@ -173,10 +171,6 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
-
-    //configure_PS5_Bindings();
-    //configure_Cameron_Bindings();
-    configure_FUN_Bindings();
 
     //configureBindings();
     configureDashboard();
@@ -259,14 +253,9 @@ public class RobotContainer {
     var camera = CameraServer.getVideo();
 
     driverTab.add("Auto", autoChooser).withPosition(0, 0).withSize(2, 1);
-    driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(2, 0).withSize(5, 4);
-    driverTab.add(camera.getSource()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(7, 0).withSize(4, 4);
-
-    /**driverTab.add("Refresh Controls", refreshControls())
-    .withWidget(BuiltInWidgets.kCommand)
-    .withPosition(0, 2)
-    .withSize(1, 1);*/
-
+    //driverTab.add("Control Setup", controlChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 1).withSize(2, 1);
+    driverTab.add(drivebase.getSwerveField()).withWidget(BuiltInWidgets.kField).withPosition(2, 0).withSize(6, 4);
+    driverTab.add(camera.getSource()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(5, 0).withSize(5, 4);
     //driverTab.add(CameraServer.startAutomaticCapture()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(6, 4);
 
     robotTab.add(powerDistribution).withWidget(BuiltInWidgets.kPowerDistribution).withPosition(2, 0).withSize(3, 4);
@@ -335,7 +324,8 @@ public class RobotContainer {
     xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
   }
 
-  public void configure_Cameron_Bindings() {
+  private void configure_Cameron_Bindings() {
+    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
 
@@ -477,82 +467,16 @@ public class RobotContainer {
     .whileTrue(shooterAmpCommand.alongWith(pivotSubsystem.setPivot_Finish_AMPCommand()))
     .onFalse(new WaitCommand(0.5));
 
-    new Trigger(xboxControllerCommand.rightBumper().and(shooterSubsystem::isnot_TOOfastTooReverse))
-    .whileTrue(intakeOutCommand);
+    new Trigger(xboxControllerCommand.rightBumper().and(shooterSubsystem::isnot_TOOfastTooReverse)).whileTrue(intakeOutCommand);
 
-    new Trigger(xboxControllerCommand.rightTrigger().and(xboxControllerCommand.button(8)))
-    .whileTrue(intakeFeedV2Command);
+    //xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand);
 
-    new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8)))
-    .whileTrue(shooterAmpCommandV2);
+    //xboxControllerCommand.leftTrigger().whileTrue(shooterShootCommand);
 
+    //xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
   }
 
-
-  public void configure_PS5_Bindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
-    leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
-
-    //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
-    //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
-    //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
-    //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
-
-    leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
-    rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
-    leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
-    rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
-
-    commandPS5controller.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
-    commandPS5controller.povDown()
-    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_BOTH_ArmCommand()))
-    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
-    
-    rightJoystick.button(1)
-    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = true)))
-    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = false)));
-
-
-    leftJoystick.povDown().and(rightJoystick.povDown()).whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
-    leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
-
-    commandPS5controller.triangle().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
-    commandPS5controller.cross().whileTrue(pivotSubsystem.setPivotIntakeCommand());
-    commandPS5controller.square().whileTrue(pivotSubsystem.setPivotShootStageCommand());
-
-    new Trigger(intakeSubsystem::hasNoteRAW).and(commandPS5controller.R2())
-    .whileTrue(new InstantCommand(() -> ps5Controller.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
-    .onFalse(new InstantCommand(() -> ps5Controller.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
-
-    new Trigger(pivotSubsystem::isAimAtTargetPosition)
-    .whileTrue((new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white))).andThen(new WaitCommand(1)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
-    .onFalse((new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
-
-    new Trigger(commandPS5controller.R2().and(commandPS5controller.L2().negate()).and(commandPS5controller.L1().negate()))
-    .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()).until(intakeSubsystem::hasNoteRAW));
-
-    new Trigger(commandPS5controller.L1().and(shooterSubsystem::isAtTargetSpeed).and(pivotSubsystem::isAimAtTargetPosition).and(commandPS5controller.R2()))
-    .whileTrue(intakeFeedV2Command);
-
-    new Trigger(commandPS5controller.L2().and(commandPS5controller.triangle().negate()).and(commandPS5controller.cross().negate()))
-    .whileTrue(shooterShootCommand.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
-
-    new Trigger(commandPS5controller.L2().and(commandPS5controller.triangle()))
-    .whileTrue(shooterShootV2Command.alongWith(pivotSubsystem.setPivotShootStageCommand()));
-
-    new Trigger(commandPS5controller.L2().and(commandPS5controller.cross()))
-    .whileTrue(shooterSHUTTLECommand.alongWith(pivotSubsystem.setPivotShootStageCommand()));
-
-    new Trigger(commandPS5controller.L2()).and(shooterSubsystem::isAtTargetVelocity).and(commandPS5controller.R2()).whileTrue(intakeFeedV2Command);
-    
-    commandPS5controller.L1().whileTrue(shooterAmpCommand.alongWith(pivotSubsystem.setPivot_Finish_AMPCommand()));
-
-    new Trigger(commandPS5controller.R1().and(shooterSubsystem::isnot_TOOfastTooReverse)).whileTrue(intakeOutCommand);
-
-  }
-
-  public void configure_Grace_Bindings() {
+  private void configure_Grace_Bindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
@@ -682,6 +606,6 @@ public class RobotContainer {
     return -1;
   
   }
-  
+
 }
 
