@@ -172,6 +172,8 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
 
+    configure_FUN_Bindings();
+
     //configureBindings();
     configureDashboard();
 
@@ -278,28 +280,6 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
-    //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
-    //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
-    //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
-    //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
-
-    leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
-    rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
-    leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
-    rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
-
-    xboxControllerCommand.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
-    xboxControllerCommand.povDown()
-    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_BOTH_ArmCommand()))
-    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
-    
-    rightJoystick.button(1)
-    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = true)))
-    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = false)));
-
-
-    leftJoystick.povDown().and(rightJoystick.povDown()).whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
-    leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
 
 
     xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
@@ -328,35 +308,6 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
-
-    //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
-    //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
-    //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
-    //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
-
-    leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
-    //rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
-    leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
-    //rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
-
-    leftJoystick.button(10).onTrue(new InstantCommand(() -> climberSubsystem.setLEFT_Position()));
-    xboxControllerCommand.povLeft().whileTrue(new InstantCommand(() -> climberSubsystem.lowerLeftArmOVERRIDE())).onFalse(new InstantCommand(() -> climberSubsystem.stopLeftMotor()).alongWith(new InstantCommand(() -> climberSubsystem.setLEFT_Position())));
-
-    //xboxControllerCommand.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
-
-    xboxControllerCommand.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
-
-    xboxControllerCommand.povDown()
-    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_LEFT_ArmCommand()))
-    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
-    
-    rightJoystick.button(1)
-    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = true)))
-    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = false)));
-
-
-    leftJoystick.povDown().and(rightJoystick.povDown()).whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
-    leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
 
     new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
     .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
@@ -402,34 +353,8 @@ public class RobotContainer {
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
 
-    //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
-    //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
-    //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
-    //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
-
-    leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
-    //rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
-    leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
-    //rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
-
-    leftJoystick.button(10).onTrue(new InstantCommand(() -> climberSubsystem.setLEFT_Position()));
-    xboxControllerCommand.povLeft().whileTrue(new InstantCommand(() -> climberSubsystem.lowerLeftArmOVERRIDE())).onFalse(new InstantCommand(() -> climberSubsystem.stopLeftMotor()).alongWith(new InstantCommand(() -> climberSubsystem.setLEFT_Position())));
-
-    //xboxControllerCommand.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
-
-    xboxControllerCommand.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
-
-    xboxControllerCommand.povDown()
-    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_LEFT_ArmCommand()))
-    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
-    
-    rightJoystick.button(1)
-    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = true)))
-    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = false)));
-
-
-    leftJoystick.povDown().and(rightJoystick.povDown()).whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
-    leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
+    leftJoystick.button(5).whileTrue(climberSubsystem.raiseLeft()).onFalse(climberSubsystem.stopLeft());
+    leftJoystick.button(3).whileTrue(climberSubsystem.lowerLeft()).onFalse(climberSubsystem.stopLeft());
 
     new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
     .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
@@ -480,28 +405,6 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
-    //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
-    //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
-    //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
-    //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
-
-    leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
-    rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
-    leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
-    rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
-
-    xboxControllerCommand.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
-    xboxControllerCommand.povDown()
-    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_BOTH_ArmCommand()))
-    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
-    
-    rightJoystick.button(1)
-    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = true)))
-    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = false)));
-
-
-    leftJoystick.povDown().and(rightJoystick.povDown()).whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
-    leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
 
 
     xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
@@ -530,28 +433,6 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
-    //rightJoystick.button(7).onTrue(new InstantCommand(() -> intakeSubsystem.setBrake()));
-    //rightJoystick.button(8).onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeCoast()));
-    //rightJoystick.button(9).onTrue(new InstantCommand(() -> pivotSubsystem.setBrake()));
-    //rightJoystick.button(10).onTrue(new InstantCommand(() -> pivotSubsystem.setCoast()));
-
-    leftJoystick.povUp().whileTrue(climberSubsystem.raiseLeftArmCommand());
-    rightJoystick.povUp().whileTrue(climberSubsystem.raiseRightArmCommand());
-    leftJoystick.povDown().whileTrue(climberSubsystem.lower_LEFT_ArmCommand());
-    rightJoystick.povDown().whileTrue(climberSubsystem.lower_RIGHT_ArmCommand());
-
-    xboxControllerCommand.povUp().whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
-    xboxControllerCommand.povDown()
-    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(climberSubsystem.lower_BOTH_ArmCommand()))
-    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false));
-    
-    rightJoystick.button(1)
-    .whileTrue(new InstantCommand(() -> climberSubsystem.fastLower = true).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = true)))
-    .onFalse(new InstantCommand(() -> climberSubsystem.fastLower = false).alongWith(new InstantCommand(() -> climberSubsystem.slowRaise = false)));
-
-
-    leftJoystick.povDown().and(rightJoystick.povDown()).whileTrue(climberSubsystem.lower_BOTH_ArmCommand());
-    leftJoystick.povUp().and(rightJoystick.povUp()).whileTrue(climberSubsystem.raise_BOTH_ArmCommand());
 
 
     xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
