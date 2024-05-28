@@ -259,6 +259,7 @@ public class RobotContainer {
     robotTab.addNumber("Servo Channel", servo::getChannel);
     robotTab.addNumber("Servo Position", servo::getPosition);
     robotTab.addNumber("Servo Speed", servo::getSpeed);
+    robotTab.addNumber("Servo get", servo::get);
 
     //robotTab.addNumber("test" , this::getAvgMotorTemp).withWidget(BuiltInWidgets.kNumberBar).withPosition(0, 0).withSize(2, 1);
 
@@ -396,8 +397,11 @@ public class RobotContainer {
     //xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servo.setPosition(1)));
     //xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.setPosition(0.5)));
 
-    xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servo.setSpeed(0.5)));
-    xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.setSpeed(0.25)));
+    //xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servo.setSpeed(0.5)));
+    //xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.setSpeed(0.25)));
+
+    xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servo.set(0.75)));
+    xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.set(0.25)));
 
     //xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand);
 
