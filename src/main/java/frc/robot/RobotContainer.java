@@ -8,8 +8,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.photonvision.PhotonCamera;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.CANSparkMax;
@@ -23,8 +21,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PS5Controller;
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -70,14 +70,11 @@ import frc.robot.commands.swervedrive.drivebase.TelopDrive;
 import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 
 public class RobotContainer {
-
-  private final PhotonCamera photonCamera = new PhotonCamera("camera");
 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
@@ -130,7 +127,7 @@ public class RobotContainer {
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
   private final stopPivotCommand stopPivotCommand = new stopPivotCommand(pivotSubsystem);
 
-  private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(photonCamera, drivebase);
+  public Servo servo = new Servo(7);
 
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
   private final ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
@@ -257,6 +254,12 @@ public class RobotContainer {
     //driverTab.add(CameraServer.startAutomaticCapture()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(6, 4);
 
     robotTab.add(powerDistribution).withWidget(BuiltInWidgets.kPowerDistribution).withPosition(2, 0).withSize(3, 4);
+
+    robotTab.addNumber("Servo Angle", servo::getAngle);
+    robotTab.addNumber("Servo Channel", servo::getChannel);
+    robotTab.addNumber("Servo Position", servo::getPosition);
+    robotTab.addNumber("Servo Speed", servo::getSpeed);
+
     //robotTab.addNumber("test" , this::getAvgMotorTemp).withWidget(BuiltInWidgets.kNumberBar).withPosition(0, 0).withSize(2, 1);
 
     //Shuffleboard.selectTab(ClimberTab.getTitle());
@@ -386,6 +389,15 @@ public class RobotContainer {
     .onFalse(new WaitCommand(0.5));
 
     new Trigger(xboxControllerCommand.rightBumper().and(shooterSubsystem::isnot_TOOfastTooReverse)).whileTrue(intakeOutCommand);
+
+    //xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servo.setAngle(20)));
+    //xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.setAngle(70)));
+
+    //xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servo.setPosition(1)));
+    //xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.setPosition(0.5)));
+
+    xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servo.setSpeed(0.5)));
+    xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.setSpeed(0.25)));
 
     //xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand);
 
