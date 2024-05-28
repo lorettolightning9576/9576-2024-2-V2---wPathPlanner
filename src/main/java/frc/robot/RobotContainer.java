@@ -68,7 +68,6 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.TelopDrive;
 import frc.robot.subsystems.Blinkin;
-import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
@@ -101,7 +100,6 @@ public class RobotContainer {
   private final PivotSubsystem pivotSubsystem = new PivotSubsystem(xboxControllerCommand);
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-  private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
   private final Blinkin blinkin = new Blinkin();
 
   // Intake
@@ -246,8 +244,6 @@ public class RobotContainer {
     final var shooterAndIntakeTab = Shuffleboard.getTab("Shooter & Intake");
     shooterSubsystem.addDashboardWidgets(shooterAndIntakeTab.getLayout("Shooter", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(3, 3));
     intakeSubsystem.addDashboardWidgets(shooterAndIntakeTab.getLayout("Intake", BuiltInLayouts.kGrid).withPosition(5, 0).withSize(3, 3));
-    final var climberTab = Shuffleboard.getTab("Climber");
-    climberSubsystem.addDashboardWidgets(climberTab.getLayout("Climber", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(4, 3));
     
 
     CameraServer.startAutomaticCapture(0).setResolution(640, 480);
@@ -352,9 +348,6 @@ public class RobotContainer {
   public void configure_FUN_Bindings() {
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
-
-    leftJoystick.button(5).whileTrue(climberSubsystem.raiseLeft()).onFalse(climberSubsystem.stopLeft());
-    leftJoystick.button(3).whileTrue(climberSubsystem.lowerLeft()).onFalse(climberSubsystem.stopLeft());
 
     new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
     .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
