@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PS5Controller;
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Servo;
@@ -62,6 +63,7 @@ import frc.robot.commands.swervedrive.drivebase.TelopDrive;
 import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.ServoTest;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
@@ -90,6 +92,7 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final Blinkin blinkin = new Blinkin();
+  private final ServoTest servoTest = new ServoTest();
 
   // Intake
   private final IntakeInCommand intakeInCommand = new IntakeInCommand(intakeSubsystem);
@@ -118,8 +121,6 @@ public class RobotContainer {
   // Pivot
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
   private final stopPivotCommand stopPivotCommand = new stopPivotCommand(pivotSubsystem);
-
-  public Servo servo = new Servo(5);
 
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
   private final ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
@@ -233,6 +234,9 @@ public class RobotContainer {
     final var shooterAndIntakeTab = Shuffleboard.getTab("Shooter & Intake");
     shooterSubsystem.addDashboardWidgets(shooterAndIntakeTab.getLayout("Shooter", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(3, 3));
     intakeSubsystem.addDashboardWidgets(shooterAndIntakeTab.getLayout("Intake", BuiltInLayouts.kGrid).withPosition(5, 0).withSize(3, 3));
+
+    final var servoTab = Shuffleboard.getTab("Servo");
+    servoTest.addDashboardWidgets(servoTab.getLayout("Servo", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(4, 4));
     
 
     CameraServer.startAutomaticCapture(0).setResolution(640, 480);
@@ -246,14 +250,6 @@ public class RobotContainer {
     //driverTab.add(CameraServer.startAutomaticCapture()).withWidget(BuiltInWidgets.kCameraStream).withProperties(Map.of("showCrosshair", true, "showControls", true)).withPosition(3, 0).withSize(6, 4);
 
     robotTab.add(powerDistribution).withWidget(BuiltInWidgets.kPowerDistribution).withPosition(2, 0).withSize(3, 4);
-
-    robotTab.addNumber("Servo Angle", servo::getAngle);
-    robotTab.addNumber("Servo Channel", servo::getChannel);
-    robotTab.addNumber("Servo Position", servo::getPosition);
-    robotTab.addNumber("Servo Speed", servo::getSpeed);
-    robotTab.addNumber("Servo get", servo::get);
-    robotTab.addNumber("Servo Pulse", servo::getPulseTimeMicroseconds);
-    robotTab.addNumber("Servo Handle", servo::getHandle);
 
     //robotTab.addNumber("test" , this::getAvgMotorTemp).withWidget(BuiltInWidgets.kNumberBar).withPosition(0, 0).withSize(2, 1);
 
@@ -356,9 +352,12 @@ public class RobotContainer {
     //xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servo.setSpeed(0.5)));
     //xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.setSpeed(0.25)));
 
-    xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servo.set(0.75)));
-    xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.set(0.25)));
-    xboxControllerCommand.button(6).whileTrue(new InstantCommand(() -> servo.setBoundsMicroseconds(servo.getPulseTimeMicroseconds() + 2400, 0, 0, 0, servo.getPulseTimeMicroseconds() - 600)));
+    //xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servo.set(0.75)));
+    //xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.set(0.25)));
+    //xboxControllerCommand.button(6).whileTrue(new InstantCommand(() -> servo.setBoundsMicroseconds(servo.getPulseTimeMicroseconds() + 2400, 0, 0, 0, servo.getPulseTimeMicroseconds() - 600)));
+
+    xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servoTest.setServoAngle(10)));
+    xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servoTest.setServoAngle(50)));
 
     //xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand);
 
