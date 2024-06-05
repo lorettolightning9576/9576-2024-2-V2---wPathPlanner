@@ -8,8 +8,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.photonvision.PhotonCamera;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.CANSparkMax;
@@ -70,14 +68,11 @@ import frc.robot.commands.swervedrive.drivebase.TelopDrive;
 import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 
 public class RobotContainer {
-
-  private final PhotonCamera photonCamera = new PhotonCamera("camera");
 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
@@ -129,8 +124,6 @@ public class RobotContainer {
   // Pivot
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
   private final stopPivotCommand stopPivotCommand = new stopPivotCommand(pivotSubsystem);
-
-  private final PoseEstimatorSubsystem poseEstimatorSubsystem = new PoseEstimatorSubsystem(photonCamera, drivebase);
 
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
   private final ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
@@ -220,19 +213,19 @@ public class RobotContainer {
         () -> MathUtil.applyDeadband(leftJoystick.getX(), 0.15)
     );
 
-    TelopDrive closedFieldRel = new TelopDrive(
+    /**TelopDrive closedFieldRel = new TelopDrive(
       drivebase,
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getY(), 0.075),
       () -> HeadingCorrection() * MathUtil.applyDeadband(-rightJoystick.getX(), 0.075),
       () -> MathUtil.applyDeadband(-leftJoystick.getX() * 0.75, 0.075), () -> true
-    );
-
-    /**TelopDrive closedFieldRel = new TelopDrive(
-      drivebase,
-      () -> HeadingCorrection() * MathUtil.applyDeadband(-ps5Controller.getLeftY(), 0.075),
-      () -> HeadingCorrection() * MathUtil.applyDeadband(-ps5Controller.getLeftX(), 0.075),
-      () -> MathUtil.applyDeadband(-ps5Controller.getRightX() * 0.75, 0.075), () -> true
     );*/
+
+    TelopDrive closedFieldRel = new TelopDrive(
+      drivebase,
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-xboxController.getRightY() * 0.5, 0.075),
+      () -> HeadingCorrection() * MathUtil.applyDeadband(-xboxController.getRightX() * 0.5, 0.075),
+      () -> MathUtil.applyDeadband(-xboxController.getLeftX() * 0.625, 0.075), () -> true
+    );
 
     drivebase.setDefaultCommand(closedFieldRel);
   }
