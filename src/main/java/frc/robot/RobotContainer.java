@@ -6,26 +6,19 @@ package frc.robot;
 
 import java.io.File;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.vision.VisionRunner.Listener;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.PS5Controller;
-import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -35,7 +28,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -127,7 +119,7 @@ public class RobotContainer {
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
   private final stopPivotCommand stopPivotCommand = new stopPivotCommand(pivotSubsystem);
 
-  public Servo servo = new Servo(7);
+  public Servo servo = new Servo(5);
 
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
   private final ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
@@ -354,44 +346,6 @@ public class RobotContainer {
   public void configure_FUN_Bindings() {
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
-
-    new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
-    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
-    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
-
-    new Trigger(pivotSubsystem::isAimAtTargetPosition)
-    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(1)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
-    .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
-
-    new Trigger(xboxControllerCommand.rightTrigger().and(xboxControllerCommand.leftTrigger().negate()).and(xboxControllerCommand.leftBumper().negate()))
-    .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()).until(intakeSubsystem::hasNoteRAW));
-
-    new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8).negate()).and(shooterSubsystem::isAtTargetSpeed).and(pivotSubsystem::isAimAtTargetPosition).and(xboxControllerCommand.rightTrigger()))
-    .whileTrue(intakeFeedV2Command);
-
-    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y().negate()).and(xboxControllerCommand.a().negate()).and(xboxControllerCommand.x().negate()).and(xboxControllerCommand.b().negate()))
-    .whileTrue(shooterFunCommand.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
-
-    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y()))
-    .whileTrue(shooterFunLongCommand.alongWith(pivotSubsystem.setPivotShootStageCommand()));
-
-    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.b()))
-    .whileTrue(shooterFunLongV3Command.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
-
-    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.x()))
-    .whileTrue(shooterFunLongV2Command.alongWith(pivotSubsystem.setPivot_Vertical_Command()));
-
-    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.a()))
-    .whileTrue(shooterFunMIDCommand.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
-
-    new Trigger(xboxControllerCommand.leftTrigger().and(shooterSubsystem::isAtTargetVelocity).and(xboxControllerCommand.rightTrigger()).and(xboxControllerCommand.button(8).negate()))
-    .whileTrue(intakeFeedV2Command);
-    
-    new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8).negate()))
-    .whileTrue(shooterAmpCommand.alongWith(pivotSubsystem.setPivot_Finish_AMPCommand()))
-    .onFalse(new WaitCommand(0.5));
-
-    new Trigger(xboxControllerCommand.rightBumper().and(shooterSubsystem::isnot_TOOfastTooReverse)).whileTrue(intakeOutCommand);
 
     //xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servo.setAngle(20)));
     //xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.setAngle(70)));
