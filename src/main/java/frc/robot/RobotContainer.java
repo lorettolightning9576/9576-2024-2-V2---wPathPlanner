@@ -356,8 +356,10 @@ public class RobotContainer {
     //xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.set(0.25)));
     //xboxControllerCommand.button(6).whileTrue(new InstantCommand(() -> servo.setBoundsMicroseconds(servo.getPulseTimeMicroseconds() + 2400, 0, 0, 0, servo.getPulseTimeMicroseconds() - 600)));
 
-    xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servoTest.setServoAngle(10)));
-    xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servoTest.setServoAngle(50)));
+    xboxControllerCommand.button(7).whileTrue(new InstantCommand(() -> servoTest.setServoAngle(10)))
+    .onFalse(servoTest.setServoDisableCommand());
+    xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servoTest.setServoAngle(50)))
+    .onFalse(servoTest.setServoDisableCommand());
 
     //xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand);
 

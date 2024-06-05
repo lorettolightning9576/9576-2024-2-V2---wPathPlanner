@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.PWM.PeriodMultiplier;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,6 +15,7 @@ public class ServoTest extends SubsystemBase{
     public ServoTest() {
         servofive = new Servo(5);
         servofive.setBoundsMicroseconds(2500, 0, 1500, 0, 500);
+        servofive.setPeriodMultiplier(PeriodMultiplier.k1X);
     }
 
     public void addDashboardWidgets(ShuffleboardLayout layout) {
@@ -43,6 +45,10 @@ public class ServoTest extends SubsystemBase{
         servofive.setSpeed(speed);
     }
 
+    public void setServoDisabled() {
+        servofive.setDisabled();
+    }
+
     public Command setServoSetCommand(double value) {
         return run(() -> setServoSet(value));
     }
@@ -57,6 +63,10 @@ public class ServoTest extends SubsystemBase{
 
     public Command setServoPositionCommand(double position) {
         return run(() -> setServoPosition(position));
+    }
+
+    public Command setServoDisableCommand() {
+        return run(() -> setServoDisabled());
     }
 
 }
