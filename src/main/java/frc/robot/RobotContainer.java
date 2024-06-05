@@ -161,8 +161,6 @@ public class RobotContainer {
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
 
     configure_FUN_Bindings();
-
-    //configureBindings();
     configureDashboard();
 
     AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
@@ -266,78 +264,7 @@ public class RobotContainer {
    * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
    * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
    */
-  public void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
-    leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
-
-
-    xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
-    xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotIntakeCommand());
-    xboxControllerCommand.y().whileTrue(pivotSubsystem.setPivot_Finish_AMPCommand());
-    xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotShootStageCommand());
-
-    new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
-    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
-    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
-
-    new Trigger(pivotSubsystem::isAimAtTargetPosition)
-    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(2)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
-    .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
-    
-    xboxControllerCommand.rightBumper().whileTrue(intakeOutCommand);
-
-    xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand);
-
-    xboxControllerCommand.leftTrigger().whileTrue(shooterShootCommand);
-
-    xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
-  }
-
-  private void configure_Cameron_Bindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
-    leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
-
-    new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
-    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
-    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
-
-    new Trigger(pivotSubsystem::isAimAtTargetPosition)
-    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(1)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
-    .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
-
-    new Trigger(xboxControllerCommand.rightTrigger().and(xboxControllerCommand.leftTrigger().negate()).and(xboxControllerCommand.leftBumper().negate()))
-    .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()).until(intakeSubsystem::hasNoteRAW));
-
-    new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8).negate()).and(shooterSubsystem::isAtTargetSpeed).and(pivotSubsystem::isAimAtTargetPosition).and(xboxControllerCommand.rightTrigger()))
-    .whileTrue(intakeFeedV2Command);
-
-    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y().negate()).and(xboxControllerCommand.a().negate()))
-    .whileTrue(shooterShootCommand.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
-
-    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y()))
-    .whileTrue(shooterShootV2Command.alongWith(pivotSubsystem.setPivotShootStageCommand()));
-
-    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.a()))
-    .whileTrue(shooterSHUTTLECommand.alongWith(pivotSubsystem.setPivotShootStageCommand()));
-
-    new Trigger(xboxControllerCommand.leftTrigger().and(shooterSubsystem::isAtTargetVelocity).and(xboxControllerCommand.rightTrigger()).and(xboxControllerCommand.button(8).negate()))
-    .whileTrue(intakeFeedV2Command);
-    
-    new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8).negate()))
-    .whileTrue(shooterAmpCommand.alongWith(pivotSubsystem.setPivot_Finish_AMPCommand()));
-
-    new Trigger(xboxControllerCommand.rightBumper().and(shooterSubsystem::isnot_TOOfastTooReverse))
-    .whileTrue(intakeOutCommand);
-
-    new Trigger(xboxControllerCommand.rightTrigger().and(xboxControllerCommand.button(8)))
-    .whileTrue(intakeFeedV2Command);
-
-    new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8)))
-    .whileTrue(shooterAmpCommandV2);
-
-  }
+  
 
   public void configure_FUN_Bindings() {
 
@@ -422,6 +349,79 @@ public class RobotContainer {
     xboxControllerCommand.leftTrigger().whileTrue(shooterShootCommand);
 
     xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
+  }
+
+  public void configureBindings() {
+    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+
+    leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
+
+
+    xboxControllerCommand.b().whileTrue(pivotSubsystem.setPivotShootSpeakerCommand());
+    xboxControllerCommand.a().whileTrue(pivotSubsystem.setPivotIntakeCommand());
+    xboxControllerCommand.y().whileTrue(pivotSubsystem.setPivot_Finish_AMPCommand());
+    xboxControllerCommand.x().whileTrue(pivotSubsystem.setPivotShootStageCommand());
+
+    new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
+    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
+    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
+
+    new Trigger(pivotSubsystem::isAimAtTargetPosition)
+    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(2)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
+    .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
+    
+    xboxControllerCommand.rightBumper().whileTrue(intakeOutCommand);
+
+    xboxControllerCommand.leftBumper().whileTrue(shooterAmpCommand);
+
+    xboxControllerCommand.leftTrigger().whileTrue(shooterShootCommand);
+
+    xboxControllerCommand.rightTrigger().whileTrue(intakeInCommand);
+  }
+
+  private void configure_Cameron_Bindings() {
+    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+
+    leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
+
+    new Trigger(intakeSubsystem::hasNoteRAW).and(xboxControllerCommand.rightTrigger())
+    .whileTrue(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.75)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_Red))))
+    .onFalse(new InstantCommand(() -> xboxController.setRumble(RumbleType.kBothRumble, 0.0)).alongWith(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Breath_Blue))));
+
+    new Trigger(pivotSubsystem::isAimAtTargetPosition)
+    .whileTrue(new InstantCommand(() -> blinkin.setCustomColor(colors.fixPal_Stobe_white)).andThen(new WaitCommand(1)).andThen(new InstantCommand(()-> blinkin.setCustomColor(colors.c2BreathSlow))))
+    .onFalse(new InstantCommand(()-> blinkin.setCustomColor(colors.fixPal_Breath_Blue)));
+
+    new Trigger(xboxControllerCommand.rightTrigger().and(xboxControllerCommand.leftTrigger().negate()).and(xboxControllerCommand.leftBumper().negate()))
+    .whileTrue(intakeInCommand.alongWith(pivotSubsystem.setPivotIntakeCommand()).until(intakeSubsystem::hasNoteRAW));
+
+    new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8).negate()).and(shooterSubsystem::isAtTargetSpeed).and(pivotSubsystem::isAimAtTargetPosition).and(xboxControllerCommand.rightTrigger()))
+    .whileTrue(intakeFeedV2Command);
+
+    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y().negate()).and(xboxControllerCommand.a().negate()))
+    .whileTrue(shooterShootCommand.alongWith(pivotSubsystem.setPivotShootSpeakerCommand()));
+
+    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.y()))
+    .whileTrue(shooterShootV2Command.alongWith(pivotSubsystem.setPivotShootStageCommand()));
+
+    new Trigger(xboxControllerCommand.leftTrigger().and(xboxControllerCommand.a()))
+    .whileTrue(shooterSHUTTLECommand.alongWith(pivotSubsystem.setPivotShootStageCommand()));
+
+    new Trigger(xboxControllerCommand.leftTrigger().and(shooterSubsystem::isAtTargetVelocity).and(xboxControllerCommand.rightTrigger()).and(xboxControllerCommand.button(8).negate()))
+    .whileTrue(intakeFeedV2Command);
+    
+    new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8).negate()))
+    .whileTrue(shooterAmpCommand.alongWith(pivotSubsystem.setPivot_Finish_AMPCommand()));
+
+    new Trigger(xboxControllerCommand.rightBumper().and(shooterSubsystem::isnot_TOOfastTooReverse))
+    .whileTrue(intakeOutCommand);
+
+    new Trigger(xboxControllerCommand.rightTrigger().and(xboxControllerCommand.button(8)))
+    .whileTrue(intakeFeedV2Command);
+
+    new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8)))
+    .whileTrue(shooterAmpCommandV2);
+
   }
 
   /**
