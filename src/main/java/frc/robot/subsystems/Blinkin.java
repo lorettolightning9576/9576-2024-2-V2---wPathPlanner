@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.Colors;
 
 public class Blinkin extends SubsystemBase {
-    public static final Spark leftBlinkin = new Spark(2);
-    public static final Spark rightBlinkin = new Spark(1);
+    public static final Spark leftBlinkin = new Spark(3);
+    public static final Spark rightBlinkin = new Spark(5);
     public static final Colors colors = new Colors();
 
     private Timer timer = new Timer();

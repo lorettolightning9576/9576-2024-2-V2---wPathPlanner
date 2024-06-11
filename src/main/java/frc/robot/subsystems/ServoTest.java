@@ -13,9 +13,9 @@ public class ServoTest extends SubsystemBase{
     public static Servo servofive;
 
     public ServoTest() {
-        servofive = new Servo(5);
+        servofive = new Servo(2);
         servofive.setBoundsMicroseconds(2500, 0, 1500, 0, 500);
-        servofive.setPeriodMultiplier(PeriodMultiplier.k1X);
+        servofive.setPeriodMultiplier(PeriodMultiplier.k4X);
     }
 
     public void addDashboardWidgets(ShuffleboardLayout layout) {
@@ -29,19 +29,19 @@ public class ServoTest extends SubsystemBase{
         layout.addNumber("Servo Handle", servofive::getHandle)                  .withPosition(1, 2);
     }
 
-    public void setServoPosition(double position) {
+    private void setServoPosition(double position) {
         servofive.setPosition(position);
     }
 
-    public void setServoAngle(double angle) {
+    private void setServoAngle(double angle) {
         servofive.setAngle(angle);
     }
 
-    public void setServoSet(double value) {
+    private void setServoSet(double value) {
         servofive.set(value);
     }
 
-    public void setServoSpeed(double speed) {
+    private void setServoSpeed(double speed) {
         servofive.setSpeed(speed);
     }
 
