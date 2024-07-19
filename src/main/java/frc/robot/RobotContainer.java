@@ -54,20 +54,13 @@ import frc.robot.commands.Shooter.ShooterInCommand;
 import frc.robot.commands.Shooter.ShooterSHUTTLECommand;
 import frc.robot.commands.Shooter.ShooterShootCommand;
 import frc.robot.commands.Shooter.ShooterShootV2Command;
-import frc.robot.commands.Shooter.ShooterFun.ShooterFunCommand;
-import frc.robot.commands.Shooter.ShooterFun.ShooterFunLongCommand;
-import frc.robot.commands.Shooter.ShooterFun.ShooterFunLongV2Command;
-import frc.robot.commands.Shooter.ShooterFun.ShooterFunLongV3Command;
-import frc.robot.commands.Shooter.ShooterFun.ShooterFunMIDCommand;
-import frc.robot.commands.Shooter.ShooterFun.ShooterFunV2Command;
-import frc.robot.commands.Shooter.ShooterFun.ShooterFunV3Command;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.TelopDrive;
 import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.ServoTest;
+import frc.robot.subsystems.DeployServo;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
@@ -96,7 +89,7 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final Blinkin blinkin = new Blinkin();
-  private final ServoTest servoTest = new ServoTest();
+  private final DeployServo servoTest = new DeployServo();
 
   // Intake
   private final IntakeInCommand intakeInCommand = new IntakeInCommand(intakeSubsystem);
@@ -114,13 +107,6 @@ public class RobotContainer {
   private final AutoShootCommand autoShootCommand = new AutoShootCommand(intakeSubsystem, shooterSubsystem);
   private final ShooterShootV2Command shooterShootV2Command = new ShooterShootV2Command(shooterSubsystem, pivotSubsystem::isTooLow);
   private final ShooterAmpCommandV2 shooterAmpCommandV2 = new ShooterAmpCommandV2(shooterSubsystem);
-  private final ShooterFunCommand shooterFunCommand = new ShooterFunCommand(shooterSubsystem);
-  private final ShooterFunV2Command shooterFunV2Command = new ShooterFunV2Command(shooterSubsystem);
-  private final ShooterFunV3Command shooterFunV3Command = new ShooterFunV3Command(shooterSubsystem);
-  private final ShooterFunMIDCommand shooterFunMIDCommand = new ShooterFunMIDCommand(shooterSubsystem);
-  private final ShooterFunLongCommand shooterFunLongCommand = new ShooterFunLongCommand(shooterSubsystem);
-  private final ShooterFunLongV2Command shooterFunLongV2Command = new ShooterFunLongV2Command(shooterSubsystem);
-  private final ShooterFunLongV3Command shooterFunLongV3Command = new ShooterFunLongV3Command(shooterSubsystem);
 
   // Pivot
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
@@ -164,7 +150,8 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
 
-    configure_FUN_Bindings();
+    //configure_FUN_Bindings();
+    configure_Cameron_Bindings();
     configureDashboard();
 
     AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
@@ -375,7 +362,6 @@ public class RobotContainer {
   }
 
   private void configure_Cameron_Bindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     leftJoystick.button(7).onTrue(new InstantCommand(drivebase::zeroGyro));
 
