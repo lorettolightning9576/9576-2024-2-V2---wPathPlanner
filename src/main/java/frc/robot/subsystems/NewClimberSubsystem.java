@@ -1,17 +1,22 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
+import java.util.Map;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
-import java.util.Map;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ClimberVSubsystem extends SubsystemBase{
+public class NewClimberSubsystem extends SubsystemBase{
+    
     private double raiseLimit = 210.0;
 
     private double RAISE_SPEED = 0.25;
@@ -24,7 +29,7 @@ public class ClimberVSubsystem extends SubsystemBase{
 
     public static RelativeEncoder ClimbMotorEncoder;
   
-    public ClimberVSubsystem() {
+    public NewClimberSubsystem() {
         ClimbMotor = new CANSparkMax(40, MotorType.kBrushless);
 
         ClimbMotor.restoreFactoryDefaults();
@@ -155,22 +160,23 @@ public class ClimberVSubsystem extends SubsystemBase{
     );
   }
 
-  @Override
-  public void periodic() {
-    if (fastLower) {
-      LOWER_SPEED = -0.5;
-    } else if (!fastLower) {
-      LOWER_SPEED = -0.25;
-    } else {
-      LOWER_SPEED = -0.25;
-    }
+    @Override
+    public void periodic() {
+        if (fastLower) {
+        LOWER_SPEED = -0.5;
+        } else if (!fastLower) {
+          LOWER_SPEED = -0.25;
+        } else {
+          LOWER_SPEED = -0.25;
+        }
 
-    if (fastRaise) {
-      RAISE_SPEED = 0.5;
-    } else if (!fastRaise) {
-      RAISE_SPEED = 0.25;
-    } else {
-      RAISE_SPEED = 0.25;
-    }
-  }
+        if (fastRaise) {
+          RAISE_SPEED = 0.5;
+        } else if (!fastRaise) {
+          RAISE_SPEED = 0.25;
+        } else {
+          RAISE_SPEED = 0.25;
+        }
+    } 
+
 }

@@ -17,10 +17,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PS5Controller;
-import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -47,7 +45,6 @@ import frc.robot.commands.Intake.IntakeInCommand;
 import frc.robot.commands.Intake.IntakeInCommandBeamBrake;
 import frc.robot.commands.Intake.IntakeOutCommand;
 import frc.robot.commands.Pivot.PivotTriggerCommand;
-import frc.robot.commands.Pivot.PivotTriggerCommandV2;
 import frc.robot.commands.Pivot.stopPivotCommand;
 import frc.robot.commands.Shooter.AutoShootCommand;
 import frc.robot.commands.Shooter.ShooterAmpCommand;
@@ -60,8 +57,8 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.TelopDrive;
 import frc.robot.subsystems.Blinkin;
-import frc.robot.subsystems.ClimberVSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.NewClimberSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.DeployServo;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -94,6 +91,8 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final Blinkin blinkin = new Blinkin();
   private final DeployServo deployServo = new DeployServo();
+  private final NewClimberSubsystem newClimberSubsystem = new NewClimberSubsystem();
+
 
   // Intake
   private final IntakeInCommand intakeInCommand = new IntakeInCommand(intakeSubsystem);
@@ -121,13 +120,6 @@ public class RobotContainer {
   private final ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
 
   private final PowerDistribution powerDistribution = new PowerDistribution(9, ModuleType.kRev);
-
-  //private final Notifier controlThread;
-
-  /**private final CANSparkMax FLdriveMotor = new CANSparkMax(1, MotorType.kBrushless);
-  private final CANSparkMax BLdriveMotor = new CANSparkMax(3, MotorType.kBrushless);
-  private final CANSparkMax BRdriveMotor = new CANSparkMax(7, MotorType.kBrushless);
-  private final CANSparkMax FRdriveMotor = new CANSparkMax(5, MotorType.kBrushless);*/
 
   private final Colors colors = new Colors();
 
@@ -417,6 +409,12 @@ public class RobotContainer {
 
     new Trigger(commandClimbController.button(2))
     .whileTrue(deployServo.setServoDisableCommand());
+
+    new Trigger(commandClimbController.axisGreaterThan(1, 0))
+    .whileTrue(newClimberSubsystem.raiseMotorCommand());
+
+    new Trigger(commandClimbController.axisLessThan(1, 0))
+    .whileTrue(newClimberSubsystem.lowerMotorCommand());
 
   }
 
