@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -25,7 +26,9 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -223,7 +226,7 @@ public class RobotContainer {
       () -> MathUtil.applyDeadband(-ps5Controller.getRightX() * 0.75, 0.075), () -> true
     );*/
 
-    drivebase.setDefaultCommand(closedFieldRel);
+    //drivebase.setDefaultCommand(closedFieldRel);
   }
 
   private void configureDashboard() {
@@ -237,7 +240,6 @@ public class RobotContainer {
     final var servoTab = Shuffleboard.getTab("Servo");
     servoTest.addDashboardWidgets(servoTab.getLayout("Servo", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(4, 4));
     
-
     CameraServer.startAutomaticCapture(0).setResolution(640, 480);
     CameraServer.getVideo().getSource().setFPS(15);
     var camera = CameraServer.getVideo();
@@ -282,10 +284,10 @@ public class RobotContainer {
     //xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.set(0.25)));
 
     xboxControllerCommand.rightBumper().whileTrue(
-      Commands.startEnd(() -> servoTest.setServoAngleCommand(10), servoTest::setServoDisabled, servoTest));
+      Commands.startEnd(() -> servoTest.setServoPosition(0.0), servoTest::setServoDisabled, servoTest));
 
     xboxControllerCommand.leftBumper().whileTrue(
-      Commands.startEnd(() -> servoTest.setServoAngleCommand(50), servoTest::setServoDisabled, servoTest));
+      Commands.startEnd(() -> servoTest.setServoPosition(1.0), servoTest::setServoDisabled, servoTest));
   }
 
   private void configure_Grace_Bindings() {
