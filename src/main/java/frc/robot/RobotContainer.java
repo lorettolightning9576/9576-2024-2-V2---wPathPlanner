@@ -132,6 +132,7 @@ public class RobotContainer {
     drivebase.setMotorBrake(true);
     shooterSubsystem.setShooterCoast();
     intakeSubsystem.setBrake();
+    deployServo.setServoPosition(1.0);
     pivotSubsystem.setDefaultCommand(pivotTriggerCommand);
     //pivotSubsystem.setDefaultCommand(pivotTriggerCommandV2);
     
@@ -211,7 +212,7 @@ public class RobotContainer {
       () -> MathUtil.applyDeadband(-ps5Controller.getRightX() * 0.75, 0.075), () -> true
     );*/
 
-    //drivebase.setDefaultCommand(closedFieldRel);
+    drivebase.setDefaultCommand(closedFieldRel);
   }
 
   private void configureDashboard() {
@@ -410,10 +411,10 @@ public class RobotContainer {
     new Trigger(commandClimbController.button(2))
     .whileTrue(deployServo.setServoDisableCommand());
 
-    new Trigger(commandClimbController.axisGreaterThan(1, 0))
+    new Trigger(commandClimbController.axisGreaterThan(4, 0.5))
     .whileTrue(newClimberSubsystem.raiseMotorCommand());
 
-    new Trigger(commandClimbController.axisLessThan(1, 0))
+    new Trigger(commandClimbController.axisLessThan(4, -0.5))
     .whileTrue(newClimberSubsystem.lowerMotorCommand());
 
   }

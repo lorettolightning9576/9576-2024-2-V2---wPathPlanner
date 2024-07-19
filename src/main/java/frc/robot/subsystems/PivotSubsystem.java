@@ -478,12 +478,12 @@ public class PivotSubsystem extends SubsystemBase{
   }*/
 
   public void setPivotShootUnderSpeaker() {
-    double  ShootSpeaker = 4.755;
+    double  ShootSpeaker = 4.735;
     setPivotPosition(ShootSpeaker);
   }
 
   public void setPivotShootStage() {
-    double  ShootStage = 5.71;
+    double  ShootStage = 5.675;
     setPivotPosition(ShootStage);
   }
 
