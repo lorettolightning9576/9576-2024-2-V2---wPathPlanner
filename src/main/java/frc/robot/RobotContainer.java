@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -46,6 +47,7 @@ import frc.robot.commands.Intake.IntakeInCommand;
 import frc.robot.commands.Intake.IntakeInCommandBeamBrake;
 import frc.robot.commands.Intake.IntakeOutCommand;
 import frc.robot.commands.Pivot.PivotTriggerCommand;
+import frc.robot.commands.Pivot.PivotTriggerCommandV2;
 import frc.robot.commands.Pivot.stopPivotCommand;
 import frc.robot.commands.Shooter.AutoShootCommand;
 import frc.robot.commands.Shooter.ShooterAmpCommand;
@@ -58,6 +60,7 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.TelopDrive;
 import frc.robot.subsystems.Blinkin;
+import frc.robot.subsystems.ClimberVSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.DeployServo;
@@ -83,13 +86,14 @@ public class RobotContainer {
   public final CommandXboxController xboxControllerCommand = new CommandXboxController(2);
   public final PS5Controller ps5Controller = new PS5Controller(3);
   public final CommandPS5Controller commandPS5controller = new CommandPS5Controller(3);
+  public final CommandGenericHID commandClimbController = new CommandGenericHID(4);
 
   // Subsystems
-  private final PivotSubsystem pivotSubsystem = new PivotSubsystem(xboxControllerCommand);
+  private final PivotSubsystem pivotSubsystem = new PivotSubsystem(xboxControllerCommand, commandClimbController);
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final Blinkin blinkin = new Blinkin();
-  private final DeployServo servoTest = new DeployServo();
+  private final DeployServo deployServo = new DeployServo();
 
   // Intake
   private final IntakeInCommand intakeInCommand = new IntakeInCommand(intakeSubsystem);
@@ -110,6 +114,7 @@ public class RobotContainer {
 
   // Pivot
   private final PivotTriggerCommand pivotTriggerCommand = new PivotTriggerCommand(pivotSubsystem);
+  //private final PivotTriggerCommandV2 pivotTriggerCommandV2 = new PivotTriggerCommandV2(pivotSubsystem, Math. (Math.abs(commandClimbController.getLeftY()), Math.abs(xboxControllerCommand.getRawAxis(1))));
   private final stopPivotCommand stopPivotCommand = new stopPivotCommand(pivotSubsystem);
 
   private final ShuffleboardTab driverTab = Shuffleboard.getTab("Driver");
@@ -136,6 +141,7 @@ public class RobotContainer {
     shooterSubsystem.setShooterCoast();
     intakeSubsystem.setBrake();
     pivotSubsystem.setDefaultCommand(pivotTriggerCommand);
+    //pivotSubsystem.setDefaultCommand(pivotTriggerCommandV2);
     
     NamedCommands.registerCommand("Shoot", shooterSubsystem.AutoShooterCommand().withTimeout(18));
     NamedCommands.registerCommand("Initial Feed", intakeSubsystem.setIntakeFeedCommand().withTimeout(.5));
@@ -225,7 +231,7 @@ public class RobotContainer {
     intakeSubsystem.addDashboardWidgets(shooterAndIntakeTab.getLayout("Intake", BuiltInLayouts.kGrid).withPosition(5, 0).withSize(3, 3));
 
     final var servoTab = Shuffleboard.getTab("Servo");
-    servoTest.addDashboardWidgets(servoTab.getLayout("Servo", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(4, 4));
+    deployServo.addDashboardWidgets(servoTab.getLayout("Servo", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(4, 4));
     
     CameraServer.startAutomaticCapture(0).setResolution(640, 480);
     CameraServer.getVideo().getSource().setFPS(15);
@@ -271,10 +277,10 @@ public class RobotContainer {
     //xboxControllerCommand.button(8).whileTrue(new InstantCommand(() -> servo.set(0.25)));
 
     xboxControllerCommand.rightBumper().whileTrue(
-      Commands.startEnd(() -> servoTest.setServoPosition(0.0), servoTest::setServoDisabled, servoTest));
+      Commands.startEnd(() -> deployServo.setServoPosition(0.0), deployServo::setServoDisabled, deployServo));
 
     xboxControllerCommand.leftBumper().whileTrue(
-      Commands.startEnd(() -> servoTest.setServoPosition(1.0), servoTest::setServoDisabled, servoTest));
+      Commands.startEnd(() -> deployServo.setServoPosition(1.0), deployServo::setServoDisabled, deployServo));
   }
 
   private void configure_Grace_Bindings() {
@@ -402,6 +408,15 @@ public class RobotContainer {
 
     new Trigger(xboxControllerCommand.leftBumper().and(xboxControllerCommand.button(8)))
     .whileTrue(shooterAmpCommandV2);
+
+    new Trigger(commandClimbController.button(4))
+    .whileTrue(deployServo.deployUpPositionCommand());
+
+    new Trigger(commandClimbController.button(1))
+    .whileTrue(deployServo.deployDownPositionCommand());
+
+    new Trigger(commandClimbController.button(2))
+    .whileTrue(deployServo.setServoDisableCommand());
 
   }
 

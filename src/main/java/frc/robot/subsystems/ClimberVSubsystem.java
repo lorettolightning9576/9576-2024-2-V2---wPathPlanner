@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ClimberV2Subsystem extends SubsystemBase {
+public class ClimberVSubsystem extends SubsystemBase{
     private double raiseLimit = 210.0;
 
     private double RAISE_SPEED = 0.25;
@@ -24,7 +24,7 @@ public class ClimberV2Subsystem extends SubsystemBase {
 
     public static RelativeEncoder ClimbMotorEncoder;
   
-    public ClimberV2Subsystem() {
+    public ClimberVSubsystem() {
         ClimbMotor = new CANSparkMax(40, MotorType.kBrushless);
 
         ClimbMotor.restoreFactoryDefaults();

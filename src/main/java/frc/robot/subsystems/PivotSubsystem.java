@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import static edu.wpi.first.units.Units.Degrees;
@@ -80,8 +81,9 @@ public class PivotSubsystem extends SubsystemBase{
   public final SparkAnalogSensor potentiometer;
 
   private CommandXboxController commandXboxController;
+  private CommandGenericHID commandClimbController;
 
-  public PivotSubsystem(CommandXboxController m_commandXboxController) {
+  public PivotSubsystem(CommandXboxController m_commandXboxController, CommandGenericHID m_CommandXboxController2) {
     leftPivotMotor = new CANSparkMax(20, MotorType.kBrushless);
     rightPivotMotorLEADER = new CANSparkMax(21, MotorType.kBrushless);
 
@@ -148,6 +150,7 @@ public class PivotSubsystem extends SubsystemBase{
     pivotUpSwitch =     new DigitalInput(pivotUpLimitID);
 
     this.commandXboxController = m_commandXboxController;
+    this.commandClimbController = m_CommandXboxController2;
   }
 
   public void addDashboardWidgets(ShuffleboardLayout layout) {
@@ -243,23 +246,62 @@ public class PivotSubsystem extends SubsystemBase{
   public void setArmTriggerSpeed() {
     holdAimPosition = false;
     if (pivotDownSwitch.get()) {
-      if (commandXboxController.getRawAxis(1) > 0) {
+      if (commandXboxController.getRawAxis(1) > 0 && commandClimbController.getRawAxis(1) > 0) {
         stopAimAndMotors();
       } else if (commandXboxController.getRawAxis(1) < 0) {
         rightPivotMotorLEADER.set(MathUtil.applyDeadband(commandXboxController.getRawAxis(1) * 0.375, 0.1));
+      } else if (commandClimbController.getRawAxis(1) < 0) {
+        rightPivotMotorLEADER.set(MathUtil.applyDeadband(commandClimbController.getRawAxis(1) * 0.375, 0.1));
       } else {
         stopAimAndMotors();
       }
     } else if (!pivotUpSwitch.get()) {
-      if (commandXboxController.getRawAxis(1) < 0) {
+      if (commandXboxController.getRawAxis(1) < 0 && commandClimbController.getRawAxis(1) < 0) {
         stopAimAndMotors();
       } else if (commandXboxController.getRawAxis(1) > 0) {
         rightPivotMotorLEADER.set(MathUtil.applyDeadband(commandXboxController.getRawAxis(1) * 0.375, 0.1));
-      }  else {
+      } else if (commandClimbController.getRawAxis(1) > 0) {
+        rightPivotMotorLEADER.set(MathUtil.applyDeadband(commandClimbController.getRawAxis(1) * 0.375, 0.1));
+      } else {
         stopAimAndMotors();
       }
     } else if (pivotUpSwitch.get() && !pivotDownSwitch.get()) {
-      rightPivotMotorLEADER.set(MathUtil.applyDeadband(commandXboxController.getRawAxis(1) * 0.375, 0.1));
+      if (commandXboxController.getRawAxis(1) != 0 && commandClimbController.getRawAxis(1) == 0) {
+        rightPivotMotorLEADER.set(MathUtil.applyDeadband(commandXboxController.getRawAxis(1) * 0.375, 0.1));
+      } else if (commandXboxController.getRawAxis(1) == 0 && commandClimbController.getRawAxis(1) != 0) {
+        rightPivotMotorLEADER.set(MathUtil.applyDeadband(commandClimbController.getRawAxis(1) * 0.375, 0.1)); 
+      } else {
+        rightPivotMotorLEADER.set(MathUtil.applyDeadband(commandXboxController.getRawAxis(1) * 0.375, 0.1)); 
+      }
+    } else {
+      stopAimAndMotors();
+    }
+  }
+
+    public void setArmTriggerSpeed(double axisValue) {
+    holdAimPosition = false;
+    if (pivotDownSwitch.get()) {
+      if (axisValue > 0) {
+        stopAimAndMotors();
+      } else if (axisValue < 0) {
+        rightPivotMotorLEADER.set(MathUtil.applyDeadband(axisValue * 0.375, 0.1));
+      } else if (commandClimbController.getRawAxis(1) < 0) {
+        rightPivotMotorLEADER.set(MathUtil.applyDeadband(axisValue * 0.375, 0.1));
+      } else {
+        stopAimAndMotors();
+      }
+    } else if (!pivotUpSwitch.get()) {
+      if (axisValue < 0) {
+        stopAimAndMotors();
+      } else if (axisValue > 0) {
+        rightPivotMotorLEADER.set(MathUtil.applyDeadband(axisValue * 0.375, 0.1));
+      } else if (commandClimbController.getRawAxis(1) > 0) {
+        rightPivotMotorLEADER.set(MathUtil.applyDeadband(axisValue * 0.375, 0.1));
+      } else {
+        stopAimAndMotors();
+      }
+    } else if (pivotUpSwitch.get() && !pivotDownSwitch.get()) {
+      rightPivotMotorLEADER.set(MathUtil.applyDeadband(axisValue * 0.375, 0.1));
     } else {
       stopAimAndMotors();
     }

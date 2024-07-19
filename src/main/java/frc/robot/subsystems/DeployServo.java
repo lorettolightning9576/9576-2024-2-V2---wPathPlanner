@@ -68,7 +68,7 @@ public class DeployServo extends SubsystemBase{
     public Command deployDownPositionCommand() {
         return this.startEnd(        
         () -> {
-            setServoPosition(0.0);
+            setServoPosition(1.0);
         },
         () -> {
             setServoDisabled();
@@ -79,7 +79,7 @@ public class DeployServo extends SubsystemBase{
     public Command deployUpPositionCommand() {
         return this.startEnd(        
         () -> {
-            setServoPosition(1.0);
+            setServoPosition(0.0);
         },
         () -> {
             setServoDisabled();
@@ -88,7 +88,7 @@ public class DeployServo extends SubsystemBase{
     }
 
     public Command setServoDisableCommand() {
-        return run(() -> setServoDisabled());
+        return this.run(() -> setServoDisabled());
     }
 
 }
