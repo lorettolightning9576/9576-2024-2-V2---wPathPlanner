@@ -19,8 +19,11 @@ public class NewClimberSubsystem extends SubsystemBase{
     
     private double raiseLimit = 210.0;
 
-    private double RAISE_SPEED = 0.25;
-    private double LOWER_SPEED = -0.25;
+    private double RAISE_SPEED = 0.5;
+    private double LOWER_SPEED = -0.5;
+
+    private double fast_RAISE_SPEED = 0.75;
+    private double fast_LOWER_SPEED = -0.75;
 
     public boolean fastLower = false;
     public boolean fastRaise = false;
@@ -58,11 +61,19 @@ public class NewClimberSubsystem extends SubsystemBase{
     }
 
     public void lowerOVERRIDE() {
-        ClimbMotor.set(LOWER_SPEED); 
+      if (fastLower) {
+        ClimbMotor.set(fast_LOWER_SPEED);
+      } else {
+        ClimbMotor.set(LOWER_SPEED);
+      }
     }
 
     public void raiseOVERRIDE() {
-        ClimbMotor.set(RAISE_SPEED); 
+      if (fastLower) {
+        ClimbMotor.set(fast_RAISE_SPEED);
+      } else {
+        ClimbMotor.set(RAISE_SPEED);
+      }
     }
 
     public double getLEFT_EncoderConvFactor() {
@@ -109,6 +120,16 @@ public class NewClimberSubsystem extends SubsystemBase{
         } else {
             return "none";
         }
+    }
+
+    public void setFastMovement() { 
+      fastLower = true;
+      fastRaise = true;
+    }
+
+    public void setSlowMovement() {
+      fastLower = false;
+      fastRaise = false;
     }
 
     public void setBrake() {
@@ -160,23 +181,31 @@ public class NewClimberSubsystem extends SubsystemBase{
     );
   }
 
-    @Override
-    public void periodic() {
-        if (fastLower) {
-        LOWER_SPEED = -0.5;
-        } else if (!fastLower) {
-          LOWER_SPEED = -0.25;
-        } else {
-          LOWER_SPEED = -0.25;
-        }
+  public Command setFastMovementCommand() {
+    return run(() -> setFastMovement());
+  }
 
-        if (fastRaise) {
-          RAISE_SPEED = 0.5;
-        } else if (!fastRaise) {
-          RAISE_SPEED = 0.25;
-        } else {
-          RAISE_SPEED = 0.25;
-        }
-    } 
+  public Command setSlowMovemeCommand() {
+    return run(() -> setSlowMovement());
+  }
+
+  @Override
+  public void periodic() {
+    /**if (fastLower) {
+    LOWER_SPEED = -0.75;
+    } else if (!fastLower) {
+      LOWER_SPEED = -0.5;
+    } else {
+      LOWER_SPEED = -0.5;
+    }
+
+    if (fastRaise) {
+      RAISE_SPEED = 0.75;
+    } else if (!fastRaise) {
+      RAISE_SPEED = 0.5;
+    } else {
+      RAISE_SPEED = 0.5;
+    }*/
+  } 
 
 }

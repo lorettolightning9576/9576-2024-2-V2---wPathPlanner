@@ -482,18 +482,33 @@ public class PivotSubsystem extends SubsystemBase{
     setPivotPosition(ShootSpeaker);
   }
 
+  public void setAUTOPivotShootUnderSpeaker() {
+    double  ShootSpeaker = 4.6925;
+    setPivotPosition(ShootSpeaker);
+  }
+
   public void setPivotShootStage() {
     double  ShootStage = 5.675;
     setPivotPosition(ShootStage);
   }
 
-    public void setPivotSHUTTLE() {
+  public void setPivotAUTOShootStage() {
+    double  ShootStage = 5.69;
+    setPivotPosition(ShootStage);
+  }
+
+  public void setPivotSHUTTLE() {
     double  Shuttle = 5.05;
     setPivotPosition(Shuttle);
   }
 
-  public void front3notesAuto() {
-    double  ShootStage = 5.65;
+  public void threeNoteAmpAuto() {
+    double  ShootStage = 5.6275;  
+    setPivotPosition(ShootStage);
+  }
+
+  public void threeNoteCenterAuto() {
+    double  ShootStage = 5.625;  
     setPivotPosition(ShootStage);
   }
 
@@ -541,11 +556,23 @@ public class PivotSubsystem extends SubsystemBase{
     return run(() -> setPivotShootUnderSpeaker());
   }
 
+  public Command setAUTOPivotShootSpeakerCommand() {
+    return run(() -> setAUTOPivotShootUnderSpeaker());
+  }
+
   public Command setPivotShootStageCommand() {
     return run(() -> setPivotShootStage());
   }
 
-    public Command autoFront3Notes_Command() {
-    return run(() -> front3notesAuto());
+  public Command setPivotAUTOShootStageCommand() {
+    return run(() -> setPivotAUTOShootStage());
+  }
+
+  public Command auto3NoteAmp_Command() {
+    return run(() -> threeNoteAmpAuto());
+  }
+
+  public Command auto3NoteCenter_Command() {
+    return run(() -> threeNoteCenterAuto());
   }
 }

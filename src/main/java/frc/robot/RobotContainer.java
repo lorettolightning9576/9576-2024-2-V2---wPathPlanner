@@ -137,14 +137,15 @@ public class RobotContainer {
     //pivotSubsystem.setDefaultCommand(pivotTriggerCommandV2);
     
     NamedCommands.registerCommand("Shoot", shooterSubsystem.AutoShooterCommand().withTimeout(18));
-    NamedCommands.registerCommand("Initial Feed", intakeSubsystem.setIntakeFeedCommand().withTimeout(.5));
+    NamedCommands.registerCommand("Initial Feed", intakeSubsystem.setIntakeFeedCommand().withTimeout(0.5));
     NamedCommands.registerCommand("Feed", intakeSubsystem.setIntakeFeedCommand().withTimeout(18));
         //NamedCommands.registerCommand("Feed44", intakeSubsystem.setIntakeFeedCommand().onlyWhile(null));
     NamedCommands.registerCommand("Intake", intakeInCommandBeamBrake);
-    NamedCommands.registerCommand("Pivot Subwoofer", pivotSubsystem.setPivotShootSpeakerCommand().withTimeout(.75));
+    NamedCommands.registerCommand("Pivot Subwoofer", pivotSubsystem.setAUTOPivotShootSpeakerCommand().withTimeout(1.0));
     NamedCommands.registerCommand("Pivot Intake", pivotSubsystem.setPivotIntakeCommand().withTimeout(1.5));
-    NamedCommands.registerCommand("Pivot Far", pivotSubsystem.autoFront3Notes_Command().withTimeout(1.5));
-    NamedCommands.registerCommand("Pivot Podium", pivotSubsystem.setPivotShootStageCommand());
+    NamedCommands.registerCommand("Pivot Center", pivotSubsystem.auto3NoteCenter_Command().withTimeout(1.5));
+    NamedCommands.registerCommand("Pivot Amp", pivotSubsystem.auto3NoteAmp_Command().withTimeout(1.5));
+    NamedCommands.registerCommand("Pivot Podium", pivotSubsystem.setPivotAUTOShootStageCommand());
 
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Nothing", new RunCommand(() -> {}));
@@ -405,17 +406,24 @@ public class RobotContainer {
     new Trigger(commandClimbController.button(4))
     .whileTrue(deployServo.deployUpPositionCommand());
 
-    new Trigger(commandClimbController.button(1))
+    new Trigger(commandClimbController.button(2))
     .whileTrue(deployServo.deployDownPositionCommand());
 
-    new Trigger(commandClimbController.button(2))
+    new Trigger(commandClimbController.button(1))
     .whileTrue(deployServo.setServoDisableCommand());
 
-    new Trigger(commandClimbController.axisGreaterThan(4, 0.5))
+    new Trigger(commandClimbController.axisGreaterThan(3, 0.5))
     .whileTrue(newClimberSubsystem.raiseMotorCommand());
 
-    new Trigger(commandClimbController.axisLessThan(4, -0.5))
+    new Trigger(commandClimbController.axisLessThan(3, -0.5))
     .whileTrue(newClimberSubsystem.lowerMotorCommand());
+
+    /**new Trigger(commandClimbController.button(7))
+    .whileTrue(Commands.startEnd(() -> newClimberSubsystem.setFastMovement(), newClimberSubsystem::setSlowMovement, newClimberSubsystem));*/
+
+    new Trigger(commandClimbController.button(7))
+    .whileTrue(new InstantCommand(newClimberSubsystem::setFastMovement))
+    .onFalse(new InstantCommand(newClimberSubsystem::setSlowMovement));
 
   }
 

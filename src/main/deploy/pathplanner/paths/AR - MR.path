@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7645024520818287,
-        "y": 6.81805748226881
+        "x": 2.813006710178897,
+        "y": 6.885971888919526
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6692718000820628,
-        "y": 6.226040913620287
+        "x": 1.7177760581791313,
+        "y": 6.293955320271003
       },
       "isLocked": false,
       "linkedName": "Amp"
@@ -45,7 +45,7 @@
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -150.0,
+    "rotation": -155.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

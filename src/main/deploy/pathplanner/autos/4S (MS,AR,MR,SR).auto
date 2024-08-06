@@ -28,7 +28,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.63
+                        "waitTime": 1.5
                       }
                     },
                     {
@@ -51,6 +51,12 @@
                       }
                     },
                     {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.75
+                      }
+                    },
+                    {
                       "type": "deadline",
                       "data": {
                         "commands": [
@@ -63,7 +69,7 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "Pivot Far"
+                              "name": "Pivot Amp"
                             }
                           }
                         ]
@@ -77,6 +83,12 @@
                             "type": "path",
                             "data": {
                               "pathName": "AR - MR"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Pivot Center"
                             }
                           }
                         ]

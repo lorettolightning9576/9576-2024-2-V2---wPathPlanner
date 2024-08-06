@@ -14,6 +14,8 @@ public class DeployServo extends SubsystemBase{
 
     public DeployServo() {
         deployServo = new Servo(5);
+
+        deployServo.setPosition(1.0);
         //servofive.setBoundsMicroseconds(2500, 0, 1500, 0, 500);
         //servofive.setPeriodMultiplier(PeriodMultiplier.k4X);
     }
@@ -31,6 +33,14 @@ public class DeployServo extends SubsystemBase{
 
     public void setServoPosition(double position) {
         deployServo.setPosition(position);
+    }
+
+    public void setDownServoPosition() {
+        deployServo.setPosition(1.0);
+    }
+
+    public void setUpServoPosition() {
+        deployServo.setPosition(0.0);
     }
 
     public void setServoAngle(double angle) {
