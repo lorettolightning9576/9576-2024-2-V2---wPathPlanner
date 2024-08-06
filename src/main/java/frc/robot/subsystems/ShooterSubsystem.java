@@ -132,16 +132,14 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public void setShooterSHUTTLE() {
-        TopTargetVelocity = 4000;
-        BottomTargetVelocity = 4000;
         TopTargetVelocity = 4300;
         BottomTargetVelocity = 4280;
         setShooterVelocity = true;
     }
 
     public void setShooterAmpShot() {
-        TopTargetVelocity = 500;
-        BottomTargetVelocity = 500;
+        TopTargetVelocity = 1700;
+        BottomTargetVelocity = 490;
         setShooterVelocity = true;
     }
 
@@ -282,4 +280,14 @@ public class ShooterSubsystem extends SubsystemBase{
         });
     }
     
+    public Command AmpShooterCommand() {
+        return this.runEnd(
+            ()-> {
+                setShooterAmpShot();
+            },
+            () -> {
+                stopShooter();
+        });
+    }
+
 }
